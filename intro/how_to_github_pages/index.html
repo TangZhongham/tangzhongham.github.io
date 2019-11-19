@@ -2,19 +2,19 @@
 <html lang='en'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='How to deploy your hugo sites to Github Pages [toc]
-部署到 Github 个人页面  在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容  进入之前教程中的本地目录
-3. 将 mytopia 项目关联到远程的 mytopia 仓库 git remote add origin git@github.com/TangZhongham/mytopia.git```
- 将本地网站全部推送到远程的 mytopia 仓库
-&gt; 可能会出现push 不了的原因。可能需要你 ```git add .```然后```git commit -m &#34;first commit&#34;``` &gt; &gt; &gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。 5. 此时所有代码已经被推送到 github 上了。 6.'>
+<meta name='description' content='How to deploy your hugo sites to Github Pages  How to deploy your hugo sites to Github Pages  部署到 Github 个人页面 常见错误   部署到 Github 个人页面  在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容
+ 进入之前教程中的本地目录
+cd /mytopia 将 mytopia 项目关联到远程的 mytopia 仓库
+git remote add origin git@github.com/TangZhongham/mytopia.git 将本地网站全部推送到远程的 mytopia 仓库
+git push -u origin master   可能会出现push 不了的原因。可能需要你 git add .然后git commit -m &quot;first commit&quot; &gt; &gt;&gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。'>
 <meta name='theme-color' content='#ffcd00'>
 
 <meta property='og:title' content='How_to_github_pages • Gary Tang'>
-<meta property='og:description' content='How to deploy your hugo sites to Github Pages [toc]
-部署到 Github 个人页面  在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容  进入之前教程中的本地目录
-3. 将 mytopia 项目关联到远程的 mytopia 仓库 git remote add origin git@github.com/TangZhongham/mytopia.git```
- 将本地网站全部推送到远程的 mytopia 仓库
-&gt; 可能会出现push 不了的原因。可能需要你 ```git add .```然后```git commit -m &#34;first commit&#34;``` &gt; &gt; &gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。 5. 此时所有代码已经被推送到 github 上了。 6.'>
+<meta property='og:description' content='How to deploy your hugo sites to Github Pages  How to deploy your hugo sites to Github Pages  部署到 Github 个人页面 常见错误   部署到 Github 个人页面  在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容
+ 进入之前教程中的本地目录
+cd /mytopia 将 mytopia 项目关联到远程的 mytopia 仓库
+git remote add origin git@github.com/TangZhongham/mytopia.git 将本地网站全部推送到远程的 mytopia 仓库
+git push -u origin master   可能会出现push 不了的原因。可能需要你 git add .然后git commit -m &quot;first commit&quot; &gt; &gt;&gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。'>
 <meta property='og:url' content='http://tangzhongham.github.io/intro/how_to_github_pages/'>
 <meta property='og:site_name' content='Mytopia'>
 <meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/2cae2cda87f673b4ee747e00d182c9d9?s=256'><meta property='article:author' content='https://facebook.com/tzh'><meta property='article:section' content='intro'><meta property='article:published_time' content='2019-11-19T13:10:03&#43;08:00'/><meta property='article:modified_time' content='2019-11-19T13:10:03&#43;08:00'/><meta name='twitter:card' content='summary'><meta name='twitter:creator' content='@tzh'>
@@ -202,51 +202,71 @@ One min read
 
 <h1 id="how-to-deploy-your-hugo-sites-to-github-pages">How to deploy your hugo sites to Github Pages</h1>
 
-<p>[toc]</p>
+<!-- TOC -->
+
+<ul>
+<li><a href="#how-to-deploy-your-hugo-sites-to-github-pages">How to deploy your hugo sites to Github Pages</a>
+
+<ul>
+<li><a href="#%e9%83%a8%e7%bd%b2%e5%88%b0-github-%e4%b8%aa%e4%ba%ba%e9%a1%b5%e9%9d%a2">部署到 Github 个人页面</a></li>
+<li><a href="#%e5%b8%b8%e8%a7%81%e9%94%99%e8%af%af">常见错误</a></li>
+</ul></li>
+</ul>
+
+<!-- /TOC -->
 
 <h2 id="部署到-github-个人页面">部署到 Github 个人页面</h2>
 
 <ol>
-<li>在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容
-</br></li>
+<li><p>在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容</p></li>
 
 <li><p>进入之前教程中的本地目录</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cd /mytopia```" data-lang="cd /mytopia```">3. 将 mytopia 项目关联到远程的 mytopia 仓库</code></pre></div>
-<p>git remote add origin git@github.com/TangZhongham/mytopia.git```</p></li>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">cd /mytopia</code></pre></div></li>
+
+<li><p>将 mytopia 项目关联到远程的 mytopia 仓库</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">git remote add origin git@github.com/TangZhongham/mytopia.git</code></pre></div></li>
 
 <li><p>将本地网站全部推送到远程的 mytopia 仓库</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-git push -u origin master```" data-lang="git push -u origin master```">&gt; 可能会出现push 不了的原因。可能需要你 ```git add .```然后```git commit -m &#34;first commit&#34;``` 
-&gt;
-&gt; &gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。
-5. 此时所有代码已经被推送到 github 上了。
-
-6. 确保服务正常，并确保根目录下没有 ```/public```文件夹。</code></pre></div>
-<p>shell</p></li>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">git push -u origin master</code></pre></div></li>
 </ol>
 
-<p>rm -r /public</p>
+<blockquote>
+<p>可能会出现push 不了的原因。可能需要你 <code>git add .</code>然后<code>git commit -m &quot;first commit&quot;</code>
+&gt;
+&gt;&gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。</p>
 
-<pre><code>7. 关闭hugo服务器```ctrl+C```，执行以下命令创建 public 子模块，将用于github page 展示。
-</code></pre>
+<ol>
+<li><p>此时所有代码已经被推送到 github 上了。</p></li>
 
-<p>git submodule add -b master  <a href="https://github.com/TangZhongham/tangzhongham.github.io.git" target="_blank">https://github.com/TangZhongham/tangzhongham.github.io.git</a> public<code>
-8. 执行</code>hugo```命令，自动创建 public 文件夹。然后将代码提交到远程 mytopia 仓库</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">hugo
+<li><p>确保服务正常，并确保根目录下没有 <code>/public</code>文件夹。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">rm -r /public</code></pre></div></li>
+
+<li><p>关闭hugo服务器<code>ctrl+C</code>，执行以下命令创建 public 子模块，将用于github page 展示。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-git submodule add -b master  https://github.com/TangZhongham/tangzhongham.github.io.git public```" data-lang="git submodule add -b master  https://github.com/TangZhongham/tangzhongham.github.io.git public```">8. 执行```hugo```命令，自动创建 public 文件夹。然后将代码提交到远程 mytopia 仓库</code></pre></div>
+<p>shell
+hugo
 cd public
 git status
 git add .
-git commit -m <span style="color:#e6db74">&#34;first commit&#34;</span>
-git push -u origin master</code></pre></div>
-<p><strong>不行</strong>，重新rm -r public 试试。tangzhongham.github.io 建点东西，好像听说不能完全为空。</p>
+git commit -m &ldquo;first commit&rdquo;
+git push -u origin master</p>
 
-<p>删完又 git add git commit/ git push -u origin master 了一波。</p>
+<pre><code>
 
-<p>重复第7步</p>
 
-<pre><code>cd ./public
-git pull --allow-unrelated-histories
+**不行**，重新rm -r public 试试。tangzhongham.github.io 建点东西，好像听说不能完全为空。
+
+删完又 git add git commit/ git push -u origin master 了一波。
+
+重复第7步
+</code></pre></li>
+</ol>
+
+<p>cd ./public
+git pull &ndash;allow-unrelated-histories
 git push 解决两边不一样的问题（http那边创建了个README）
-</code></pre>
+```</p>
+</blockquote>
 
 <p>现在的操作流程就是说，先改文章。然后 /mytopia 下面 hugo -buildDrafts 然后 git add/commit/push 三连，之后 去 /build 里面 三连，页面才能更新。</p>
 

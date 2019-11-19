@@ -16,11 +16,11 @@
       <pubDate>Tue, 19 Nov 2019 13:10:03 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_github_pages/</guid>
-      <description>How to deploy your hugo sites to Github Pages [toc]
-部署到 Github 个人页面  在github 分别建立 mytopia 和 &amp;lt;username&amp;gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容  进入之前教程中的本地目录
-3. 将 mytopia 项目关联到远程的 mytopia 仓库 git remote add origin git@github.com/TangZhongham/mytopia.git```
- 将本地网站全部推送到远程的 mytopia 仓库
-&amp;gt; 可能会出现push 不了的原因。可能需要你 ```git add .```然后```git commit -m &amp;#34;first commit&amp;#34;``` &amp;gt; &amp;gt; &amp;gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。 5. 此时所有代码已经被推送到 github 上了。 6.</description>
+      <description>How to deploy your hugo sites to Github Pages  How to deploy your hugo sites to Github Pages  部署到 Github 个人页面 常见错误   部署到 Github 个人页面  在github 分别建立 mytopia 和 &amp;lt;username&amp;gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容
+ 进入之前教程中的本地目录
+cd /mytopia 将 mytopia 项目关联到远程的 mytopia 仓库
+git remote add origin git@github.com/TangZhongham/mytopia.git 将本地网站全部推送到远程的 mytopia 仓库
+git push -u origin master   可能会出现push 不了的原因。可能需要你 git add .然后git commit -m &amp;quot;first commit&amp;quot; &amp;gt; &amp;gt;&amp;gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。</description>
     </item>
     
     <item>
