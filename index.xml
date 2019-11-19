@@ -2,64 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Mytopia</title>
-    <link>http://tangzhongham.github.io/</link>
+    <link>uildDrafts/</link>
     <description>Recent content on Mytopia</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Mon, 18 Nov 2019 23:20:43 +0800</lastBuildDate>
     
-	<atom:link href="http://tangzhongham.github.io/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="uildDrafts/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>How_to_github_pages</title>
-      <link>http://tangzhongham.github.io/intro/how_to_github_pages/</link>
-      <pubDate>Tue, 19 Nov 2019 13:10:03 +0800</pubDate>
-      
-      <guid>http://tangzhongham.github.io/intro/how_to_github_pages/</guid>
-      <description>How to deploy your hugo sites to Github Pages [toc]
-部署到 Github 个人页面  在github 分别建立 mytopia 和 &amp;lt;username&amp;gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容  进入之前教程中的本地目录
-3. 将 mytopia 项目关联到远程的 mytopia 仓库 git remote add origin git@github.com/TangZhongham/mytopia.git```
- 将本地网站全部推送到远程的 mytopia 仓库
-&amp;gt; 可能会出现push 不了的原因。可能需要你 ```git add .```然后```git commit -m &amp;#34;first commit&amp;#34;``` &amp;gt; &amp;gt; &amp;gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。 5. 此时所有代码已经被推送到 github 上了。 6.</description>
-    </item>
-    
-    <item>
-      <title>How_to_hugo_1</title>
-      <link>http://tangzhongham.github.io/intro/how_to_hugo_1/</link>
-      <pubDate>Tue, 19 Nov 2019 11:23:09 +0800</pubDate>
-      
-      <guid>http://tangzhongham.github.io/intro/how_to_hugo_1/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>How_to_hugo</title>
-      <link>http://tangzhongham.github.io/posts/how_to_hugo/</link>
-      <pubDate>Mon, 18 Nov 2019 22:13:51 +0800</pubDate>
-      
-      <guid>http://tangzhongham.github.io/posts/how_to_hugo/</guid>
-      <description>1. Markdown 5分钟使用指南  注意: 该主题的toc渲染有点问题,不支持1.1.1 这种表达(和 visual studio code 里面冲突)   1. Markdown 5分钟使用指南  1.1. Why Markdown How to Markdown 1.2.1. 结构 1.2.2. 段落  1.2.2.1. 分隔符 1.2.2.2. 引用 1.2.2.3. 代码块 1.2.2.3.1. 单行代码 1.2.2.3.2. 多行代码  1.2.3. 句子  1.2.3.1. 换行 1.2.3.2. Bullet Dot  1.2.4. 文本  1.2.4.1. 链接  1.3. Others 1.3.1. 杂   1.1. Why Markdown  Markdown is a lightweight markup language that you can use to add formatting elements to plaintext text documents.</description>
-    </item>
-    
-    <item>
-      <title>How_to_markdown</title>
-      <link>http://tangzhongham.github.io/posts/how_to_markdown/</link>
-      <pubDate>Mon, 18 Nov 2019 22:13:43 +0800</pubDate>
-      
-      <guid>http://tangzhongham.github.io/posts/how_to_markdown/</guid>
-      <description>Markdown 5分钟使用指南  Markdown 5分钟使用指南  Why Markdown How to Markdown 结构 段落  分隔符 引用 代码块 单行代码 多行代码  句子  换行 Bullet Dot  文本  链接  Others 杂   Why Markdown  Markdown is a lightweight markup language that you can use to add formatting elements to plaintext text documents.
- Markdown 本质上就是一种标记语言，让你在不需要过度关注文章结构的同时，提供了符合逻辑的文章结构。
-How to Markdown 正如以上所说，Markdown 只是为了让你更舒服的组织好文章架构，那么从以下几个方面来使用则很符合逻辑。
-结构 Markdown 把一篇文章分为如下结构:
- 这是一级标题 这是二级标题 这是三级标题 这是四级标题 这是五级标题  一级标题只能有一个，等价于文章的标题，所有其他等级标题都在一级标题下面。</description>
-    </item>
     
     <item>
       <title></title>
-      <link>http://tangzhongham.github.io/about/</link>
+      <link>uildDrafts/about/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://tangzhongham.github.io/about/</guid>
+      <guid>uildDrafts/about/</guid>
       <description> Hello! </description>
     </item>
     

@@ -3,102 +3,29 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://tangzhongham.github.io/authors/</loc>
-    <lastmod>2019-11-19T13:10:03+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/categories/</loc>
-    <lastmod>2019-11-19T13:10:03+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/intro/how_to_github_pages/</loc>
-    <lastmod>2019-11-19T13:10:03+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/intro/</loc>
-    <lastmod>2019-11-19T13:10:03+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/categories/tutorial/</loc>
-    <lastmod>2019-11-19T13:10:03+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/authors/tzh/</loc>
-    <lastmod>2019-11-19T13:10:03+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/tags/github/</loc>
-    <lastmod>2019-11-19T11:23:09+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/intro/how_to_hugo_1/</loc>
-    <lastmod>2019-11-19T11:23:09+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/tags/hugo/</loc>
-    <lastmod>2019-11-19T11:23:09+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/tags/markdown/</loc>
-    <lastmod>2019-11-19T11:23:09+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/tags/</loc>
-    <lastmod>2019-11-19T11:23:09+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/tags/wercker/</loc>
-    <lastmod>2019-11-19T11:23:09+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/</loc>
+    <loc>uildDrafts/</loc>
     <lastmod>2019-11-18T23:20:43+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tangzhongham.github.io/tags/create/</loc>
-    <lastmod>2019-11-18T22:13:51+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/posts/how_to_hugo/</loc>
-    <lastmod>2019-11-18T22:13:51+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/posts/</loc>
-    <lastmod>2019-11-18T22:13:51+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/posts/how_to_markdown/</loc>
-    <lastmod>2019-11-18T22:13:43+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/categories/posts/</loc>
-    <lastmod>2019-11-18T22:13:43+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://tangzhongham.github.io/about/</loc>
+    <loc>uildDrafts/about/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://tangzhongham.github.io/series/</loc>
+    <loc>uildDrafts/authors/</loc>
+  </url>
+  
+  <url>
+    <loc>uildDrafts/categories/</loc>
+  </url>
+  
+  <url>
+    <loc>uildDrafts/series/</loc>
+  </url>
+  
+  <url>
+    <loc>uildDrafts/tags/</loc>
   </url>
   
 </urlset>
