@@ -5,10 +5,21 @@
     <link>http://tangzhongham.github.io/authors/tzh/</link>
     <description>Recent content in tzh on Mytopia</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 19 Nov 2019 13:10:03 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 19 Nov 2019 22:31:48 +0800</lastBuildDate>
     
 	<atom:link href="http://tangzhongham.github.io/authors/tzh/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>201911</title>
+      <link>http://tangzhongham.github.io/diary/201911/</link>
+      <pubDate>Tue, 19 Nov 2019 22:31:48 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/diary/201911/</guid>
+      <description> 2019 年 11 月  2019 年 11 月  1119 - 1126 11 19 周二  Thoughts TODO LIST     This is for PRIVATE ONLY !!!
+ 1119 - 1126 11 19 周二 Thoughts 今天终于把页面部署好了~ 然后可以舒舒服服的发布,然后在哪里都能看啦.
+TODO LIST deploy 脚本研究 git submodule 是什么意思 文章润色~ 明天要开始输出 kafka 的东西啦~ 然后 Spark 源码也要看起来了!!!  </description>
+    </item>
     
     <item>
       <title>How_to_github_pages</title>
