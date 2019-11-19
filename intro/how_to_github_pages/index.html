@@ -2,19 +2,19 @@
 <html lang='en'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='How to deploy your hugo sites to Github Pages  How to deploy your hugo sites to Github Pages  部署到 Github 个人页面 常见错误   部署到 Github 个人页面  在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容
+<meta name='description' content='How to deploy your hugo sites to Github Pages  How to deploy your hugo sites to Github Pages  部署到 Github 个人页面 常见错误 TODO LIST   部署到 Github 个人页面  在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容
  进入之前教程中的本地目录
 cd /mytopia 将 mytopia 项目关联到远程的 mytopia 仓库
 git remote add origin git@github.com/TangZhongham/mytopia.git 将本地网站全部推送到远程的 mytopia 仓库
-git push -u origin master   可能会出现push 不了的原因。可能需要你 git add .然后git commit -m &quot;first commit&quot; &gt; &gt;&gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。'>
+git push -u origin master  可能会出现push 不了的原因。可能需要你 git add .然后git commit -m &quot;first commit&quot;'>
 <meta name='theme-color' content='#ffcd00'>
 
 <meta property='og:title' content='How_to_github_pages • Gary Tang'>
-<meta property='og:description' content='How to deploy your hugo sites to Github Pages  How to deploy your hugo sites to Github Pages  部署到 Github 个人页面 常见错误   部署到 Github 个人页面  在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容
+<meta property='og:description' content='How to deploy your hugo sites to Github Pages  How to deploy your hugo sites to Github Pages  部署到 Github 个人页面 常见错误 TODO LIST   部署到 Github 个人页面  在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容
  进入之前教程中的本地目录
 cd /mytopia 将 mytopia 项目关联到远程的 mytopia 仓库
 git remote add origin git@github.com/TangZhongham/mytopia.git 将本地网站全部推送到远程的 mytopia 仓库
-git push -u origin master   可能会出现push 不了的原因。可能需要你 git add .然后git commit -m &quot;first commit&quot; &gt; &gt;&gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。'>
+git push -u origin master  可能会出现push 不了的原因。可能需要你 git add .然后git commit -m &quot;first commit&quot;'>
 <meta property='og:url' content='http://tangzhongham.github.io/intro/how_to_github_pages/'>
 <meta property='og:site_name' content='Mytopia'>
 <meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/2cae2cda87f673b4ee747e00d182c9d9?s=256'><meta property='article:author' content='https://facebook.com/tzh'><meta property='article:section' content='intro'><meta property='article:published_time' content='2019-11-19T13:10:03&#43;08:00'/><meta property='article:modified_time' content='2019-11-19T13:10:03&#43;08:00'/><meta name='twitter:card' content='summary'><meta name='twitter:creator' content='@tzh'>
@@ -210,6 +210,7 @@ One min read
 <ul>
 <li><a href="#%e9%83%a8%e7%bd%b2%e5%88%b0-github-%e4%b8%aa%e4%ba%ba%e9%a1%b5%e9%9d%a2">部署到 Github 个人页面</a></li>
 <li><a href="#%e5%b8%b8%e8%a7%81%e9%94%99%e8%af%af">常见错误</a></li>
+<li><a href="#todo-list">TODO LIST</a></li>
 </ul></li>
 </ul>
 
@@ -230,10 +231,9 @@ One min read
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">git push -u origin master</code></pre></div></li>
 </ol>
 
-<blockquote>
-<p>可能会出现push 不了的原因。可能需要你 <code>git add .</code>然后<code>git commit -m &quot;first commit&quot;</code>
-&gt;
-&gt;&gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。</p>
+<p>可能会出现push 不了的原因。可能需要你 <code>git add .</code>然后<code>git commit -m &quot;first commit&quot;</code></p>
+
+<p>前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。</p>
 
 <ol>
 <li><p>此时所有代码已经被推送到 github 上了。</p></li>
@@ -242,31 +242,27 @@ One min read
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">rm -r /public</code></pre></div></li>
 
 <li><p>关闭hugo服务器<code>ctrl+C</code>，执行以下命令创建 public 子模块，将用于github page 展示。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-git submodule add -b master  https://github.com/TangZhongham/tangzhongham.github.io.git public```" data-lang="git submodule add -b master  https://github.com/TangZhongham/tangzhongham.github.io.git public```">8. 执行```hugo```命令，自动创建 public 文件夹。然后将代码提交到远程 mytopia 仓库</code></pre></div>
-<p>shell
-hugo
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">git submodule add -b master  https://github.com/TangZhongham/tangzhongham.github.io.git public</code></pre></div></li>
+
+<li><p>执行<code>hugo</code>命令，自动创建 public 文件夹。然后将代码提交到远程 mytopia 仓库</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">hugo
 cd public
 git status
 git add .
-git commit -m &ldquo;first commit&rdquo;
-git push -u origin master</p>
-
-<pre><code>
-
-
-**不行**，重新rm -r public 试试。tangzhongham.github.io 建点东西，好像听说不能完全为空。
-
-删完又 git add git commit/ git push -u origin master 了一波。
-
-重复第7步
-</code></pre></li>
+git commit -m <span style="color:#e6db74">&#34;first commit&#34;</span>
+git push -u origin master</code></pre></div></li>
 </ol>
 
-<p>cd ./public
-git pull &ndash;allow-unrelated-histories
+<p><strong>不行</strong>，重新rm -r public 试试。tangzhongham.github.io 建点东西，好像听说不能完全为空。</p>
+
+<p>删完又 git add git commit/ git push -u origin master 了一波。</p>
+
+<p>重复第7步</p>
+
+<pre><code>cd ./public
+git pull --allow-unrelated-histories
 git push 解决两边不一样的问题（http那边创建了个README）
-```</p>
-</blockquote>
+</code></pre>
 
 <p>现在的操作流程就是说，先改文章。然后 /mytopia 下面 hugo -buildDrafts 然后 git add/commit/push 三连，之后 去 /build 里面 三连，页面才能更新。</p>
 
@@ -275,6 +271,17 @@ git push 解决两边不一样的问题（http那边创建了个README）
 不知道404 是不是由于这个原因。尝试 hugo -buildDrafts 之后先提交里面的试试。</p>
 
 <h2 id="常见错误">常见错误</h2>
+
+<h2 id="todo-list">TODO LIST</h2>
+
+<ul class="task-list">
+<li><label><input type="checkbox" disabled class="task-list-item"> 预备流程：go/git/hugo</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> 分两篇，怎样本地启动，怎样部署。注意事项（http 空文件问题）</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> 可以重新部署一次玩（好累，往后稍稍吧)</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> Git submodule 的使用，为啥两边要更新两次</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> deploy 脚本的编写</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> Enjoy！</label></li>
+</ul>
 
 </div>
 
