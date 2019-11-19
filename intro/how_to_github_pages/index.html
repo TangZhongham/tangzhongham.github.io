@@ -237,6 +237,17 @@ git status
 git add .
 git commit -m <span style="color:#e6db74">&#34;first commit&#34;</span>
 git push -u origin master</code></pre></div>
+<p><strong>不行</strong>，重新rm -r public 试试。tangzhongham.github.io 建点东西，好像听说不能完全为空。</p>
+
+<p>删完又 git add git commit/ git push -u origin master 了一波。</p>
+
+<p>重复第7步</p>
+
+<pre><code>cd ./public
+git pull --allow-unrelated-histories
+git push 解决两边不一样的问题（http那边创建了个README）
+</code></pre>
+
 <h2 id="常见错误">常见错误</h2>
 
 </div>
