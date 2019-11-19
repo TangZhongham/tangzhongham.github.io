@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>markdown on Mytopia</title>
+    <link>http://tangzhongham.github.io/tags/markdown/</link>
+    <description>Recent content in markdown on Mytopia</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Tue, 19 Nov 2019 11:23:09 +0800</lastBuildDate>
+    
+	<atom:link href="http://tangzhongham.github.io/tags/markdown/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>How_to_hugo_1</title>
+      <link>http://tangzhongham.github.io/intro/how_to_hugo_1/</link>
+      <pubDate>Tue, 19 Nov 2019 11:23:09 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/intro/how_to_hugo_1/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>How_to_markdown</title>
+      <link>http://tangzhongham.github.io/posts/how_to_markdown/</link>
+      <pubDate>Mon, 18 Nov 2019 22:13:43 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/posts/how_to_markdown/</guid>
+      <description>Markdown 5分钟使用指南  Markdown 5分钟使用指南  Why Markdown How to Markdown 结构 段落  分隔符 引用 代码块 单行代码 多行代码  句子  换行 Bullet Dot  文本  链接  Others 杂   Why Markdown  Markdown is a lightweight markup language that you can use to add formatting elements to plaintext text documents.
+ Markdown 本质上就是一种标记语言，让你在不需要过度关注文章结构的同时，提供了符合逻辑的文章结构。
+How to Markdown 正如以上所说，Markdown 只是为了让你更舒服的组织好文章架构，那么从以下几个方面来使用则很符合逻辑。
+结构 Markdown 把一篇文章分为如下结构:
+ 这是一级标题 这是二级标题 这是三级标题 这是四级标题 这是五级标题  一级标题只能有一个，等价于文章的标题，所有其他等级标题都在一级标题下面。</description>
+    </item>
+    
+  </channel>
+</rss>

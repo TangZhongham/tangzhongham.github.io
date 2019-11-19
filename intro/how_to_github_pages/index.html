@@ -2,19 +2,27 @@
 <html lang='en'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content=' Hello! '>
+<meta name='description' content='How to deploy your hugo sites to Github Pages [toc]
+部署到 Github 个人页面  在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容  进入之前教程中的本地目录
+3. 将 mytopia 项目关联到远程的 mytopia 仓库 git remote add origin git@github.com/TangZhongham/mytopia.git```
+ 将本地网站全部推送到远程的 mytopia 仓库
+&gt; 可能会出现push 不了的原因。可能需要你 ```git add .```然后```git commit -m &#34;first commit&#34;``` &gt; &gt; &gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。 5. 此时所有代码已经被推送到 github 上了。 6.'>
 <meta name='theme-color' content='#ffcd00'>
 
-<meta property='og:title' content=' • Mytopia'>
-<meta property='og:description' content=' Hello! '>
-<meta property='og:url' content='http://tangzhongham.github.io/about/'>
+<meta property='og:title' content='How_to_github_pages • Gary Tang'>
+<meta property='og:description' content='How to deploy your hugo sites to Github Pages [toc]
+部署到 Github 个人页面  在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容  进入之前教程中的本地目录
+3. 将 mytopia 项目关联到远程的 mytopia 仓库 git remote add origin git@github.com/TangZhongham/mytopia.git```
+ 将本地网站全部推送到远程的 mytopia 仓库
+&gt; 可能会出现push 不了的原因。可能需要你 ```git add .```然后```git commit -m &#34;first commit&#34;``` &gt; &gt; &gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。 5. 此时所有代码已经被推送到 github 上了。 6.'>
+<meta property='og:url' content='http://tangzhongham.github.io/intro/how_to_github_pages/'>
 <meta property='og:site_name' content='Mytopia'>
-<meta property='og:type' content='article'><meta property='article:section' content=''><meta name='twitter:card' content='summary'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/2cae2cda87f673b4ee747e00d182c9d9?s=256'><meta property='article:author' content='https://facebook.com/tzh'><meta property='article:section' content='intro'><meta property='article:published_time' content='2019-11-19T13:10:03&#43;08:00'/><meta property='article:modified_time' content='2019-11-19T13:10:03&#43;08:00'/><meta name='twitter:card' content='summary'><meta name='twitter:creator' content='@tzh'>
 
 <meta name="generator" content="Hugo 0.59.1" />
 
-  <title> • Mytopia</title>
-  <link rel='canonical' href='http://tangzhongham.github.io/about/'>
+  <title>How_to_github_pages • Gary Tang</title>
+  <link rel='canonical' href='http://tangzhongham.github.io/intro/how_to_github_pages/'>
   
   
   <link rel='icon' href='/favicon.ico'>
@@ -25,7 +33,7 @@
   
 
 </head>
-<body class='page type-page has-sidebar'>
+<body class='page type-intro has-sidebar'>
 
   <div class='site'><div id='sidebar' class='sidebar'>
   <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
@@ -122,10 +130,11 @@
   </div>
 </nav><div class='header-widgets'>
         <div class='container'>
+    
     <style>.widget-breadcrumbs li:after{content:'\2f '}</style>
   <section class='widget widget-breadcrumbs sep-after'>
     <nav id='breadcrumbs'>
-      <ol><li><a href='/'></a></li><li><span></span></li></ol>
+      <ol><li><a href='/'></a></li><li><a href='/intro/'>Intros</a></li><li><span>How_to_github_pages</span></li></ol>
     </nav>
   </section></div>
       </div>
@@ -144,7 +153,7 @@
   <header class='header entry-header'>
   <div class='container sep-after'>
     <div class='header-info'>
-      <h1 class='title'></h1>
+      <h1 class='title'>How_to_github_pages</h1>
       
 
     </div>
@@ -158,10 +167,16 @@
   
 </svg>
 <span class='screen-reader-text'>Posted on </span>
-  <time class='entry-date' datetime='0001-01-01T00:00:00Z'>0001, Jan 01</time>
+  <time class='entry-date' datetime='2019-11-19T13:10:03&#43;08:00'>2019, Nov 19</time>
 </span>
 
+  <span class='byline'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
+  <path d="M21,21V20c0-2.76-4-5-9-5s-9,2.24-9,5v1"/>
+  <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
+  
+</svg>
+<span class='screen-reader-text'> by </span><a href='/authors/tzh'>Gary Tang</a></span>
   
 <span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
@@ -185,18 +200,75 @@ One min read
   <div class='container entry-content'>
   
 
-<h1 id="hello">Hello!</h1>
+<h1 id="how-to-deploy-your-hugo-sites-to-github-pages">How to deploy your hugo sites to Github Pages</h1>
+
+<p>[toc]</p>
+
+<h2 id="部署到-github-个人页面">部署到 Github 个人页面</h2>
+
+<ol>
+<li>在github 分别建立 mytopia 和 &lt;username&gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容
+</br></li>
+
+<li><p>进入之前教程中的本地目录</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cd /mytopia```" data-lang="cd /mytopia```">3. 将 mytopia 项目关联到远程的 mytopia 仓库</code></pre></div>
+<p>git remote add origin git@github.com/TangZhongham/mytopia.git```</p></li>
+
+<li><p>将本地网站全部推送到远程的 mytopia 仓库</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-git push -u origin master```" data-lang="git push -u origin master```">&gt; 可能会出现push 不了的原因。可能需要你 ```git add .```然后```git commit -m &#34;first commit&#34;``` 
+&gt;
+&gt; &gt; 前文要注意git submodule 和 git init，所以这边才不用git init了。src refspec master does not match 错误是由于没有 add 东西就 push 了。
+5. 此时所有代码已经被推送到 github 上了。
+
+6. 确保服务正常，并确保根目录下没有 ```/public```文件夹。</code></pre></div>
+<p>shell</p></li>
+</ol>
+
+<p>rm -r /public</p>
+
+<pre><code>7. 关闭hugo服务器```ctrl+C```，执行以下命令创建 public 子模块，将用于github page 展示。
+</code></pre>
+
+<p>git submodule add -b master  <a href="https://github.com/TangZhongham/tangzhongham.github.io.git" target="_blank">https://github.com/TangZhongham/tangzhongham.github.io.git</a> public<code>
+8. 执行</code>hugo```命令，自动创建 public 文件夹。然后将代码提交到远程 mytopia 仓库</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">hugo
+cd public
+git status
+git add .
+git commit -m <span style="color:#e6db74">&#34;first commit&#34;</span>
+git push -u origin master</code></pre></div>
+<h2 id="常见错误">常见错误</h2>
 
 </div>
 
   
 <footer class='entry-footer'>
-  <div class='container sep-before'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/tutorial/'>tutorial</a></div>
+
   </div>
 </footer>
 
 
 </article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/intro/how_to_hugo_1/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>How_to_hugo_1</a>
+    </div></div>
+</nav>
 
 
 
