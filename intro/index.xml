@@ -5,10 +5,19 @@
     <link>http://tangzhongham.github.io/intro/</link>
     <description>Recent content in Intros on Mytopia</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 19 Nov 2019 13:10:03 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 23 Nov 2019 17:48:40 +0800</lastBuildDate>
     
 	<atom:link href="http://tangzhongham.github.io/intro/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>How_to_hugo</title>
+      <link>http://tangzhongham.github.io/intro/how_to_hugo/</link>
+      <pubDate>Sat, 23 Nov 2019 17:48:40 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/intro/how_to_hugo/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>How_to_github_pages</title>
@@ -29,7 +38,15 @@ git push -u origin master  可能会出现push 不了的原因。可能需要你
       <pubDate>Tue, 19 Nov 2019 11:23:09 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_hugo_1/</guid>
-      <description></description>
+      <description>How to Hugo [toc]
+安装篇 Git 安装 略
+Hugo 安装 Windows 下载二进制文件: Windows 安装其实要比 Mac 舒服一些.找到 binary 二进制文件 的Releases, 下载下来安装就行. 下载链接
+添加到Path: 不会的可以谷歌.
+Mac 诚然, 我一开始当然是愉快的使用 brew install hugo 的方式. 问题来了&amp;hellip;由于方方面的原因,这样下载的 hugo 版本太低了,和我喜欢的主题有冲突, 所以 mac 也老老实实和 win 一样找二进制安装然后配置path 吧~
+ ps: Mac 软链接有点小坑, 没搞定的谷歌可以解决.
+ 启动篇  Hugo 是目前最舒服的markdown 静态网站方案了. 简单五步开始搭建博客吧.
+ 第一步: 网站 由于静态网站的便捷性, hugo 建立一个网站只需要一条命令.
+hugo new site mytopiia 此时 hugo 生成的目录结构如下: mytopiia ├── archetypes # 存放生成博客的模版 │ └── default.</description>
     </item>
     
   </channel>
