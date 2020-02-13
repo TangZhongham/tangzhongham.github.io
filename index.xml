@@ -20,7 +20,8 @@
  本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
  本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D cd build git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:
 cd ./mytopia hugo -D git add . git commit -m &amp;#34;xxx&amp;#34; git push original master deploy文件:
-TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.</description>
+TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.
+一个很坑的事情, 按照文档添加 search 则会把homepage的介绍挤掉.</description>
     </item>
     
     <item>
@@ -102,15 +103,6 @@ How to Markdown 正如以上所说，Markdown 只是为了让你更舒服的组�
       
       <guid>http://tangzhongham.github.io/about/</guid>
       <description> Hello! </description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>http://tangzhongham.github.io/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>http://tangzhongham.github.io/</guid>
-      <description></description>
     </item>
     
     <item>

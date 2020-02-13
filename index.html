@@ -25,7 +25,7 @@
   
 
 </head>
-<body class='page type-page has-sidebar'>
+<body class='page type-page layout-search has-sidebar'>
 
   <div class='site'><div id='sidebar' class='sidebar'>
   <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
@@ -48,18 +48,6 @@
     A place for him to create.
     </div>
   </header>
-
-</section>
-<section class='widget widget-search sep-after'>
-  <header>
-    <h4 class='title widget-title'>Search</h4>
-  </header>
-
-  <form action='/search' id='search-form' class='search-form'>
-    <label>
-      <span class='screen-reader-text'>Search</span>
-      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
-    </label></form>
 
 </section>
 <section class='widget widget-taxonomy_cloud sep-after'>
@@ -120,8 +108,6 @@
         <a href='/intro'>入门</a>
       </li><li class='item'>
         <a href='/diary'>日记</a>
-      </li><li class='item current'>
-        <a aria-current='page' href='/'></a>
       </li></ul>
   </div>
 </nav><div class='header-widgets'>
@@ -145,34 +131,45 @@
       <main id='content'>
 
 
-<article lang='en' class='entry'>
-  <header class='header entry-header'>
+<header class='header'>
   <div class='container sep-after'>
     <div class='header-info'>
       <h1 class='title'></h1>
+
       
 
     </div>
-    
-
   </div>
 </header>
 
+
+
+
+<div class='container'>
+  <section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label><button type='submit' class='search-submit'>
+      <span class='screen-reader-text'>Search</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
+  <circle cx="11" cy="11" r="8" />
+  <line x1="21" y1="21" x2="16.65" y2="16.65" />
   
+</svg>
+</button></form>
 
-  <div class='container entry-content'>
-  
-</div>
-
-  
-
-</article>
+</section>
 
 
-
-
-      </main>
+  <ul id='search-results' class='list search-results' data-results-empty='Nothing found!' data-searching='Searching'>
+  </ul>
+</div><script src='/assets/js/fuse_search.1ada4bca.js'></script>      </main>
 
       <footer id='footer' class='footer'>
         <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>

@@ -6,7 +6,8 @@
  本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
  本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D cd build git add . git commit -m &#34;xxx&#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:
 cd ./mytopia hugo -D git add . git commit -m &#34;xxx&#34; git push original master deploy文件:
-TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.'>
+TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.
+一个很坑的事情, 按照文档添加 search 则会把homepage的介绍挤掉.'>
 <meta name='theme-color' content='#ffcd00'>
 
 <meta property='og:title' content='New_intro • Gary Tang'>
@@ -14,7 +15,8 @@ TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,�
  本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
  本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D cd build git add . git commit -m &#34;xxx&#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:
 cd ./mytopia hugo -D git add . git commit -m &#34;xxx&#34; git push original master deploy文件:
-TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.'>
+TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.
+一个很坑的事情, 按照文档添加 search 则会把homepage的介绍挤掉.'>
 <meta property='og:url' content='http://tangzhongham.github.io/posts/new_intro/'>
 <meta property='og:site_name' content='Mytopia'>
 <meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/2cae2cda87f673b4ee747e00d182c9d9?s=256'><meta property='article:author' content='https://facebook.com/tzh'><meta property='article:section' content='posts'><meta property='article:tag' content='hugo'><meta property='article:tag' content='markdown'><meta property='article:tag' content='github'><meta property='article:published_time' content='2020-02-13T18:24:45&#43;08:00'/><meta property='article:modified_time' content='2020-02-13T18:24:45&#43;08:00'/><meta name='twitter:card' content='summary'><meta name='twitter:creator' content='@tzh'>
@@ -56,18 +58,6 @@ TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,�
     A place for him to create.
     </div>
   </header>
-
-</section>
-<section class='widget widget-search sep-after'>
-  <header>
-    <h4 class='title widget-title'>Search</h4>
-  </header>
-
-  <form action='/search' id='search-form' class='search-form'>
-    <label>
-      <span class='screen-reader-text'>Search</span>
-      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
-    </label></form>
 
 </section>
 <section class='widget widget-taxonomy_cloud sep-after'>
@@ -128,8 +118,6 @@ TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,�
         <a href='/intro'>入门</a>
       </li><li class='item'>
         <a href='/diary'>日记</a>
-      </li><li class='item'>
-        <a href='/'></a>
       </li></ul>
   </div>
 </nav><div class='header-widgets'>
@@ -239,6 +227,43 @@ git push original master</code></pre></div>
 
 <p>创建了一个改版的sh文件,不知道咋样,试试.</p>
 
+<p>一个很坑的事情, 按照文档添加 search 则会把homepage的介绍挤掉. 放到sidebar 则无法使用&hellip; 暂时去掉搜索吧.</p>
+
+<h3 id="文本">文本</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">#!/bin/sh
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e"># If a command fails then the deploy stops</span>
+set -e
+
+printf <span style="color:#e6db74">&#34;\033[0;32mDeploying updates to tangzhongham...\033[0m\n&#34;</span>
+
+<span style="color:#75715e"># Build the project.</span>
+hugo -D <span style="color:#75715e"># if using a theme, replace with `hugo -t &lt;YOURTHEME&gt;`</span>
+
+<span style="color:#75715e"># push your files to github</span>
+msg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;saving file and rebuilding site </span><span style="color:#66d9ef">$(</span>date<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span>$*<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        msg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$*<span style="color:#e6db74">&#34;</span>
+<span style="color:#66d9ef">fi</span>
+git add .
+git commit -m <span style="color:#e6db74">&#34;</span>$msg<span style="color:#e6db74">&#34;</span>
+
+<span style="color:#75715e"># Push source and build repos.</span>
+git push origin master
+
+<span style="color:#75715e"># Go To Public folder</span>
+cd public
+
+<span style="color:#75715e"># Add changes to git.</span>
+git add .
+
+<span style="color:#75715e"># Commit changes.</span>
+git commit -m <span style="color:#e6db74">&#34;</span>$msg<span style="color:#e6db74">&#34;</span>
+
+<span style="color:#75715e"># Push source and build repos.</span>
+git push origin master
+
+printf <span style="color:#e6db74">&#34;upload success, enjoy your journey! &#34;</span></code></pre></div>
 </div>
 
   
