@@ -78,12 +78,12 @@
   </url>
   
   <url>
-    <loc>http://tangzhongham.github.io/categories/diary/</loc>
+    <loc>http://tangzhongham.github.io/tags/diary/</loc>
     <lastmod>2019-11-19T22:31:48+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tangzhongham.github.io/tags/diary/</loc>
+    <loc>http://tangzhongham.github.io/categories/diary/</loc>
     <lastmod>2019-11-19T22:31:48+08:00</lastmod>
   </url>
   
@@ -125,6 +125,18 @@
   <url>
     <loc>http://tangzhongham.github.io/about/</loc>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://tangzhongham.github.io/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tangzhongham.github.io/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tangzhongham.github.io/page/</loc>
   </url>
   
   <url>
