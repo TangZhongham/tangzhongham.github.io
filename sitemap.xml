@@ -3,29 +3,29 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://tangzhongham.github.io/</loc>
+    <loc>uildDrafts/</loc>
     <lastmod>2019-11-18T23:20:43+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tangzhongham.github.io/about/</loc>
+    <loc>uildDrafts/about/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://tangzhongham.github.io/authors/</loc>
+    <loc>uildDrafts/authors/</loc>
   </url>
   
   <url>
-    <loc>http://tangzhongham.github.io/categories/</loc>
+    <loc>uildDrafts/categories/</loc>
   </url>
   
   <url>
-    <loc>http://tangzhongham.github.io/series/</loc>
+    <loc>uildDrafts/series/</loc>
   </url>
   
   <url>
-    <loc>http://tangzhongham.github.io/tags/</loc>
+    <loc>uildDrafts/tags/</loc>
   </url>
   
 </urlset>
