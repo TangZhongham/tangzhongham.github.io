@@ -2,22 +2,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Authors on Mytopia</title>
-    <link>http://tangzhongham.github.io/authors/</link>
+    <link>uildDrafts/authors/</link>
     <description>Recent content in Authors on Mytopia</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 19 Nov 2019 22:31:48 +0800</lastBuildDate>
     
-	<atom:link href="http://tangzhongham.github.io/authors/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="uildDrafts/authors/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>tzh</title>
-      <link>http://tangzhongham.github.io/authors/tzh/</link>
-      <pubDate>Tue, 19 Nov 2019 22:31:48 +0800</pubDate>
-      
-      <guid>http://tangzhongham.github.io/authors/tzh/</guid>
-      <description></description>
-    </item>
     
   </channel>
 </rss>

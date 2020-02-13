@@ -2,76 +2,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Mytopia</title>
-    <link>http://tangzhongham.github.io/tags/</link>
+    <link>uildDrafts/tags/</link>
     <description>Recent content in Tags on Mytopia</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 19 Nov 2019 22:31:48 +0800</lastBuildDate>
     
-	<atom:link href="http://tangzhongham.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="uildDrafts/tags/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>create</title>
-      <link>http://tangzhongham.github.io/tags/create/</link>
-      <pubDate>Tue, 19 Nov 2019 22:31:48 +0800</pubDate>
-      
-      <guid>http://tangzhongham.github.io/tags/create/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>diary</title>
-      <link>http://tangzhongham.github.io/tags/diary/</link>
-      <pubDate>Tue, 19 Nov 2019 22:31:48 +0800</pubDate>
-      
-      <guid>http://tangzhongham.github.io/tags/diary/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ORZ...</title>
-      <link>http://tangzhongham.github.io/tags/orz.../</link>
-      <pubDate>Tue, 19 Nov 2019 22:31:48 +0800</pubDate>
-      
-      <guid>http://tangzhongham.github.io/tags/orz.../</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>github</title>
-      <link>http://tangzhongham.github.io/tags/github/</link>
-      <pubDate>Tue, 19 Nov 2019 11:23:09 +0800</pubDate>
-      
-      <guid>http://tangzhongham.github.io/tags/github/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>hugo</title>
-      <link>http://tangzhongham.github.io/tags/hugo/</link>
-      <pubDate>Tue, 19 Nov 2019 11:23:09 +0800</pubDate>
-      
-      <guid>http://tangzhongham.github.io/tags/hugo/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>markdown</title>
-      <link>http://tangzhongham.github.io/tags/markdown/</link>
-      <pubDate>Tue, 19 Nov 2019 11:23:09 +0800</pubDate>
-      
-      <guid>http://tangzhongham.github.io/tags/markdown/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>wercker</title>
-      <link>http://tangzhongham.github.io/tags/wercker/</link>
-      <pubDate>Tue, 19 Nov 2019 11:23:09 +0800</pubDate>
-      
-      <guid>http://tangzhongham.github.io/tags/wercker/</guid>
-      <description></description>
-    </item>
     
   </channel>
 </rss>
