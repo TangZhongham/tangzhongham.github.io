@@ -5,10 +5,31 @@
     <link>http://tangzhongham.github.io/categories/tutorial/</link>
     <description>Recent content in tutorial on Mytopia</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 13 Feb 2020 18:24:45 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 15 Feb 2020 14:34:05 +0800</lastBuildDate>
     
 	<atom:link href="http://tangzhongham.github.io/categories/tutorial/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>How_to_hugo日常使用篇</title>
+      <link>http://tangzhongham.github.io/intro/how_to_hugo%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%AF%87/</link>
+      <pubDate>Sat, 15 Feb 2020 14:34:05 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/intro/how_to_hugo%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%AF%87/</guid>
+      <description>How to hugo 日常使用篇  本篇介绍如何发布一篇文章并编写shell脚本快捷发布/
+  How to hugo 日常使用篇  本地撰写博文 发布 shell 脚本自动发布 TODO Ref    本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
+ 本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D // 默认hugo new出来的文章都有个标签是草稿, -D 指的是build 所有草稿 cd build git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:</description>
+    </item>
+    
+    <item>
+      <title>How_to_hugo安装篇</title>
+      <link>http://tangzhongham.github.io/intro/how_to_hugo%E5%AE%89%E8%A3%85%E7%AF%87/</link>
+      <pubDate>Fri, 14 Feb 2020 14:33:55 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/intro/how_to_hugo%E5%AE%89%E8%A3%85%E7%AF%87/</guid>
+      <description> How to hugo 安装篇  本篇介绍如何安装 hugo 并将 blog 部署到 github pages.
+ </description>
+    </item>
     
     <item>
       <title>New_intro</title>
