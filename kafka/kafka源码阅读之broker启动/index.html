@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='Kafka 源码解析之 broker启动  基于 kafka 2.3.0 C:/kafka created on 0327 modified on 0410 学习了 scala 之后我又来了
+  Kafka 启动脚本分析 Kafka 核心主类 kafka.Kafka 由于作者的 java 知识相对薄弱，源码注解可能做的比较细
+object Kafka extends Logging { // 读取配置文件方法  def getPropsFromArgs(args: Array[String]): Properties = { // 处理命令行参数的解析工具 OptionParser  val optionParser = new OptionParser(false) // 允许覆盖内容  val overrideOpt = optionParser.accepts(&#34;override&#34;, &#34;Optional property that should override values set in server.properties file&#34;) .withRequiredArg() .ofType(classOf[String]) // This is just to make the parameter show up in the help output, we are not actually using this due the  // fact that this class ignores the first parameter which is interpreted as positional and mandatory  // but would not be mandatory if --version is specified  // This is a bit of an ugly crutch till we get a chance to rework the entire command line parsing  val versionOpt = optionParser.'>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='Kafka源码阅读之broker启动 • Mytopia'>
+<meta property='og:description' content='Kafka 源码解析之 broker启动  基于 kafka 2.3.0 C:/kafka created on 0327 modified on 0410 学习了 scala 之后我又来了
+  Kafka 启动脚本分析 Kafka 核心主类 kafka.Kafka 由于作者的 java 知识相对薄弱，源码注解可能做的比较细
+object Kafka extends Logging { // 读取配置文件方法  def getPropsFromArgs(args: Array[String]): Properties = { // 处理命令行参数的解析工具 OptionParser  val optionParser = new OptionParser(false) // 允许覆盖内容  val overrideOpt = optionParser.accepts(&#34;override&#34;, &#34;Optional property that should override values set in server.properties file&#34;) .withRequiredArg() .ofType(classOf[String]) // This is just to make the parameter show up in the help output, we are not actually using this due the  // fact that this class ignores the first parameter which is interpreted as positional and mandatory  // but would not be mandatory if --version is specified  // This is a bit of an ugly crutch till we get a chance to rework the entire command line parsing  val versionOpt = optionParser.'>
+<meta property='og:url' content='http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bbroker%E5%90%AF%E5%8A%A8/'>
+<meta property='og:site_name' content='Mytopia'>
+<meta property='og:type' content='article'><meta property='article:section' content='kafka'><meta property='article:published_time' content='2020-04-17T17:44:51&#43;08:00'/><meta property='article:modified_time' content='2020-04-17T17:44:51&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.59.1" />
+
+  <title>Kafka源码阅读之broker启动 • Mytopia</title>
+  <link rel='canonical' href='http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bbroker%E5%90%AF%E5%8A%A8/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+  
+
+</head>
+<body class='page type-kafka has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      Mytopia
+      </a>
+    </h2>
+    <div class='desc'>
+    A place for him to create.
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/create/' style='font-size:1.5em'>create</a>
+      </li><li>
+        <a href='/tags/diary/' style='font-size:1em'>diary</a>
+      </li><li>
+        <a href='/tags/github/' style='font-size:1.75em'>github</a>
+      </li><li>
+        <a href='/tags/hugo/' style='font-size:2em'>hugo</a>
+      </li><li>
+        <a href='/tags/markdown/' style='font-size:2em'>markdown</a>
+      </li><li>
+        <a href='/tags/orz.../' style='font-size:1em'>ORZ...</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='Main Menu'>
+  <div class='container'>
+    <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+    <ul><li class='item'>
+        <a href='/about'>About</a>
+      </li><li class='item'>
+        <a href='/flink'>Flink笔记</a>
+      </li><li class='item'>
+        <a href='/intro'>hugo入门</a>
+      </li><li class='item'>
+        <a href='/java'>Java学习</a>
+      </li><li class='item'>
+        <a href='/kafka'>Kafka笔记</a>
+      </li><li class='item'>
+        <a href='/scala'>Scala学习</a>
+      </li></ul>
+  </div>
+</nav><div class='header-widgets'>
+        <div class='container'>
+    
+    <style>.widget-breadcrumbs li:after{content:'\2f '}</style>
+  <section class='widget widget-breadcrumbs sep-after'>
+    <nav id='breadcrumbs'>
+      <ol><li><a href='/'></a></li><li><a href='/kafka/'>Kafkas</a></li><li><span>Kafka源码阅读之broker启动</span></li></ol>
+    </nav>
+  </section></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>Mytopia</p><p class='desc site-desc'>A place for him to create.</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>Kafka源码阅读之broker启动</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2020-04-17T17:44:51&#43;08:00'>2020, Apr 17</time>
+</span>
+
+  
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+7 mins read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  
+
+<h1 id="kafka-源码解析之-broker启动">Kafka 源码解析之 broker启动</h1>
+
+<blockquote>
+<p>基于 kafka 2.3.0
+C:/kafka
+created on 0327
+modified on 0410
+学习了 scala 之后我又来了</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"></code></pre></div>
+<h2 id="kafka-启动脚本分析">Kafka 启动脚本分析</h2>
+
+<h2 id="kafka-核心主类-kafka-kafka">Kafka 核心主类 kafka.Kafka</h2>
+
+<p>由于作者的 java 知识相对薄弱，源码注解可能做的比较细</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#960050;background-color:#1e0010">object Kafka extends Logging </span>{
+  <span style="color:#75715e">// 读取配置文件方法
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">def getPropsFromArgs</span>(args<span style="color:#f92672">:</span> Array[String])<span style="color:#f92672">:</span> Properties <span style="color:#f92672">=</span> {
+    <span style="color:#75715e">// 处理命令行参数的解析工具 OptionParser
+</span><span style="color:#75715e"></span>    <span style="color:#960050;background-color:#1e0010">val optionParser </span><span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> OptionParser(<span style="color:#66d9ef">false</span>)
+    <span style="color:#75715e">// 允许覆盖内容
+</span><span style="color:#75715e"></span>    <span style="color:#960050;background-color:#1e0010">val overrideOpt </span><span style="color:#f92672">=</span> optionParser.<span style="color:#a6e22e">accepts</span>(<span style="color:#e6db74">&#34;override&#34;</span>, <span style="color:#e6db74">&#34;Optional property that should override values set in server.properties file&#34;</span>)
+      .<span style="color:#a6e22e">withRequiredArg</span>()
+      .<span style="color:#a6e22e">ofType</span>(classOf[String])
+    <span style="color:#75715e">// This is just to make the parameter show up in the help output, we are not actually using this due the
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// fact that this class ignores the first parameter which is interpreted as positional and mandatory
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// but would not be mandatory if --version is specified
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// This is a bit of an ugly crutch till we get a chance to rework the entire command line parsing
+</span><span style="color:#75715e"></span>    <span style="color:#960050;background-color:#1e0010">val versionOpt </span><span style="color:#f92672">=</span> optionParser.<span style="color:#a6e22e">accepts</span>(<span style="color:#e6db74">&#34;version&#34;</span>, <span style="color:#e6db74">&#34;Print version information and exit.&#34;</span>)
+
+    <span style="color:#75715e">// 如果 命令行参数 为 0
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (args.<span style="color:#a6e22e">length</span> <span style="color:#f92672">==</span> 0 <span style="color:#f92672">||</span> args.<span style="color:#a6e22e">contains</span>(<span style="color:#e6db74">&#34;--help&#34;</span>)) {
+      CommandLineUtils.<span style="color:#a6e22e">printUsageAndDie</span>(optionParser, <span style="color:#e6db74">&#34;USAGE: java [options] %s server.properties [--override property=value]*&#34;</span>.<span style="color:#a6e22e">format</span>(classOf[KafkaServer].<span style="color:#a6e22e">getSimpleName</span>()))
+    }
+
+    <span style="color:#66d9ef">if</span> (args.<span style="color:#a6e22e">contains</span>(<span style="color:#e6db74">&#34;--version&#34;</span>)) {
+      CommandLineUtils.<span style="color:#a6e22e">printVersionAndDie</span>()
+    }
+
+    <span style="color:#960050;background-color:#1e0010">val props </span><span style="color:#f92672">=</span> Utils.<span style="color:#a6e22e">loadProps</span>(args(0))
+
+    <span style="color:#66d9ef">if</span> (args.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;</span> 1) {
+      <span style="color:#960050;background-color:#1e0010">val options </span><span style="color:#f92672">=</span> optionParser.<span style="color:#a6e22e">parse</span>(args.<span style="color:#a6e22e">slice</span>(1, args.<span style="color:#a6e22e">length</span>)<span style="color:#f92672">:</span> _<span style="color:#f92672">*</span>)
+
+      <span style="color:#66d9ef">if</span> (options.<span style="color:#a6e22e">nonOptionArguments</span>().<span style="color:#a6e22e">size</span>() <span style="color:#f92672">&gt;</span> 0) {
+        CommandLineUtils.<span style="color:#a6e22e">printUsageAndDie</span>(optionParser, <span style="color:#e6db74">&#34;Found non argument parameters: &#34;</span> <span style="color:#f92672">+</span> options.<span style="color:#a6e22e">nonOptionArguments</span>().<span style="color:#a6e22e">toArray</span>.<span style="color:#a6e22e">mkString</span>(<span style="color:#e6db74">&#34;,&#34;</span>))
+      }
+
+      props <span style="color:#f92672">++=</span> CommandLineUtils.<span style="color:#a6e22e">parseKeyValueArgs</span>(options.<span style="color:#a6e22e">valuesOf</span>(overrideOpt).<span style="color:#a6e22e">asScala</span>)
+    }
+    props
+  }
+  <span style="color:#75715e">// Kafka 实际的执行类
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">def main</span>(args<span style="color:#f92672">:</span> Array[String])<span style="color:#f92672">:</span> Unit <span style="color:#f92672">=</span> {
+    <span style="color:#66d9ef">try</span> {
+      <span style="color:#75715e">//上述的 getPropsFromArgs 获取配置文件信息
+</span><span style="color:#75715e"></span>      <span style="color:#960050;background-color:#1e0010">val serverProps </span><span style="color:#f92672">=</span> getPropsFromArgs(args)
+      <span style="color:#75715e">// 调用了KafkaServerStartable 对象 读取 props 文件，里面实际上是调用了 KafkaServer.startup()
+</span><span style="color:#75715e"></span>      <span style="color:#960050;background-color:#1e0010">val kafkaServerStartable </span><span style="color:#f92672">=</span> KafkaServerStartable.<span style="color:#a6e22e">fromProps</span>(serverProps)
+      <span style="color:#75715e">// 操作系统判断
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">try</span> {
+        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>OperatingSystem.<span style="color:#a6e22e">IS_WINDOWS</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span>Java.<span style="color:#a6e22e">isIbmJdk</span>)
+          <span style="color:#66d9ef">new</span> LoggingSignalHandler().<span style="color:#a6e22e">register</span>()
+      } <span style="color:#66d9ef">catch</span> {
+        <span style="color:#66d9ef">case</span> e<span style="color:#f92672">:</span> ReflectiveOperationException <span style="color:#f92672">=&gt;</span>
+          warn(<span style="color:#e6db74">&#34;Failed to register optional signal handler that logs a message when the process is terminated &#34;</span> <span style="color:#f92672">+</span>
+            s<span style="color:#e6db74">&#34;by a signal. Reason for registration failure is: $e&#34;</span>, e)
+      }
+
+      <span style="color:#75715e">// attach shutdown handler to catch terminating signals as well as normal termination
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">// Runtime 用了单实例的设计模式，所以在java程序中不同线程通过调用Runtime.getRuntime()获得的是同一个对象实例，
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">// 也就是说一个java进程中只有一个Runtime实例
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">//该函数的作用就是在你的程序结束前,执行一些清理工作,尤其是没有用户界面的程序.很明显,这些关闭钩子都是线程对象,
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">// 因此,清理工作要写在run()里.根据JDK帮助文档,清理工作不能太耗时,要尽快结束,但仍然可以对数据库进行操作.
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">//意思就是在jvm中增加一个关闭的钩子，当jvm关闭的时候，会执行系统中已经设置的所有通过方法addShutdownHook添加的钩子，
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">// 当系统执行完这些钩子后，jvm才会关闭。所以这些钩子可以在jvm关闭的时候进行内存清理、对象销毁等操作。
+</span><span style="color:#75715e"></span>      Runtime.<span style="color:#a6e22e">getRuntime</span>().<span style="color:#a6e22e">addShutdownHook</span>(<span style="color:#66d9ef">new</span> Thread(<span style="color:#e6db74">&#34;kafka-shutdown-hook&#34;</span>) {
+        <span style="color:#960050;background-color:#1e0010">override def </span>run()<span style="color:#f92672">:</span> Unit <span style="color:#f92672">=</span> kafkaServerStartable.<span style="color:#a6e22e">shutdown</span>()
+      })
+      <span style="color:#75715e">// 这里终于到了 kafka 启动了， 本质上就是 KafkaServer.startup()
+</span><span style="color:#75715e"></span>      kafkaServerStartable.<span style="color:#a6e22e">startup</span>()
+      <span style="color:#75715e">// shutdown 之后需要做的一些事
+</span><span style="color:#75715e"></span>      kafkaServerStartable.<span style="color:#a6e22e">awaitShutdown</span>()
+    }
+    <span style="color:#66d9ef">catch</span> {
+      <span style="color:#66d9ef">case</span> e<span style="color:#f92672">:</span> Throwable <span style="color:#f92672">=&gt;</span>
+        fatal(<span style="color:#e6db74">&#34;Exiting Kafka due to fatal exception&#34;</span>, e)
+        Exit.<span style="color:#a6e22e">exit</span>(1)
+    }
+    Exit.<span style="color:#a6e22e">exit</span>(0)
+  }
+}</code></pre></div>
+<h2 id="然后到了-kafka-server-kafkaserverstartable-和-kafka-server-kafkaserver">然后到了 kafka.server.KafkaServerStartable 和 kafka.server.KafkaServer</h2>
+
+<p>KafkaServerStartable 包装了一层KafkaServer。本质上 KafkaServerStartable 定义了 KafkaServer 的 几种状态，将属于这几种状态的 error 抽象了出来。</p>
+
+<p>现在来看看 KafkaServer 的 startup() 启动类</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#960050;background-color:#1e0010">class KafkaServer</span>(<span style="color:#960050;background-color:#1e0010">val config</span><span style="color:#f92672">:</span> KafkaConfig, time<span style="color:#f92672">:</span> Time <span style="color:#f92672">=</span> Time.<span style="color:#a6e22e">SYSTEM</span>, threadNamePrefix<span style="color:#f92672">:</span> Option[String] <span style="color:#f92672">=</span> None,
+                  kafkaMetricsReporters<span style="color:#f92672">:</span> Seq[KafkaMetricsReporter] <span style="color:#f92672">=</span> List()) <span style="color:#960050;background-color:#1e0010">extends Logging with KafkaMetricsGroup </span>{
+  <span style="color:#75715e">// 启动、是否关闭、是否启动标识
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 原子方式进行读和写的布尔值
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">//AtomicBoolean是Java.util.concurrent.atomic包下的原子变量，这个包里面提供了一组原子类。
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 其基本的特性就是在多线程环境下，当有多个线程同时执行这些类的实例包含的方法时，具有排他性，
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 即当某个线程进入方法，执行其中的指令时，不会被其他线程打断，而别的线程就像自旋锁一样，
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 一直等到该方法执行完成，才由JVM从等待队列中选择一个另一个线程进入，这只是一种逻辑上的理解。
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 实际上是借助硬件的相关指令来实现的，不会阻塞线程(或者说只是在硬件级别上阻塞了)。
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">private val </span>startupComplete <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicBoolean(<span style="color:#66d9ef">false</span>)
+  <span style="color:#960050;background-color:#1e0010">private val </span>isShuttingDown <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicBoolean(<span style="color:#66d9ef">false</span>)
+  <span style="color:#960050;background-color:#1e0010">private val </span>isStartingUp <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicBoolean(<span style="color:#66d9ef">false</span>)
+
+  <span style="color:#75715e">// CountDownLatch是同步工具类之一，可以指定一个计数值，在并发环境下由线程进行减1操作，
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 当计数值变为0之后，被await方法阻塞的线程将会唤醒，实现线程间的同步。
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">private var </span>shutdownLatch <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CountDownLatch(1)
+
+  <span style="color:#960050;background-color:#1e0010">private val </span>jmxPrefix<span style="color:#f92672">:</span> String <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;kafka.server&#34;</span>
+
+  <span style="color:#960050;background-color:#1e0010">private var </span>logContext<span style="color:#f92672">:</span> LogContext <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  var </span>metrics<span style="color:#f92672">:</span> Metrics <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  val </span>brokerState<span style="color:#f92672">:</span> BrokerState <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#960050;background-color:#1e0010">BrokerState
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  var </span>dataPlaneRequestProcessor<span style="color:#f92672">:</span> KafkaApis <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">  var </span>controlPlaneRequestProcessor<span style="color:#f92672">:</span> KafkaApis <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  var </span>authorizer<span style="color:#f92672">:</span> Option[Authorizer] <span style="color:#f92672">=</span> None
+  <span style="color:#75715e">// 监听 socket 请求
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">var socketServer</span><span style="color:#f92672">:</span> SocketServer <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>
+  <span style="color:#75715e">// 请求资源池
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">var dataPlaneRequestHandlerPool</span><span style="color:#f92672">:</span> KafkaRequestHandlerPool <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">  var </span>controlPlaneRequestHandlerPool<span style="color:#f92672">:</span> KafkaRequestHandlerPool <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>
+
+  <span style="color:#75715e">// 日志管理
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">var logDirFailureChannel</span><span style="color:#f92672">:</span> LogDirFailureChannel <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">  var </span>logManager<span style="color:#f92672">:</span> LogManager <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>
+
+  <span style="color:#75715e">// 分区副本管理
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">var replicaManager</span><span style="color:#f92672">:</span> ReplicaManager <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">  var </span>adminManager<span style="color:#f92672">:</span> AdminManager <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">  var </span>tokenManager<span style="color:#f92672">:</span> DelegationTokenManager <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>
+
+  <span style="color:#75715e">// 动态 config 处理
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">var dynamicConfigHandlers</span><span style="color:#f92672">:</span> Map[String, ConfigHandler] <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">  var </span>dynamicConfigManager<span style="color:#f92672">:</span> DynamicConfigManager <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">  var </span>credentialProvider<span style="color:#f92672">:</span> CredentialProvider <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">  var </span>tokenCache<span style="color:#f92672">:</span> DelegationTokenCache <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  var </span>groupCoordinator<span style="color:#f92672">:</span> GroupCoordinator <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  var </span>transactionCoordinator<span style="color:#f92672">:</span> TransactionCoordinator <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  var </span>kafkaController<span style="color:#f92672">:</span> KafkaController <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  var </span>kafkaScheduler<span style="color:#f92672">:</span> KafkaScheduler <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  var </span>metadataCache<span style="color:#f92672">:</span> MetadataCache <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">  var </span>quotaManagers<span style="color:#f92672">:</span> QuotaFactory.<span style="color:#a6e22e">QuotaManagers</span> <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  private var _zkClient</span><span style="color:#f92672">:</span> KafkaZkClient <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">  val </span>correlationId<span style="color:#f92672">:</span> AtomicInteger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicInteger(0)
+  <span style="color:#960050;background-color:#1e0010">val brokerMetaPropsFile </span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;meta.properties&#34;</span>
+  <span style="color:#960050;background-color:#1e0010">val brokerMetadataCheckpoints </span><span style="color:#f92672">=</span> config.<span style="color:#a6e22e">logDirs</span>.<span style="color:#a6e22e">map</span>(logDir <span style="color:#f92672">=&gt;</span> (logDir, <span style="color:#66d9ef">new</span> BrokerMetadataCheckpoint(<span style="color:#66d9ef">new</span> File(logDir <span style="color:#f92672">+</span> File.<span style="color:#a6e22e">separator</span> <span style="color:#f92672">+</span> brokerMetaPropsFile)))).<span style="color:#a6e22e">toMap</span>
+
+  <span style="color:#960050;background-color:#1e0010">private var </span>_clusterId<span style="color:#f92672">:</span> String <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">  private var _brokerTopicStats</span><span style="color:#f92672">:</span> BrokerTopicStats <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">null
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  def </span>clusterId<span style="color:#f92672">:</span> String <span style="color:#f92672">=</span> _clusterId
+
+  <span style="color:#75715e">// Visible for testing
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">private[kafka] def </span>zkClient <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">_zkClient
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  private</span>[<span style="color:#960050;background-color:#1e0010">kafka] def </span>brokerTopicStats <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">_brokerTopicStats
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">  newGauge</span>(
+    <span style="color:#e6db74">&#34;BrokerState&#34;</span>,
+    <span style="color:#66d9ef">new</span> Gauge[Int] {
+      <span style="color:#960050;background-color:#1e0010">def value </span><span style="color:#f92672">=</span> brokerState.<span style="color:#a6e22e">currentState</span>
+    }
+  )
+
+  newGauge(
+    <span style="color:#e6db74">&#34;ClusterId&#34;</span>,
+    <span style="color:#66d9ef">new</span> Gauge[String] {
+      <span style="color:#960050;background-color:#1e0010">def value </span><span style="color:#f92672">=</span> clusterId
+    }
+  )
+
+  newGauge(
+    <span style="color:#e6db74">&#34;yammer-metrics-count&#34;</span>,
+    <span style="color:#66d9ef">new</span> Gauge[Int] {
+      <span style="color:#960050;background-color:#1e0010">def value </span><span style="color:#f92672">=</span> {
+        com.<span style="color:#a6e22e">yammer</span>.<span style="color:#a6e22e">metrics</span>.<span style="color:#a6e22e">Metrics</span>.<span style="color:#a6e22e">defaultRegistry</span>.<span style="color:#a6e22e">allMetrics</span>.<span style="color:#a6e22e">size</span>
+      }
+    }
+  )
+
+  <span style="color:#75715e">/**
+</span><span style="color:#75715e">   * Start up API for bringing up a single instance of the Kafka server.
+</span><span style="color:#75715e">   * Instantiates the LogManager, the SocketServer and the request handlers - KafkaRequestHandlers
+</span><span style="color:#75715e">   */</span>
+    <span style="color:#75715e">// Kafka 真正 broker 的启动类
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">def startup</span>() {
+    <span style="color:#66d9ef">try</span> {
+      info(<span style="color:#e6db74">&#34;starting&#34;</span>)
+
+      <span style="color:#75715e">// 如果脚本再次在本机启动这个类，
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (isShuttingDown.<span style="color:#a6e22e">get</span>)
+        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalStateException(<span style="color:#e6db74">&#34;Kafka server is still shutting down, cannot re-start!&#34;</span>)
+
+      <span style="color:#66d9ef">if</span> (startupComplete.<span style="color:#a6e22e">get</span>)
+        <span style="color:#66d9ef">return</span>
+
+      <span style="color:#960050;background-color:#1e0010">val canStartup </span><span style="color:#f92672">=</span> isStartingUp.<span style="color:#a6e22e">compareAndSet</span>(<span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">true</span>)
+      <span style="color:#66d9ef">if</span> (canStartup) {
+        brokerState.<span style="color:#a6e22e">newState</span>(Starting)
+
+        <span style="color:#75715e">/* setup zookeeper */</span>
+        <span style="color:#75715e">// 启动 broker 第一步就是 初始化 zk client
+</span><span style="color:#75715e"></span>        initZkClient(time)
+
+        <span style="color:#75715e">/* Get or create cluster_id */</span>
+        <span style="color:#75715e">// 确定 cluser id， 包装 n 层 直到配置文件 /cluster/id
+</span><span style="color:#75715e"></span>        _clusterId <span style="color:#f92672">=</span> getOrGenerateClusterId(zkClient)
+        info(s<span style="color:#e6db74">&#34;Cluster ID = $clusterId&#34;</span>)
+
+        <span style="color:#75715e">/* generate brokerId */</span>
+        <span style="color:#75715e">// 获取 broker id
+</span><span style="color:#75715e"></span>        val (brokerId, initialOfflineDirs) <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">getBrokerIdAndOfflineDirs
+</span><span style="color:#960050;background-color:#1e0010">        config</span>.<span style="color:#a6e22e">brokerId</span> <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">brokerId
+</span><span style="color:#960050;background-color:#1e0010">        logContext </span><span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LogContext(s<span style="color:#e6db74">&#34;[KafkaServer id=${config.brokerId}] &#34;</span>)
+        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">logIdent</span> <span style="color:#f92672">=</span> logContext.<span style="color:#a6e22e">logPrefix</span>
+
+        <span style="color:#75715e">// initialize dynamic broker configs from ZooKeeper. Any updates made after this will be
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// applied after DynamicConfigManager starts.
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// Kafka 支持动态修改 config （都存 zk 上）
+</span><span style="color:#75715e"></span>        config.<span style="color:#a6e22e">dynamicConfig</span>.<span style="color:#a6e22e">initialize</span>(zkClient)
+
+        <span style="color:#75715e">/* start scheduler */</span>
+        <span style="color:#75715e">// 启动调度器 A scheduler based on java.util.concurrent.ScheduledThreadPoolExecutor
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// It has a pool of kafka-scheduler- threads that do the actual work.
+</span><span style="color:#75715e"></span>        kafkaScheduler <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> KafkaScheduler(config.<span style="color:#a6e22e">backgroundThreads</span>)
+        kafkaScheduler.<span style="color:#a6e22e">startup</span>()
+
+        <span style="color:#75715e">/* create and configure metrics */</span>
+        <span style="color:#960050;background-color:#1e0010">val reporters </span><span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#960050;background-color:#1e0010">util.ArrayList[MetricsReporter]
+</span><span style="color:#960050;background-color:#1e0010">        reporters</span>.<span style="color:#a6e22e">add</span>(<span style="color:#66d9ef">new</span> JmxReporter(jmxPrefix))
+        <span style="color:#960050;background-color:#1e0010">val metricConfig </span><span style="color:#f92672">=</span> KafkaServer.<span style="color:#a6e22e">metricConfig</span>(config)
+        metrics <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Metrics(metricConfig, reporters, time, <span style="color:#66d9ef">true</span>)
+
+        <span style="color:#75715e">/* register broker metrics */</span>
+        _brokerTopicStats <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#960050;background-color:#1e0010">BrokerTopicStats
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">        quotaManagers </span><span style="color:#f92672">=</span> QuotaFactory.<span style="color:#a6e22e">instantiate</span>(config, metrics, time, threadNamePrefix.<span style="color:#a6e22e">getOrElse</span>(<span style="color:#e6db74">&#34;&#34;</span>))
+        notifyClusterListeners(kafkaMetricsReporters <span style="color:#f92672">++</span> metrics.<span style="color:#a6e22e">reporters</span>.<span style="color:#a6e22e">asScala</span>)
+
+        logDirFailureChannel <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LogDirFailureChannel(config.<span style="color:#a6e22e">logDirs</span>.<span style="color:#a6e22e">size</span>)
+
+        <span style="color:#75715e">/* start log manager */</span>
+        <span style="color:#75715e">// 启动 Log Manager
+</span><span style="color:#75715e"></span>        logManager <span style="color:#f92672">=</span> LogManager(config, initialOfflineDirs, zkClient, brokerState, kafkaScheduler, time, brokerTopicStats, logDirFailureChannel)
+        logManager.<span style="color:#a6e22e">startup</span>()
+
+        metadataCache <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> MetadataCache(config.<span style="color:#a6e22e">brokerId</span>)
+        <span style="color:#75715e">// Enable delegation token cache for all SCRAM mechanisms to simplify dynamic update.
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// This keeps the cache up-to-date if new SCRAM mechanisms are enabled dynamically.
+</span><span style="color:#75715e"></span>        tokenCache <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DelegationTokenCache(ScramMechanism.<span style="color:#a6e22e">mechanismNames</span>)
+        credentialProvider <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CredentialProvider(ScramMechanism.<span style="color:#a6e22e">mechanismNames</span>, tokenCache)
+
+        <span style="color:#75715e">// Create and start the socket server acceptor threads so that the bound port is known.
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// Delay starting processors until the end of the initialization sequence to ensure
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// that credentials have been loaded before processing authentications.
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 启动socket server，准备对外服务了! 9092 在启动前面的内部类后 对外 服务
+</span><span style="color:#75715e"></span>        socketServer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SocketServer(config, metrics, time, credentialProvider)
+        socketServer.<span style="color:#a6e22e">startup</span>(startupProcessors <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>)
+
+        <span style="color:#75715e">/* start replica manager */</span>
+        <span style="color:#75715e">// 复制管理
+</span><span style="color:#75715e"></span>        replicaManager <span style="color:#f92672">=</span> createReplicaManager(isShuttingDown)
+        replicaManager.<span style="color:#a6e22e">startup</span>()
+
+        <span style="color:#75715e">// broker 相关信息注册到 zk 上，host:port 和防止 controller 脑裂的 epoch
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 直到这步 真正注册 到 /broker/ids 算是加入到集群中了
+</span><span style="color:#75715e"></span>        <span style="color:#960050;background-color:#1e0010">val brokerInfo </span><span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">createBrokerInfo
+</span><span style="color:#960050;background-color:#1e0010">        val </span>brokerEpoch <span style="color:#f92672">=</span> zkClient.<span style="color:#a6e22e">registerBroker</span>(brokerInfo)
+
+        <span style="color:#75715e">// Now that the broker id is successfully registered, checkpoint it
+</span><span style="color:#75715e"></span>        checkpointBrokerId(config.<span style="color:#a6e22e">brokerId</span>)
+
+        <span style="color:#75715e">/* start token manager */</span>
+        tokenManager <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DelegationTokenManager(config, tokenCache, time , zkClient)
+        tokenManager.<span style="color:#a6e22e">startup</span>()
+
+        <span style="color:#75715e">/* start kafka controller */</span>
+        <span style="color:#75715e">// 启动kafka controller
+</span><span style="color:#75715e"></span>        kafkaController <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> KafkaController(config, zkClient, time, metrics, brokerInfo, brokerEpoch, tokenManager, threadNamePrefix)
+        kafkaController.<span style="color:#a6e22e">startup</span>()
+
+        adminManager <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AdminManager(config, metrics, metadataCache, zkClient)
+
+        <span style="color:#75715e">/* start group coordinator */</span>
+        <span style="color:#75715e">// Hardcode Time.SYSTEM for now as some Streams tests fail otherwise, it would be good to fix the underlying issue
+</span><span style="color:#75715e"></span>        groupCoordinator <span style="color:#f92672">=</span> GroupCoordinator(config, zkClient, replicaManager, Time.<span style="color:#a6e22e">SYSTEM</span>)
+        groupCoordinator.<span style="color:#a6e22e">startup</span>()
+
+        <span style="color:#75715e">/* start transaction coordinator, with a separate background thread scheduler for transaction expiration and log loading */</span>
+        <span style="color:#75715e">// Hardcode Time.SYSTEM for now as some Streams tests fail otherwise, it would be good to fix the underlying issue
+</span><span style="color:#75715e"></span>        transactionCoordinator <span style="color:#f92672">=</span> TransactionCoordinator(config, replicaManager, <span style="color:#66d9ef">new</span> KafkaScheduler(threads <span style="color:#f92672">=</span> 1, threadNamePrefix <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;transaction-log-manager-&#34;</span>), zkClient, metrics, metadataCache, Time.<span style="color:#a6e22e">SYSTEM</span>)
+        transactionCoordinator.<span style="color:#a6e22e">startup</span>()
+
+        <span style="color:#75715e">/* Get the authorizer and initialize it if one is specified.*/</span>
+        authorizer <span style="color:#f92672">=</span> Option(config.<span style="color:#a6e22e">authorizerClassName</span>).<span style="color:#a6e22e">filter</span>(_.<span style="color:#a6e22e">nonEmpty</span>).<span style="color:#a6e22e">map</span> { authorizerClassName <span style="color:#f92672">=&gt;</span>
+          <span style="color:#960050;background-color:#1e0010">val authZ </span><span style="color:#f92672">=</span> CoreUtils.<span style="color:#a6e22e">createObject</span>[Authorizer](authorizerClassName)
+          authZ.<span style="color:#a6e22e">configure</span>(config.<span style="color:#a6e22e">originals</span>())
+          authZ
+        }
+
+        <span style="color:#960050;background-color:#1e0010">val fetchManager </span><span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FetchManager(Time.<span style="color:#a6e22e">SYSTEM</span>,
+          <span style="color:#66d9ef">new</span> FetchSessionCache(config.<span style="color:#a6e22e">maxIncrementalFetchSessionCacheSlots</span>,
+            KafkaServer.<span style="color:#a6e22e">MIN_INCREMENTAL_FETCH_SESSION_EVICTION_MS</span>))
+
+        <span style="color:#75715e">/* start processing requests */</span>
+        <span style="color:#75715e">// 从这里开始， 准备 完成， 开始处理外界消息。
+</span><span style="color:#75715e"></span>        dataPlaneRequestProcessor <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> KafkaApis(socketServer.<span style="color:#a6e22e">dataPlaneRequestChannel</span>, replicaManager, adminManager, groupCoordinator, transactionCoordinator,
+          kafkaController, zkClient, config.<span style="color:#a6e22e">brokerId</span>, config, metadataCache, metrics, authorizer, quotaManagers,
+          fetchManager, brokerTopicStats, clusterId, time, tokenManager)
+
+        <span style="color:#75715e">// 起线程池，传入 socket server 对象
+</span><span style="color:#75715e"></span>        dataPlaneRequestHandlerPool <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> KafkaRequestHandlerPool(config.<span style="color:#a6e22e">brokerId</span>, socketServer.<span style="color:#a6e22e">dataPlaneRequestChannel</span>, dataPlaneRequestProcessor, time,
+          config.<span style="color:#a6e22e">numIoThreads</span>, s<span style="color:#e6db74">&#34;${SocketServer.DataPlaneMetricPrefix}RequestHandlerAvgIdlePercent&#34;</span>, SocketServer.<span style="color:#a6e22e">DataPlaneThreadPrefix</span>)
+
+        socketServer.<span style="color:#a6e22e">controlPlaneRequestChannelOpt</span>.<span style="color:#a6e22e">foreach</span> { controlPlaneRequestChannel <span style="color:#f92672">=&gt;</span>
+          controlPlaneRequestProcessor <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> KafkaApis(controlPlaneRequestChannel, replicaManager, adminManager, groupCoordinator, transactionCoordinator,
+            kafkaController, zkClient, config.<span style="color:#a6e22e">brokerId</span>, config, metadataCache, metrics, authorizer, quotaManagers,
+            fetchManager, brokerTopicStats, clusterId, time, tokenManager)
+
+          controlPlaneRequestHandlerPool <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> KafkaRequestHandlerPool(config.<span style="color:#a6e22e">brokerId</span>, socketServer.<span style="color:#a6e22e">controlPlaneRequestChannelOpt</span>.<span style="color:#a6e22e">get</span>, controlPlaneRequestProcessor, time,
+            1, s<span style="color:#e6db74">&#34;${SocketServer.ControlPlaneMetricPrefix}RequestHandlerAvgIdlePercent&#34;</span>, SocketServer.<span style="color:#a6e22e">ControlPlaneThreadPrefix</span>)
+        }
+
+        <span style="color:#75715e">// 监控相关
+</span><span style="color:#75715e"></span>        Mx4jLoader.<span style="color:#a6e22e">maybeLoad</span>()
+
+        <span style="color:#75715e">/* Add all reconfigurables for config change notification before starting config handlers */</span>
+        config.<span style="color:#a6e22e">dynamicConfig</span>.<span style="color:#a6e22e">addReconfigurables</span>(<span style="color:#66d9ef">this</span>)
+
+        <span style="color:#75715e">/* start dynamic config manager */</span>
+        dynamicConfigHandlers <span style="color:#f92672">=</span> Map[String, ConfigHandler](ConfigType.<span style="color:#a6e22e">Topic</span> <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">new</span> TopicConfigHandler(logManager, config, quotaManagers, kafkaController),
+                                                           ConfigType.<span style="color:#a6e22e">Client</span> <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">new</span> ClientIdConfigHandler(quotaManagers),
+                                                           ConfigType.<span style="color:#a6e22e">User</span> <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">new</span> UserConfigHandler(quotaManagers, credentialProvider),
+                                                           ConfigType.<span style="color:#a6e22e">Broker</span> <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">new</span> BrokerConfigHandler(config, quotaManagers))
+
+        <span style="color:#75715e">// Create the config manager. start listening to notifications
+</span><span style="color:#75715e"></span>        dynamicConfigManager <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DynamicConfigManager(zkClient, dynamicConfigHandlers)
+        dynamicConfigManager.<span style="color:#a6e22e">startup</span>()
+
+        <span style="color:#75715e">// socket server 开始对外服务
+</span><span style="color:#75715e"></span>        socketServer.<span style="color:#a6e22e">startDataPlaneProcessors</span>()
+        socketServer.<span style="color:#a6e22e">startControlPlaneProcessor</span>()
+        brokerState.<span style="color:#a6e22e">newState</span>(RunningAsBroker)
+        <span style="color:#75715e">// 修改初始 new KafkaServer 类的状态，启动完成
+</span><span style="color:#75715e"></span>        shutdownLatch <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CountDownLatch(1)
+        startupComplete.<span style="color:#a6e22e">set</span>(<span style="color:#66d9ef">true</span>)
+        isStartingUp.<span style="color:#a6e22e">set</span>(<span style="color:#66d9ef">false</span>)
+        AppInfoParser.<span style="color:#a6e22e">registerAppInfo</span>(jmxPrefix, config.<span style="color:#a6e22e">brokerId</span>.<span style="color:#a6e22e">toString</span>, metrics, time.<span style="color:#a6e22e">milliseconds</span>())
+        info(<span style="color:#e6db74">&#34;started&#34;</span>)
+      }
+    }
+    <span style="color:#66d9ef">catch</span> {
+      <span style="color:#66d9ef">case</span> e<span style="color:#f92672">:</span> Throwable <span style="color:#f92672">=&gt;</span>
+        fatal(<span style="color:#e6db74">&#34;Fatal error during KafkaServer startup. Prepare to shutdown&#34;</span>, e)
+        isStartingUp.<span style="color:#a6e22e">set</span>(<span style="color:#66d9ef">false</span>)
+        shutdown()
+        <span style="color:#66d9ef">throw</span> e
+    }
+  }</code></pre></div>
+<h2 id="核心">核心</h2>
+
+<p>经过以上分析，kafka 大致的启动流程我们就知道了，接下来是看 kafka 内部 各个 startup 出来的模块，到底每个是负责什么的。</p>
+
+<p>比方说:
+KafkaScheduler是一个基于java.util.concurrent.ScheduledThreadPoolExecutor的调度器，它内部是以前缀kafka-scheduler-xx（xx是线程序列号）的线程池处理真正的工作。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'>
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/kafka/intro/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>Intro</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/tangzhongham' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://instagram.com/TZHDSG' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Instagram account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+  <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:13122260573@163.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2019-2020 tzh </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script><script src='/js/custom.js'></script>
+
+</body>
+
+</html>
+

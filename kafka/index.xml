@@ -5,18 +5,29 @@
     <link>http://tangzhongham.github.io/kafka/</link>
     <description>Recent content in Kafkas on Mytopia</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 01 Jun 2020 17:03:34 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 17 Apr 2020 17:44:51 +0800</lastBuildDate>
     
 	<atom:link href="http://tangzhongham.github.io/kafka/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>Kafka源码阅读之broker启动</title>
+      <link>http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bbroker%E5%90%AF%E5%8A%A8/</link>
+      <pubDate>Fri, 17 Apr 2020 17:44:51 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bbroker%E5%90%AF%E5%8A%A8/</guid>
+      <description>Kafka 源码解析之 broker启动  基于 kafka 2.3.0 C:/kafka created on 0327 modified on 0410 学习了 scala 之后我又来了
+  Kafka 启动脚本分析 Kafka 核心主类 kafka.Kafka 由于作者的 java 知识相对薄弱，源码注解可能做的比较细
+object Kafka extends Logging { // 读取配置文件方法  def getPropsFromArgs(args: Array[String]): Properties = { // 处理命令行参数的解析工具 OptionParser  val optionParser = new OptionParser(false) // 允许覆盖内容  val overrideOpt = optionParser.accepts(&amp;#34;override&amp;#34;, &amp;#34;Optional property that should override values set in server.properties file&amp;#34;) .withRequiredArg() .ofType(classOf[String]) // This is just to make the parameter show up in the help output, we are not actually using this due the  // fact that this class ignores the first parameter which is interpreted as positional and mandatory  // but would not be mandatory if --version is specified  // This is a bit of an ugly crutch till we get a chance to rework the entire command line parsing  val versionOpt = optionParser.</description>
+    </item>
+    
+    <item>
       <title>Intro</title>
       <link>http://tangzhongham.github.io/kafka/intro/</link>
-      <pubDate>Mon, 01 Jun 2020 17:03:34 +0800</pubDate>
+      <pubDate>Fri, 17 Apr 2020 17:03:34 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/kafka/intro/</guid>
-      <description></description>
+      <description>Kafka 源码阅读 这里是一些kafka源码阅读笔记</description>
     </item>
     
   </channel>
