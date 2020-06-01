@@ -11,6 +11,42 @@
     
     
     <item>
+      <title>Intro</title>
+      <link>http://tangzhongham.github.io/scala/intro/</link>
+      <pubDate>Mon, 01 Jun 2020 17:03:48 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/scala/intro/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Intro</title>
+      <link>http://tangzhongham.github.io/java/intro/</link>
+      <pubDate>Mon, 01 Jun 2020 17:03:41 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/java/intro/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Intro</title>
+      <link>http://tangzhongham.github.io/kafka/intro/</link>
+      <pubDate>Mon, 01 Jun 2020 17:03:34 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/kafka/intro/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Intro</title>
+      <link>http://tangzhongham.github.io/flink/intro/</link>
+      <pubDate>Mon, 01 Jun 2020 17:03:23 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/flink/intro/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>How_to_hugo日常使用篇</title>
       <link>http://tangzhongham.github.io/intro/how_to_hugo%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%AF%87/</link>
       <pubDate>Sat, 15 Feb 2020 14:34:05 +0800</pubDate>
