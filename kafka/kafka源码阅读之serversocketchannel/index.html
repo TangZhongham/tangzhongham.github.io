@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='kafka源码解析之 ServerSocketChannel 详解  由于kafka socketServer 使用到了 nio 的 serverSocketChannel, 本文详细解析了 该类的使用方法。 https://blog.csdn.net/kavu1/article/details/53212178
+ Kafka 的 kafka.network.Acceptor 负责监听外界 Socket 连接并把请求转发给 kafka.network.Processor，完事后 Processor 负责转发 Socket 的请求和响应，并将其发送到 kafka.network.RequestChannel。
+与java.net.Socket类和java.net.ServerSocket类相对应，NIO也提供了SocketChannel和ServerSocketChannel两种不同的套接字通道实现。这两种新增的通道都支持阻塞和非阻塞两种模式。 低负载、低并发的应用程序可以选择同步阻塞I/O以降低编程复杂度；对于高负载、高并发的网络应用，需要使用NIO的非阻塞模式进行开发。 链接：https://www.jianshu.com/p/5442b04ccff8
+注意, 如果一个 Channel 要注册到 Selector 中, 那么这个 Channel 必须是非阻塞的, 即channel.configureBlocking(false); 因为 Channel 必须要是非阻塞的, 因此 FileChannel 是不能够使用选择器的, 因为 FileChannel 都是阻塞的.
+ServerSocketChannel 与 ServerSocket ServerSocketChannel类似于SocketChannel,只不过ServerSocketChannel使用server端.ServerSocketChannel是ServerSocket &#43; Selector的高层 封装.可以通过socket()方法获得与其关联的ServerSocket.
+事实上channel即为socket链接的高层封装,每个channel都绑定在一个socket上,它们息息相关.
+SocketChannel的关闭支持异步关闭(来自InterruptableChannel特性),这与Channel类中指定的异步close操作有关.如果一个线程关闭了某个Socket input,那么同时另一个线程被阻塞在该SocketChannel的read操作中,那么处于阻塞线程中的读取操作将完成,而不读取任何字节且返回-1.如果一个线程关闭了socket output,而同时另一个线程被阻塞在该socketChannel的write操作中,此时阻塞线程将收到AsynchronousClosedException.
+SocketChannel是线程安全的,但是任何时刻只能有一个线程处于read或者write操作(read操作同步readLock,write操作同步writeLock,2个线程可以同时进行read和write;),不过DatagramChannel支持并发的读写.
+参考:http://shift-alt-ctrl.iteye.com/blog/1840409
+NIO 的四种事件    OP_ACCEPT OP_CONNECT OP_WRITE OP_READ        Y Y Y SocketChannel 客户端   Y    ServerSocketChannel 服务端     Y Y SocketChannel 服务端            就绪条件：'>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='Kafka源码阅读之ServerSocketChannel • Mytopia'>
+<meta property='og:description' content='kafka源码解析之 ServerSocketChannel 详解  由于kafka socketServer 使用到了 nio 的 serverSocketChannel, 本文详细解析了 该类的使用方法。 https://blog.csdn.net/kavu1/article/details/53212178
+ Kafka 的 kafka.network.Acceptor 负责监听外界 Socket 连接并把请求转发给 kafka.network.Processor，完事后 Processor 负责转发 Socket 的请求和响应，并将其发送到 kafka.network.RequestChannel。
+与java.net.Socket类和java.net.ServerSocket类相对应，NIO也提供了SocketChannel和ServerSocketChannel两种不同的套接字通道实现。这两种新增的通道都支持阻塞和非阻塞两种模式。 低负载、低并发的应用程序可以选择同步阻塞I/O以降低编程复杂度；对于高负载、高并发的网络应用，需要使用NIO的非阻塞模式进行开发。 链接：https://www.jianshu.com/p/5442b04ccff8
+注意, 如果一个 Channel 要注册到 Selector 中, 那么这个 Channel 必须是非阻塞的, 即channel.configureBlocking(false); 因为 Channel 必须要是非阻塞的, 因此 FileChannel 是不能够使用选择器的, 因为 FileChannel 都是阻塞的.
+ServerSocketChannel 与 ServerSocket ServerSocketChannel类似于SocketChannel,只不过ServerSocketChannel使用server端.ServerSocketChannel是ServerSocket &#43; Selector的高层 封装.可以通过socket()方法获得与其关联的ServerSocket.
+事实上channel即为socket链接的高层封装,每个channel都绑定在一个socket上,它们息息相关.
+SocketChannel的关闭支持异步关闭(来自InterruptableChannel特性),这与Channel类中指定的异步close操作有关.如果一个线程关闭了某个Socket input,那么同时另一个线程被阻塞在该SocketChannel的read操作中,那么处于阻塞线程中的读取操作将完成,而不读取任何字节且返回-1.如果一个线程关闭了socket output,而同时另一个线程被阻塞在该socketChannel的write操作中,此时阻塞线程将收到AsynchronousClosedException.
+SocketChannel是线程安全的,但是任何时刻只能有一个线程处于read或者write操作(read操作同步readLock,write操作同步writeLock,2个线程可以同时进行read和write;),不过DatagramChannel支持并发的读写.
+参考:http://shift-alt-ctrl.iteye.com/blog/1840409
+NIO 的四种事件    OP_ACCEPT OP_CONNECT OP_WRITE OP_READ        Y Y Y SocketChannel 客户端   Y    ServerSocketChannel 服务端     Y Y SocketChannel 服务端            就绪条件：'>
+<meta property='og:url' content='http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bserversocketchannel/'>
+<meta property='og:site_name' content='Mytopia'>
+<meta property='og:type' content='article'><meta property='article:section' content='kafka'><meta property='article:published_time' content='2020-05-08T17:02:23&#43;08:00'/><meta property='article:modified_time' content='2020-05-08T17:02:23&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.59.1" />
+
+  <title>Kafka源码阅读之ServerSocketChannel • Mytopia</title>
+  <link rel='canonical' href='http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bserversocketchannel/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+  
+
+</head>
+<body class='page type-kafka has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      Mytopia
+      </a>
+    </h2>
+    <div class='desc'>
+    A place for him to create.
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/create/' style='font-size:1.5em'>create</a>
+      </li><li>
+        <a href='/tags/diary/' style='font-size:1em'>diary</a>
+      </li><li>
+        <a href='/tags/github/' style='font-size:1.75em'>github</a>
+      </li><li>
+        <a href='/tags/hugo/' style='font-size:2em'>hugo</a>
+      </li><li>
+        <a href='/tags/markdown/' style='font-size:2em'>markdown</a>
+      </li><li>
+        <a href='/tags/orz.../' style='font-size:1em'>ORZ...</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='Main Menu'>
+  <div class='container'>
+    <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+    <ul><li class='item'>
+        <a href='/about'>About</a>
+      </li><li class='item'>
+        <a href='/flink'>Flink笔记</a>
+      </li><li class='item'>
+        <a href='/intro'>hugo入门</a>
+      </li><li class='item'>
+        <a href='/java'>Java学习</a>
+      </li><li class='item'>
+        <a href='/kafka'>Kafka笔记</a>
+      </li><li class='item'>
+        <a href='/scala'>Scala学习</a>
+      </li></ul>
+  </div>
+</nav><div class='header-widgets'>
+        <div class='container'>
+    
+    <style>.widget-breadcrumbs li:after{content:'\2f '}</style>
+  <section class='widget widget-breadcrumbs sep-after'>
+    <nav id='breadcrumbs'>
+      <ol><li><a href='/'></a></li><li><a href='/kafka/'>Kafkas</a></li><li><span>Kafka源码阅读之ServerSocketChannel</span></li></ol>
+    </nav>
+  </section></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>Mytopia</p><p class='desc site-desc'>A place for him to create.</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>Kafka源码阅读之ServerSocketChannel</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2020-05-08T17:02:23&#43;08:00'>2020, May 08</time>
+</span>
+
+  
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+One min read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  
+
+<h1 id="kafka源码解析之-serversocketchannel-详解">kafka源码解析之 ServerSocketChannel 详解</h1>
+
+<blockquote>
+<p>由于kafka socketServer 使用到了 nio 的 serverSocketChannel, 本文详细解析了 该类的使用方法。
+<a href="https://blog.csdn.net/kavu1/article/details/53212178" target="_blank">https://blog.csdn.net/kavu1/article/details/53212178</a></p>
+</blockquote>
+
+<p>Kafka 的 kafka.network.Acceptor 负责监听外界 Socket 连接并把请求转发给 kafka.network.Processor，完事后
+Processor 负责转发 Socket 的请求和响应，并将其发送到 kafka.network.RequestChannel。</p>
+
+<p>与java.net.Socket类和java.net.ServerSocket类相对应，NIO也提供了SocketChannel和ServerSocketChannel两种不同的套接字通道实现。这两种新增的通道都支持阻塞和非阻塞两种模式。
+低负载、低并发的应用程序可以选择同步阻塞I/O以降低编程复杂度；对于高负载、高并发的网络应用，需要使用NIO的非阻塞模式进行开发。
+链接：<a href="https://www.jianshu.com/p/5442b04ccff8" target="_blank">https://www.jianshu.com/p/5442b04ccff8</a></p>
+
+<p><strong>注意</strong>, 如果一个 Channel 要注册到 <strong>Selector</strong> 中, 那么这个 Channel 必须是<strong>非阻塞</strong>的, 即channel.configureBlocking(false);
+因为 Channel 必须要是非阻塞的, 因此 FileChannel 是不能够使用选择器的, 因为 FileChannel 都是阻塞的.</p>
+
+<h2 id="serversocketchannel-与-serversocket">ServerSocketChannel 与 ServerSocket</h2>
+
+<p>ServerSocketChannel类似于SocketChannel,只不过ServerSocketChannel使用server端.ServerSocketChannel是ServerSocket + Selector的高层
+封装.可以通过socket()方法获得与其关联的ServerSocket.</p>
+
+<p>事实上<strong>channel即为socket链接的高层封装</strong>,每个channel都绑定在一个socket上,它们息息相关.</p>
+
+<p>SocketChannel的关闭支持异步关闭(来自InterruptableChannel特性),这与Channel类中指定的异步close操作有关.如果一个线程关闭了某个Socket input,那么同时另一个线程被阻塞在该SocketChannel的read操作中,那么处于阻塞线程中的读取操作将完成,而不读取任何字节且返回-1.如果一个线程关闭了socket output,而同时另一个线程被阻塞在该socketChannel的write操作中,此时阻塞线程将收到AsynchronousClosedException.</p>
+
+<p>SocketChannel是线程安全的,但是任何时刻只能有一个线程处于read或者write操作(read操作同步readLock,write操作同步writeLock,2个线程可以同时进行read和write;),不过DatagramChannel支持并发的读写.</p>
+
+<p>参考:<a href="http://shift-alt-ctrl.iteye.com/blog/1840409" target="_blank">http://shift-alt-ctrl.iteye.com/blog/1840409</a></p>
+
+<h2 id="nio-的四种事件">NIO 的四种事件</h2>
+
+<table>
+<thead>
+<tr>
+<th>OP_ACCEPT</th>
+<th>OP_CONNECT</th>
+<th>OP_WRITE</th>
+<th>OP_READ</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td></td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+<td>SocketChannel</td>
+<td>客户端</td>
+</tr>
+
+<tr>
+<td>Y</td>
+<td></td>
+<td></td>
+<td></td>
+<td>ServerSocketChannel</td>
+<td>服务端</td>
+</tr>
+
+<tr>
+<td></td>
+<td></td>
+<td>Y</td>
+<td>Y</td>
+<td>SocketChannel</td>
+<td>服务端</td>
+</tr>
+
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>就绪条件：</p>
+
+<p>OP_ACCEPT就绪条件：
+当收到一个客户端的连接请求时，该操作就绪。这是ServerSocketChannel上唯一有效的操作。
+OP_CONNECT就绪条件：
+只有客户端SocketChannel会注册该操作，当客户端调用SocketChannel.connect()时，该操作会就绪。
+OP_READ就绪条件：
+该操作对客户端和服务端的SocketChannel都有效，当OS的读缓冲区中有数据可读时，该操作就绪。
+OP_WRITE就绪条件：
+该操作对客户端和服务端的SocketChannel都有效，当OS的写缓冲区中有空闲的空间时，该操作就绪。</p>
+
+<h2 id="acceptor-与-java-nio-channels-serversocketchannel">Acceptor 与 java.nio.channels.ServerSocketChannel</h2>
+
+<p>可以理解为 Acceptor 为了和 processor 通信， 是包装了 一层的 ServerSocketChannel。</p>
+
+<p>查看 acceptor 的 class 和 run 方法， 发现主要是：</p>
+
+<ol>
+<li>通过 new ServerSocketChannel 开启 Socket 服务</li>
+<li>注册 OP_ACCEPT 事件，表示该accptor 可以被外界访问，已经开始监听</li>
+<li>通过 key.isAcceptable 确认 acceptor 正常，使用 round-robin 轮询将对应的 SocketChannel 发送到 Processor 线程。</li>
+</ol>
+
+<p>Selector不断轮询是否有事件准备好了，如果有事件准备好了则获取事件相应的SelectionKey，进入事件处理</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'>
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E6%80%A7%E8%83%BD%E7%AF%87/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>Kafka源码阅读之性能篇</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/tangzhongham' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://instagram.com/TZHDSG' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Instagram account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+  <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:13122260573@163.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2019-2020 tzh </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script><script src='/js/custom.js'></script>
+
+</body>
+
+</html>
+

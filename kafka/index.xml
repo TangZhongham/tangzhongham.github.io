@@ -5,10 +5,69 @@
     <link>http://tangzhongham.github.io/kafka/</link>
     <description>Recent content in Kafkas on Mytopia</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 17 Apr 2020 17:44:51 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 08 May 2020 17:02:23 +0800</lastBuildDate>
     
 	<atom:link href="http://tangzhongham.github.io/kafka/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kafka源码阅读之ServerSocketChannel</title>
+      <link>http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bserversocketchannel/</link>
+      <pubDate>Fri, 08 May 2020 17:02:23 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bserversocketchannel/</guid>
+      <description>kafka源码解析之 ServerSocketChannel 详解  由于kafka socketServer 使用到了 nio 的 serverSocketChannel, 本文详细解析了 该类的使用方法。 https://blog.csdn.net/kavu1/article/details/53212178
+ Kafka 的 kafka.network.Acceptor 负责监听外界 Socket 连接并把请求转发给 kafka.network.Processor，完事后 Processor 负责转发 Socket 的请求和响应，并将其发送到 kafka.network.RequestChannel。
+与java.net.Socket类和java.net.ServerSocket类相对应，NIO也提供了SocketChannel和ServerSocketChannel两种不同的套接字通道实现。这两种新增的通道都支持阻塞和非阻塞两种模式。 低负载、低并发的应用程序可以选择同步阻塞I/O以降低编程复杂度；对于高负载、高并发的网络应用，需要使用NIO的非阻塞模式进行开发。 链接：https://www.jianshu.com/p/5442b04ccff8
+注意, 如果一个 Channel 要注册到 Selector 中, 那么这个 Channel 必须是非阻塞的, 即channel.configureBlocking(false); 因为 Channel 必须要是非阻塞的, 因此 FileChannel 是不能够使用选择器的, 因为 FileChannel 都是阻塞的.
+ServerSocketChannel 与 ServerSocket ServerSocketChannel类似于SocketChannel,只不过ServerSocketChannel使用server端.ServerSocketChannel是ServerSocket + Selector的高层 封装.可以通过socket()方法获得与其关联的ServerSocket.
+事实上channel即为socket链接的高层封装,每个channel都绑定在一个socket上,它们息息相关.
+SocketChannel的关闭支持异步关闭(来自InterruptableChannel特性),这与Channel类中指定的异步close操作有关.如果一个线程关闭了某个Socket input,那么同时另一个线程被阻塞在该SocketChannel的read操作中,那么处于阻塞线程中的读取操作将完成,而不读取任何字节且返回-1.如果一个线程关闭了socket output,而同时另一个线程被阻塞在该socketChannel的write操作中,此时阻塞线程将收到AsynchronousClosedException.
+SocketChannel是线程安全的,但是任何时刻只能有一个线程处于read或者write操作(read操作同步readLock,write操作同步writeLock,2个线程可以同时进行read和write;),不过DatagramChannel支持并发的读写.
+参考:http://shift-alt-ctrl.iteye.com/blog/1840409
+NIO 的四种事件    OP_ACCEPT OP_CONNECT OP_WRITE OP_READ        Y Y Y SocketChannel 客户端   Y    ServerSocketChannel 服务端     Y Y SocketChannel 服务端            就绪条件：</description>
+    </item>
+    
+    <item>
+      <title>Kafka源码阅读之性能篇</title>
+      <link>http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E6%80%A7%E8%83%BD%E7%AF%87/</link>
+      <pubDate>Fri, 08 May 2020 17:01:30 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E6%80%A7%E8%83%BD%E7%AF%87/</guid>
+      <description>kafka源码解析之性能篇 概念篇 Linux 的 Page Cache 和 Buffer Cache page cache是系统读写磁盘文件时为了提高性能而将一部分文件缓存到内存中。 这种做法虽然提高了磁盘I/O性能，但是也极大的占用了物理内存，特别当系统内存紧张时更容易出现问题。
+也就是说，我们平常向硬盘写文件时，默认异步情况下，并不是直接把文件内容写入到硬盘中才返回的，而是成功拷贝到内核的page cache后就直接返回，所以大多数情况下，硬盘写操作不会是性能瓶颈。写入到内核page cache的pages成为dirty pages，稍后会由内核线程pdflush真正写入到硬盘上。
+从硬盘读取文件时，同样不是直接把硬盘上文件内容读取到用户态内存，而是先拷贝到内核的page cache，然后再“拷贝”到用户态内存，这样用户就可以访问该文件。因为涉及到硬盘操作，所以第一次读取一个文件时，不会有性能提升；不过，如果一个文件已经存在page cache中，再次读取该文件时就可以直接从page cache中命中读取不涉及硬盘操作，这时性能就会有很大提高。
+Page Cache 的构成 page cache中的每个文件都是一棵基数树（radix tree，本质上是多叉搜索树），树的每个节点都是一个页。根据文件内的偏移量就可以快速定位到所在的页，如下图所示。
+原理篇 Kafka为什么不自己管理缓存，而非要用page cache？原因有如下三点：
+ JVM中一切皆对象，数据的对象存储会带来所谓object overhead，浪费空间；
+ 如果由JVM来管理缓存，会受到GC的影响，并且过大的堆也会拖累GC的效率，降低吞吐量；
+ 一旦程序崩溃，自己管理的缓存数据会全部丢失。
+  Kafka三大件（broker、producer、consumer）与page cache的关系可以用下面的简图来表示。
+![page cache](./images/pagecache.jpg）
+producer生产消息时，会使用pwrite()系统调用【对应到Java NIO中是FileChannel.write() API】按偏移量写入数据，并且都会先写入page cache里。consumer消费消息时，会使用sendfile()系统调用【对应FileChannel.transferTo() API】，零拷贝地将数据从page cache传输到broker的Socket buffer，再通过网络传输。
+https://zhuanlan.zhihu.com/p/105509080
+图中没有画出来的还有leader与follower之间的同步，这与consumer是同理的：只要follower处在ISR中，就也能够通过零拷贝机制将数据从leader所在的broker page cache传输到follower所在的broker。
+同时，page cache中的数据会随着内核中flusher线程的调度以及对sync()/fsync()的调用写回到磁盘，就算进程崩溃，也不用担心数据丢失。另外，如果consumer要消费的消息不在page cache里，才会去磁盘读取，并且会顺便预读出一些相邻的块放入page cache，以方便下一次读取。
+由此我们可以得出重要的结论：如果Kafka producer的生产速率与consumer的消费速率相差不大，那么就能几乎只靠对broker page cache的读写完成整个生产-消费过程，磁盘访问非常少。并且Kafka持久化消息到各个topic的partition文件时，是只追加的顺序写，充分利用了磁盘顺序访问快的特性，效率高。
+注意事项与相关参数 对于单纯运行Kafka的集群而言，首先要注意的就是为Kafka设置合适（不那么大）的JVM堆大小。从上面的分析可知，Kafka的性能与堆内存关系并不大，而对page cache需求巨大。根据经验值，为Kafka分配5~8GB的堆内存就已经足足够用了，将剩下的系统内存都作为page cache空间，可以最大化I/O效率。
+另一个需要特别注意的问题是lagging consumer，即那些消费速率慢、明显落后的consumer。它们要读取的数据有较大概率不在broker page cache中，因此会增加很多不必要的读盘操作。比这更坏的是，lagging consumer读取的“冷”数据仍然会进入page cache，污染了多数正常consumer要读取的“热”数据，连带着正常consumer的性能变差。在生产环境中，这个问题尤为重要。</description>
+    </item>
+    
+    <item>
+      <title>Kafka源码阅读之socketServer原理篇</title>
+      <link>http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bsocketserver%E5%8E%9F%E7%90%86%E7%AF%87/</link>
+      <pubDate>Fri, 08 May 2020 12:00:33 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bsocketserver%E5%8E%9F%E7%90%86%E7%AF%87/</guid>
+      <description>Kafka 源码解析之 socketServer 原理篇  Kafka 是如何做到百万级高并发低延迟的?
+ 原理 有别于传统的 thread per connection 模型, Kafka 使用基于 NIO 实现的 Reactor 模型.
+Kafka 使用 nio 实现了自己的 socketServer 网络层代码, 而非常见的 netty、mina 框架, 从性能上来看这一块并不是主要的性能瓶颈.
+kafka socketServer 通信采取的是 NIO 的reactor模式, 是一种事件驱动模式.
+什么是 Reactor 模型  同步的等待多个事件源到达（采用select()实现）
+ 将事件多路分解以及分配相应的事件服务进行处理，这个分派采用server集中处理（dispatch）
+ 分解的事件以及对应的事件服务应用从分派服务中分离出去（handler）
+  为何需要 Reactor 模型  同步阻塞IO，读写阻塞，线程等待时间过长 在制定线程策略的时候，只能根据CPU的数目来限定可用线程资源，不能根据连接并发数目来制定，也就是连接有限制。否则很难保证对客户端请求的高效和公平。 多线程之间的上下文切换，造成线程使用效率并不高，并且不易扩展 状态数据以及其他需要保持一致的数据，需要采用并发同步控制  Kafka 的 socketServer 如何实现 Reactor 模型 kafka 的架构模型 工作原理： 1）先创建ServerSocketChannel对象并在Selector上注册OP_ACCEPT事件，ServerSocketChannel负责监听指定端口上的连接请求。 2）当客户端发起服务端的网络连接时，服务端的Selector监听到此OP_ACCEPT事件，会触发Acceptor来处理OP_ACCEPT。 3）当Acceptor接收到来自客户端的Socket连接请求时会为这个连接创建响应的SocketChannel，将SocketChannel设置为非阻塞模式，并在Selector上注册其关注的I/O事件，如OP_READ,OP_WRITE。此时，客户端和服务端的Socket连接建立完成。 4）当客户端通过已经建立的SocketChannel连接向服务端发送请求时，服务端的Selector会监听到OP_READ事件，并触发执行相应的处理逻辑（上图中的Reader Handler）。当服务端可以向客户端写数据时，服务端的Selector会监听到OP_WRITE事件，并触发相应的执行逻辑（上图中的Writer Handler）。 这些事情都是在同一个线程完成的，KafkaProducer中的Sender线程以及KafkaConsumer的代码都是这种设计。这样的设计时候客户端这样的并发连接数小，数据量较小的场景，这样对于服务端来说就会有缺点。如：某个请求的处理过程比较复杂会造成线程的阻塞，造成所有的后续请求读无法处理，这就会导致大量的请求超时。为了避免这种情况，就必须要求服务端在读取请求，处理请求已经发送响应等各个环节上必须能迅速的完成，这样就提升了编程的难度，在有些情况下实现不了。而且这种模式不能利用服务器多核多处理器的并行处理能力，造成资源的浪费。 为了满足高并发的需求，服务端需要使用多线程来执行逻辑。我们可以对上述架构做调整，将网络的读写的逻辑和业务处理的逻辑进行拆分，让其由不同的线程池来处理，从而实现多线程处理。 链接：https://www.</description>
+    </item>
     
     <item>
       <title>Kafka源码阅读之broker启动</title>

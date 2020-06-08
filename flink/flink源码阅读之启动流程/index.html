@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='Flink源码阅读之启动流程  本文分析了 Flink standalone/yarn 的启动流程
+ 先看启动脚本 start-cluster.sh ## 读取默认 config 配置文件 . &#34;$bin&#34;/config.sh # Start the JobManager instance(s) ## 用来定制 shell 环境 -s 开启某个选项 nocasematch 忽略大小写 shopt -s nocasematch ## 支持高可用模式启动 if [[ $HIGH_AVAILABILITY == &#34;zookeeper&#34; ]]; then # HA Mode readMasters echo &#34;Starting HA cluster with ${#MASTERS[@]}masters.&#34; for ((i=0;i&lt;${#MASTERS[@]};&#43;&#43;i)); do master=${MASTERS[i]} webuiport=${WEBUIPORTS[i]} if [ ${MASTERS_ALL_LOCALHOST} = true ] ; then &#34;${FLINK_BIN_DIR}&#34;/jobmanager.sh start &#34;${master}&#34; &#34;${webuiport}&#34; else ssh -n $FLINK_SSH_OPTS $master -- &#34;nohup /bin/bash -l \&#34;${FLINK_BIN_DIR}/jobmanager.'>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='Flink源码阅读之启动流程 • Mytopia'>
+<meta property='og:description' content='Flink源码阅读之启动流程  本文分析了 Flink standalone/yarn 的启动流程
+ 先看启动脚本 start-cluster.sh ## 读取默认 config 配置文件 . &#34;$bin&#34;/config.sh # Start the JobManager instance(s) ## 用来定制 shell 环境 -s 开启某个选项 nocasematch 忽略大小写 shopt -s nocasematch ## 支持高可用模式启动 if [[ $HIGH_AVAILABILITY == &#34;zookeeper&#34; ]]; then # HA Mode readMasters echo &#34;Starting HA cluster with ${#MASTERS[@]}masters.&#34; for ((i=0;i&lt;${#MASTERS[@]};&#43;&#43;i)); do master=${MASTERS[i]} webuiport=${WEBUIPORTS[i]} if [ ${MASTERS_ALL_LOCALHOST} = true ] ; then &#34;${FLINK_BIN_DIR}&#34;/jobmanager.sh start &#34;${master}&#34; &#34;${webuiport}&#34; else ssh -n $FLINK_SSH_OPTS $master -- &#34;nohup /bin/bash -l \&#34;${FLINK_BIN_DIR}/jobmanager.'>
+<meta property='og:url' content='http://tangzhongham.github.io/flink/flink%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/'>
+<meta property='og:site_name' content='Mytopia'>
+<meta property='og:type' content='article'><meta property='article:section' content='flink'><meta property='article:published_time' content='2020-06-08T16:57:43&#43;08:00'/><meta property='article:modified_time' content='2020-06-08T16:57:43&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.59.1" />
+
+  <title>Flink源码阅读之启动流程 • Mytopia</title>
+  <link rel='canonical' href='http://tangzhongham.github.io/flink/flink%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+  
+
+</head>
+<body class='page type-flink has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      Mytopia
+      </a>
+    </h2>
+    <div class='desc'>
+    A place for him to create.
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/create/' style='font-size:1.5em'>create</a>
+      </li><li>
+        <a href='/tags/diary/' style='font-size:1em'>diary</a>
+      </li><li>
+        <a href='/tags/github/' style='font-size:1.75em'>github</a>
+      </li><li>
+        <a href='/tags/hugo/' style='font-size:2em'>hugo</a>
+      </li><li>
+        <a href='/tags/markdown/' style='font-size:2em'>markdown</a>
+      </li><li>
+        <a href='/tags/orz.../' style='font-size:1em'>ORZ...</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='Main Menu'>
+  <div class='container'>
+    <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+    <ul><li class='item'>
+        <a href='/about'>About</a>
+      </li><li class='item'>
+        <a href='/flink'>Flink笔记</a>
+      </li><li class='item'>
+        <a href='/intro'>hugo入门</a>
+      </li><li class='item'>
+        <a href='/java'>Java学习</a>
+      </li><li class='item'>
+        <a href='/kafka'>Kafka笔记</a>
+      </li><li class='item'>
+        <a href='/scala'>Scala学习</a>
+      </li></ul>
+  </div>
+</nav><div class='header-widgets'>
+        <div class='container'>
+    
+    <style>.widget-breadcrumbs li:after{content:'\2f '}</style>
+  <section class='widget widget-breadcrumbs sep-after'>
+    <nav id='breadcrumbs'>
+      <ol><li><a href='/'></a></li><li><a href='/flink/'>Flinks</a></li><li><span>Flink源码阅读之启动流程</span></li></ol>
+    </nav>
+  </section></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>Mytopia</p><p class='desc site-desc'>A place for him to create.</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>Flink源码阅读之启动流程</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2020-06-08T16:57:43&#43;08:00'>2020, Jun 08</time>
+</span>
+
+  
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+5 mins read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  
+
+<h1 id="flink源码阅读之启动流程">Flink源码阅读之启动流程</h1>
+
+<blockquote>
+<p>本文分析了 Flink standalone/yarn 的启动流程</p>
+</blockquote>
+
+<h2 id="先看启动脚本-start-cluster-sh">先看启动脚本 start-cluster.sh</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">## 读取默认 config 配置文件</span>
+. <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>/config.sh
+
+<span style="color:#75715e"># Start the JobManager instance(s)</span>
+<span style="color:#75715e">## 用来定制 shell 环境 -s 开启某个选项 nocasematch 忽略大小写</span>
+shopt -s nocasematch
+<span style="color:#75715e">## 支持高可用模式启动</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> $HIGH_AVAILABILITY <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;zookeeper&#34;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+    <span style="color:#75715e"># HA Mode</span>
+    readMasters
+
+    echo <span style="color:#e6db74">&#34;Starting HA cluster with </span><span style="color:#e6db74">${#</span>MASTERS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74"> masters.&#34;</span>
+
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">((</span>i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i&lt;<span style="color:#e6db74">${#</span>MASTERS[@]<span style="color:#e6db74">}</span>;++i<span style="color:#f92672">))</span>; <span style="color:#66d9ef">do</span>
+        master<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>MASTERS[i]<span style="color:#e6db74">}</span>
+        webuiport<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>WEBUIPORTS[i]<span style="color:#e6db74">}</span>
+
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">${</span>MASTERS_ALL_LOCALHOST<span style="color:#e6db74">}</span> <span style="color:#f92672">=</span> true <span style="color:#f92672">]</span> ; <span style="color:#66d9ef">then</span>
+            <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FLINK_BIN_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>/jobmanager.sh start <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>master<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>webuiport<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+        <span style="color:#66d9ef">else</span>
+            ssh -n $FLINK_SSH_OPTS $master -- <span style="color:#e6db74">&#34;nohup /bin/bash -l \&#34;</span><span style="color:#e6db74">${</span>FLINK_BIN_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/jobmanager.sh\&#34; start </span><span style="color:#e6db74">${</span>master<span style="color:#e6db74">}</span><span style="color:#e6db74"> </span><span style="color:#e6db74">${</span>webuiport<span style="color:#e6db74">}</span><span style="color:#e6db74"> &amp;&#34;</span>
+        <span style="color:#66d9ef">fi</span>
+    <span style="color:#66d9ef">done</span>
+
+<span style="color:#66d9ef">else</span>
+    <span style="color:#75715e">## 正常 cluster 模式启动</span>
+    echo <span style="color:#e6db74">&#34;Starting cluster.&#34;</span>
+
+    <span style="color:#75715e"># Start single JobManager on this machine</span>
+    <span style="color:#e6db74">&#34;</span>$FLINK_BIN_DIR<span style="color:#e6db74">&#34;</span>/jobmanager.sh start
+<span style="color:#66d9ef">fi</span>
+shopt -u nocasematch
+
+<span style="color:#75715e"># Start TaskManager instance(s)</span>
+TMSlaves start</code></pre></div>
+<h2 id="查看实际启动的-jobmanager-sh">查看实际启动的 jobmanager.sh</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># Start/stop a Flink JobManager.</span>
+<span style="color:#75715e">## echo 出脚本的用法，可以学着这种写法</span>
+USAGE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Usage: jobmanager.sh ((start|start-foreground) [host] [webui-port])|stop|stop-all&#34;</span>
+
+<span style="color:#75715e">## %1 表示第一个变量</span>
+STARTSTOP<span style="color:#f92672">=</span>$1
+<span style="color:#75715e">## 第二个</span>
+HOST<span style="color:#f92672">=</span>$2 <span style="color:#75715e"># optional when starting multiple instances</span>
+<span style="color:#75715e">## 第三个</span>
+WEBUIPORT<span style="color:#f92672">=</span>$3 <span style="color:#75715e"># optional when starting multiple instances</span>
+
+<span style="color:#75715e">## 如果第一个参数 STARTSTOP 不是以下几种，则返回 USAGE; 学习</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> $STARTSTOP !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;start&#34;</span> <span style="color:#f92672">]]</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">[[</span> $STARTSTOP !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;start-foreground&#34;</span> <span style="color:#f92672">]]</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">[[</span> $STARTSTOP !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;stop&#34;</span> <span style="color:#f92672">]]</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">[[</span> $STARTSTOP !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;stop-all&#34;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+  echo $USAGE
+  exit <span style="color:#ae81ff">1</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#75715e">## 这个命令很少直接在shell命令行中使用，我们一般把它用在shell脚本中，用于取得脚本文件所在目录，然后将当前目录切换过去。</span>
+bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>dirname <span style="color:#e6db74">&#34;</span>$0<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">`</span>
+bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>cd <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>; pwd<span style="color:#e6db74">`</span>
+
+<span style="color:#75715e">## 读取配置文件</span>
+. <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>/config.sh
+
+<span style="color:#75715e">## 启动入口，默认 standalonesession</span>
+ENTRYPOINT<span style="color:#f92672">=</span>standalonesession
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> $STARTSTOP <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;start&#34;</span> <span style="color:#f92672">]]</span> <span style="color:#f92672">||</span> <span style="color:#f92672">[[</span> $STARTSTOP <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;start-foreground&#34;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FLINK_JM_HEAP_MB<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FLINK_JM_HEAP<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+	    echo <span style="color:#e6db74">&#34;used deprecated key \`</span><span style="color:#e6db74">${</span>KEY_JOBM_MEM_MB<span style="color:#e6db74">}</span><span style="color:#e6db74">\`, please replace with key \`</span><span style="color:#e6db74">${</span>KEY_JOBM_MEM_SIZE<span style="color:#e6db74">}</span><span style="color:#e6db74">\`&#34;</span>
+    <span style="color:#66d9ef">else</span>
+	    flink_jm_heap_bytes<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>parseBytes <span style="color:#e6db74">${</span>FLINK_JM_HEAP<span style="color:#e6db74">}</span><span style="color:#66d9ef">)</span>
+	    FLINK_JM_HEAP_MB<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>getMebiBytes <span style="color:#e6db74">${</span>flink_jm_heap_bytes<span style="color:#e6db74">}</span><span style="color:#66d9ef">)</span>
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> ! <span style="color:#e6db74">${</span>FLINK_JM_HEAP_MB<span style="color:#e6db74">}</span> <span style="color:#f92672">=</span>~ $IS_NUMBER <span style="color:#f92672">]]</span> <span style="color:#f92672">||</span> <span style="color:#f92672">[[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FLINK_JM_HEAP_MB<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -lt <span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+        echo <span style="color:#e6db74">&#34;[ERROR] Configured JobManager memory size is not a valid value. Please set &#39;</span><span style="color:#e6db74">${</span>KEY_JOBM_MEM_SIZE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39; in </span><span style="color:#e6db74">${</span>FLINK_CONF_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">.&#34;</span>
+        exit <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FLINK_JM_HEAP_MB<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -gt <span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        export JVM_ARGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$JVM_ARGS<span style="color:#e6db74"> -Xms&#34;</span>$FLINK_JM_HEAP_MB<span style="color:#e6db74">&#34;m -Xmx&#34;</span>$FLINK_JM_HEAP_MB<span style="color:#e6db74">&#34;m&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#75715e"># Add JobManager-specific JVM options</span>
+    export FLINK_ENV_JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FLINK_ENV_JAVA_OPTS<span style="color:#e6db74">}</span><span style="color:#e6db74"> </span><span style="color:#e6db74">${</span>FLINK_ENV_JAVA_OPTS_JM<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+
+    <span style="color:#75715e"># Startup parameters</span>
+    <span style="color:#75715e">## 相关参数可以加到这里</span>
+    args<span style="color:#f92672">=(</span><span style="color:#e6db74">&#34;--configDir&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FLINK_CONF_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;--executionMode&#34;</span> <span style="color:#e6db74">&#34;cluster&#34;</span><span style="color:#f92672">)</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -z $HOST <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        args<span style="color:#f92672">+=(</span><span style="color:#e6db74">&#34;--host&#34;</span><span style="color:#f92672">)</span>
+        args<span style="color:#f92672">+=(</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">)</span>
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -z $WEBUIPORT <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        args<span style="color:#f92672">+=(</span><span style="color:#e6db74">&#34;--webui-port&#34;</span><span style="color:#f92672">)</span>
+        args<span style="color:#f92672">+=(</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>WEBUIPORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">)</span>
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> $STARTSTOP <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;start-foreground&#34;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+    exec <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FLINK_BIN_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>/flink-console.sh $ENTRYPOINT <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>args[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#66d9ef">else</span>
+    <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FLINK_BIN_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>/flink-daemon.sh $STARTSTOP $ENTRYPOINT <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>args[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#66d9ef">fi</span></code></pre></div>
+<h3 id="flink-真正的启动类-flink-daemon-sh">flink 真正的启动类 flink-daemon.sh</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># Start/stop a Flink daemon.</span>
+USAGE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Usage: flink-daemon.sh (start|stop|stop-all) (taskexecutor|zookeeper|historyserver|standalonesession|standalonejob) [args]&#34;</span>
+
+STARTSTOP<span style="color:#f92672">=</span>$1
+DAEMON<span style="color:#f92672">=</span>$2
+ARGS<span style="color:#f92672">=(</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>@:3<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">)</span> <span style="color:#75715e"># get remaining arguments as array</span>
+
+bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>dirname <span style="color:#e6db74">&#34;</span>$0<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">`</span>
+bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>cd <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>; pwd<span style="color:#e6db74">`</span>
+
+. <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>/config.sh
+
+<span style="color:#66d9ef">case</span> $DAEMON in
+    <span style="color:#f92672">(</span>taskexecutor<span style="color:#f92672">)</span>
+    <span style="color:#75715e">## Task Manager 启动类</span>
+        CLASS_TO_RUN<span style="color:#f92672">=</span>org.apache.flink.runtime.taskexecutor.TaskManagerRunner
+    ;;
+
+    <span style="color:#f92672">(</span>zookeeper<span style="color:#f92672">)</span>
+        CLASS_TO_RUN<span style="color:#f92672">=</span>org.apache.flink.runtime.zookeeper.FlinkZooKeeperQuorumPeer
+    ;;
+
+    <span style="color:#f92672">(</span>historyserver<span style="color:#f92672">)</span>
+        CLASS_TO_RUN<span style="color:#f92672">=</span>org.apache.flink.runtime.webmonitor.history.HistoryServer
+    ;;
+    <span style="color:#75715e">## 默认传滴就是 standalonesession 所以是在这里啦</span>
+    <span style="color:#f92672">(</span>standalonesession<span style="color:#f92672">)</span>
+        CLASS_TO_RUN<span style="color:#f92672">=</span>org.apache.flink.runtime.entrypoint.StandaloneSessionClusterEntrypoint
+    ;;
+
+    <span style="color:#f92672">(</span>standalonejob<span style="color:#f92672">)</span>
+        CLASS_TO_RUN<span style="color:#f92672">=</span>org.apache.flink.container.entrypoint.StandaloneJobClusterEntryPoint
+    ;;
+
+    <span style="color:#f92672">(</span>*<span style="color:#f92672">)</span>
+        echo <span style="color:#e6db74">&#34;Unknown daemon &#39;</span><span style="color:#e6db74">${</span>DAEMON<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;. </span>$USAGE<span style="color:#e6db74">.&#34;</span>
+        exit <span style="color:#ae81ff">1</span>
+    ;;
+<span style="color:#66d9ef">esac</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$FLINK_IDENT_STRING<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    FLINK_IDENT_STRING<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$USER<span style="color:#e6db74">&#34;</span>
+<span style="color:#66d9ef">fi</span>
+
+FLINK_TM_CLASSPATH<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>constructFlinkClassPath<span style="color:#e6db74">`</span>
+
+pid<span style="color:#f92672">=</span>$FLINK_PID_DIR/flink-$FLINK_IDENT_STRING-$DAEMON.pid
+
+mkdir -p <span style="color:#e6db74">&#34;</span>$FLINK_PID_DIR<span style="color:#e6db74">&#34;</span>
+
+<span style="color:#75715e"># Log files for daemons are indexed from the process ID&#39;s position in the PID</span>
+<span style="color:#75715e"># file. The following lock prevents a race condition during daemon startup</span>
+<span style="color:#75715e"># when multiple daemons read, index, and write to the PID file concurrently.</span>
+<span style="color:#75715e"># The lock is created on the PID directory since a lock file cannot be safely</span>
+<span style="color:#75715e"># removed. The daemon is started with the lock closed and the lock remains</span>
+<span style="color:#75715e"># active in this script until the script exits.</span>
+command -v flock &gt;/dev/null <span style="color:#ae81ff">2</span>&gt;&amp;<span style="color:#ae81ff">1</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> $? -eq <span style="color:#ae81ff">0</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+    exec <span style="color:#ae81ff">200</span>&lt;<span style="color:#e6db74">&#34;</span>$FLINK_PID_DIR<span style="color:#e6db74">&#34;</span>
+    flock <span style="color:#ae81ff">200</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#75715e"># Ascending ID depending on number of lines in pid file.</span>
+<span style="color:#75715e"># This allows us to start multiple daemon of each type.</span>
+id<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span><span style="color:#f92672">[</span> -f <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> echo <span style="color:#66d9ef">$(</span>wc -l &lt; <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span> <span style="color:#f92672">||</span> echo <span style="color:#e6db74">&#34;0&#34;</span><span style="color:#66d9ef">)</span>
+
+FLINK_LOG_PREFIX<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FLINK_LOG_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/flink-</span><span style="color:#e6db74">${</span>FLINK_IDENT_STRING<span style="color:#e6db74">}</span><span style="color:#e6db74">-</span><span style="color:#e6db74">${</span>DAEMON<span style="color:#e6db74">}</span><span style="color:#e6db74">-</span><span style="color:#e6db74">${</span>id<span style="color:#e6db74">}</span><span style="color:#e6db74">-</span><span style="color:#e6db74">${</span>HOSTNAME<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+log<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FLINK_LOG_PREFIX<span style="color:#e6db74">}</span><span style="color:#e6db74">.log&#34;</span>
+out<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FLINK_LOG_PREFIX<span style="color:#e6db74">}</span><span style="color:#e6db74">.out&#34;</span>
+
+log_setting<span style="color:#f92672">=(</span><span style="color:#e6db74">&#34;-Dlog.file=</span><span style="color:#e6db74">${</span>log<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;-Dlog4j.configuration=file:</span><span style="color:#e6db74">${</span>FLINK_CONF_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/log4j.properties&#34;</span> <span style="color:#e6db74">&#34;-Dlogback.configurationFile=file:</span><span style="color:#e6db74">${</span>FLINK_CONF_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/logback.xml&#34;</span><span style="color:#f92672">)</span>
+
+JAVA_VERSION<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span><span style="color:#e6db74">${</span>JAVA_RUN<span style="color:#e6db74">}</span> -version <span style="color:#ae81ff">2</span>&gt;&amp;<span style="color:#ae81ff">1</span> | sed <span style="color:#e6db74">&#39;s/.*version &#34;\(.*\)\.\(.*\)\..*&#34;/\1\2/; 1q&#39;</span><span style="color:#66d9ef">)</span>
+
+<span style="color:#75715e"># Only set JVM 8 arguments if we have correctly extracted the version</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> <span style="color:#e6db74">${</span>JAVA_VERSION<span style="color:#e6db74">}</span> <span style="color:#f92672">=</span>~ <span style="color:#e6db74">${</span>IS_NUMBER<span style="color:#e6db74">}</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$JAVA_VERSION<span style="color:#e6db74">&#34;</span> -lt <span style="color:#ae81ff">18</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        JVM_ARGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$JVM_ARGS<span style="color:#e6db74"> -XX:MaxPermSize=256m&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">case</span> $STARTSTOP in
+
+    <span style="color:#f92672">(</span>start<span style="color:#f92672">)</span>
+        <span style="color:#75715e"># Rotate log files</span>
+        rotateLogFilesWithPrefix <span style="color:#e6db74">&#34;</span>$FLINK_LOG_DIR<span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span>$FLINK_LOG_PREFIX<span style="color:#e6db74">&#34;</span>
+
+        <span style="color:#75715e"># Print a warning if daemons are already running on host</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -f <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+          active<span style="color:#f92672">=()</span>
+          <span style="color:#66d9ef">while</span> IFS<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;&#39;</span> read -r p <span style="color:#f92672">||</span> <span style="color:#f92672">[[</span> -n <span style="color:#e6db74">&#34;</span>$p<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">do</span>
+            kill -0 $p &gt;/dev/null <span style="color:#ae81ff">2</span>&gt;&amp;<span style="color:#ae81ff">1</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> $? -eq <span style="color:#ae81ff">0</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+              active<span style="color:#f92672">+=(</span>$p<span style="color:#f92672">)</span>
+            <span style="color:#66d9ef">fi</span>
+          <span style="color:#66d9ef">done</span> &lt; <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>pid<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+
+          count<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${#</span>active[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+
+          <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">${</span>count<span style="color:#e6db74">}</span> -gt <span style="color:#ae81ff">0</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+            echo <span style="color:#e6db74">&#34;[INFO] </span>$count<span style="color:#e6db74"> instance(s) of </span>$DAEMON<span style="color:#e6db74"> are already running on </span>$HOSTNAME<span style="color:#e6db74">.&#34;</span>
+          <span style="color:#66d9ef">fi</span>
+        <span style="color:#66d9ef">fi</span>
+
+        <span style="color:#75715e"># Evaluate user options for local variable expansion</span>
+        FLINK_ENV_JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>eval echo <span style="color:#e6db74">${</span>FLINK_ENV_JAVA_OPTS<span style="color:#e6db74">}</span><span style="color:#66d9ef">)</span>
+
+        echo <span style="color:#e6db74">&#34;Starting </span>$DAEMON<span style="color:#e6db74"> daemon on host </span>$HOSTNAME<span style="color:#e6db74">.&#34;</span>
+        $JAVA_RUN $JVM_ARGS <span style="color:#e6db74">${</span>FLINK_ENV_JAVA_OPTS<span style="color:#e6db74">}</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>log_setting[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -classpath <span style="color:#e6db74">&#34;`manglePathList &#34;</span>$FLINK_TM_CLASSPATH:$INTERNAL_HADOOP_CLASSPATHS<span style="color:#e6db74">&#34;`&#34;</span> <span style="color:#e6db74">${</span>CLASS_TO_RUN<span style="color:#e6db74">}</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ARGS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &gt; <span style="color:#e6db74">&#34;</span>$out<span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">200</span>&lt;&amp;- <span style="color:#ae81ff">2</span>&gt;&amp;<span style="color:#ae81ff">1</span> &lt; /dev/null &amp;
+
+        mypid<span style="color:#f92672">=</span>$!
+
+        <span style="color:#75715e"># Add to pid file if successful start</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> <span style="color:#e6db74">${</span>mypid<span style="color:#e6db74">}</span> <span style="color:#f92672">=</span>~ <span style="color:#e6db74">${</span>IS_NUMBER<span style="color:#e6db74">}</span> <span style="color:#f92672">]]</span> <span style="color:#f92672">&amp;&amp;</span> kill -0 $mypid &gt; /dev/null <span style="color:#ae81ff">2</span>&gt;&amp;<span style="color:#ae81ff">1</span> ; <span style="color:#66d9ef">then</span>
+            echo $mypid &gt;&gt; <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">&#34;</span>
+        <span style="color:#66d9ef">else</span>
+            echo <span style="color:#e6db74">&#34;Error starting </span>$DAEMON<span style="color:#e6db74"> daemon.&#34;</span>
+            exit <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">fi</span>
+    ;;
+
+    <span style="color:#f92672">(</span>stop<span style="color:#f92672">)</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -f <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+            <span style="color:#75715e"># Remove last in pid file</span>
+            to_stop<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>tail -n <span style="color:#ae81ff">1</span> <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span>
+
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z $to_stop <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+                rm <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">&#34;</span> <span style="color:#75715e"># If all stopped, clean up pid file</span>
+                echo <span style="color:#e6db74">&#34;No </span>$DAEMON<span style="color:#e6db74"> daemon to stop on host </span>$HOSTNAME<span style="color:#e6db74">.&#34;</span>
+            <span style="color:#66d9ef">else</span>
+                sed <span style="color:#ae81ff">\$</span>d <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">&#34;</span> &gt; <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">.tmp&#34;</span> <span style="color:#75715e"># all but last line</span>
+
+                <span style="color:#75715e"># If all stopped, clean up pid file</span>
+                <span style="color:#f92672">[</span> <span style="color:#66d9ef">$(</span>wc -l &lt; <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">.tmp&#34;</span><span style="color:#66d9ef">)</span> -eq <span style="color:#ae81ff">0</span> <span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> rm <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">.tmp&#34;</span> <span style="color:#f92672">||</span> mv <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">.tmp&#34;</span> <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">&#34;</span>
+
+                <span style="color:#66d9ef">if</span> kill -0 $to_stop &gt; /dev/null <span style="color:#ae81ff">2</span>&gt;&amp;<span style="color:#ae81ff">1</span>; <span style="color:#66d9ef">then</span>
+                    echo <span style="color:#e6db74">&#34;Stopping </span>$DAEMON<span style="color:#e6db74"> daemon (pid: </span>$to_stop<span style="color:#e6db74">) on host </span>$HOSTNAME<span style="color:#e6db74">.&#34;</span>
+                    kill $to_stop
+                <span style="color:#66d9ef">else</span>
+                    echo <span style="color:#e6db74">&#34;No </span>$DAEMON<span style="color:#e6db74"> daemon (pid: </span>$to_stop<span style="color:#e6db74">) is running anymore on </span>$HOSTNAME<span style="color:#e6db74">.&#34;</span>
+                <span style="color:#66d9ef">fi</span>
+            <span style="color:#66d9ef">fi</span>
+        <span style="color:#66d9ef">else</span>
+            echo <span style="color:#e6db74">&#34;No </span>$DAEMON<span style="color:#e6db74"> daemon to stop on host </span>$HOSTNAME<span style="color:#e6db74">.&#34;</span>
+        <span style="color:#66d9ef">fi</span>
+    ;;
+
+    <span style="color:#f92672">(</span>stop-all<span style="color:#f92672">)</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -f <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+            mv <span style="color:#e6db74">&#34;</span>$pid<span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>pid<span style="color:#e6db74">}</span><span style="color:#e6db74">.tmp&#34;</span>
+
+            <span style="color:#66d9ef">while</span> read to_stop; <span style="color:#66d9ef">do</span>
+                <span style="color:#66d9ef">if</span> kill -0 $to_stop &gt; /dev/null <span style="color:#ae81ff">2</span>&gt;&amp;<span style="color:#ae81ff">1</span>; <span style="color:#66d9ef">then</span>
+                    echo <span style="color:#e6db74">&#34;Stopping </span>$DAEMON<span style="color:#e6db74"> daemon (pid: </span>$to_stop<span style="color:#e6db74">) on host </span>$HOSTNAME<span style="color:#e6db74">.&#34;</span>
+                    kill $to_stop
+                <span style="color:#66d9ef">else</span>
+                    echo <span style="color:#e6db74">&#34;Skipping </span>$DAEMON<span style="color:#e6db74"> daemon (pid: </span>$to_stop<span style="color:#e6db74">), because it is not running anymore on </span>$HOSTNAME<span style="color:#e6db74">.&#34;</span>
+                <span style="color:#66d9ef">fi</span>
+            <span style="color:#66d9ef">done</span> &lt; <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>pid<span style="color:#e6db74">}</span><span style="color:#e6db74">.tmp&#34;</span>
+            rm <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>pid<span style="color:#e6db74">}</span><span style="color:#e6db74">.tmp&#34;</span>
+        <span style="color:#66d9ef">fi</span>
+    ;;
+
+    <span style="color:#f92672">(</span>*<span style="color:#f92672">)</span>
+        echo <span style="color:#e6db74">&#34;Unexpected argument &#39;</span>$STARTSTOP<span style="color:#e6db74">&#39;. </span>$USAGE<span style="color:#e6db74">.&#34;</span>
+        exit <span style="color:#ae81ff">1</span>
+    ;;
+
+<span style="color:#66d9ef">esac</span></code></pre></div>
+<h2 id="终于找到-standalonesessionclusterentrypoint-启动类-啦">终于找到 StandaloneSessionClusterEntrypoint 启动类 啦</h2>
+
+<p>通过查看 三 个启动脚本，终于找到了 standalone 的启动类 <code>StandaloneSessionClusterEntrypoint</code>，下面看看源码是怎么实现的</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"></code></pre></div>
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'>
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/flink/intro/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>Intro</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/flink/flink%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E4%BB%BB%E5%8A%A1%E6%8F%90%E4%BA%A4%E6%B5%81%E7%A8%8B/'>
+        <span class='screen-reader-text'>Next post: </span>Flink源码阅读之任务提交流程<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/tangzhongham' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://instagram.com/TZHDSG' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Instagram account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+  <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:13122260573@163.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2019-2020 tzh </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script><script src='/js/custom.js'></script>
+
+</body>
+
+</html>
+

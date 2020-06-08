@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='Kafka 源码解析之 socketServer 原理篇  Kafka 是如何做到百万级高并发低延迟的?
+ 原理 有别于传统的 thread per connection 模型, Kafka 使用基于 NIO 实现的 Reactor 模型.
+Kafka 使用 nio 实现了自己的 socketServer 网络层代码, 而非常见的 netty、mina 框架, 从性能上来看这一块并不是主要的性能瓶颈.
+kafka socketServer 通信采取的是 NIO 的reactor模式, 是一种事件驱动模式.
+什么是 Reactor 模型  同步的等待多个事件源到达（采用select()实现）
+ 将事件多路分解以及分配相应的事件服务进行处理，这个分派采用server集中处理（dispatch）
+ 分解的事件以及对应的事件服务应用从分派服务中分离出去（handler）
+  为何需要 Reactor 模型  同步阻塞IO，读写阻塞，线程等待时间过长 在制定线程策略的时候，只能根据CPU的数目来限定可用线程资源，不能根据连接并发数目来制定，也就是连接有限制。否则很难保证对客户端请求的高效和公平。 多线程之间的上下文切换，造成线程使用效率并不高，并且不易扩展 状态数据以及其他需要保持一致的数据，需要采用并发同步控制  Kafka 的 socketServer 如何实现 Reactor 模型 kafka 的架构模型 工作原理： 1）先创建ServerSocketChannel对象并在Selector上注册OP_ACCEPT事件，ServerSocketChannel负责监听指定端口上的连接请求。 2）当客户端发起服务端的网络连接时，服务端的Selector监听到此OP_ACCEPT事件，会触发Acceptor来处理OP_ACCEPT。 3）当Acceptor接收到来自客户端的Socket连接请求时会为这个连接创建响应的SocketChannel，将SocketChannel设置为非阻塞模式，并在Selector上注册其关注的I/O事件，如OP_READ,OP_WRITE。此时，客户端和服务端的Socket连接建立完成。 4）当客户端通过已经建立的SocketChannel连接向服务端发送请求时，服务端的Selector会监听到OP_READ事件，并触发执行相应的处理逻辑（上图中的Reader Handler）。当服务端可以向客户端写数据时，服务端的Selector会监听到OP_WRITE事件，并触发相应的执行逻辑（上图中的Writer Handler）。 这些事情都是在同一个线程完成的，KafkaProducer中的Sender线程以及KafkaConsumer的代码都是这种设计。这样的设计时候客户端这样的并发连接数小，数据量较小的场景，这样对于服务端来说就会有缺点。如：某个请求的处理过程比较复杂会造成线程的阻塞，造成所有的后续请求读无法处理，这就会导致大量的请求超时。为了避免这种情况，就必须要求服务端在读取请求，处理请求已经发送响应等各个环节上必须能迅速的完成，这样就提升了编程的难度，在有些情况下实现不了。而且这种模式不能利用服务器多核多处理器的并行处理能力，造成资源的浪费。 为了满足高并发的需求，服务端需要使用多线程来执行逻辑。我们可以对上述架构做调整，将网络的读写的逻辑和业务处理的逻辑进行拆分，让其由不同的线程池来处理，从而实现多线程处理。 链接：https://www.'>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='Kafka源码阅读之socketServer原理篇 • Mytopia'>
+<meta property='og:description' content='Kafka 源码解析之 socketServer 原理篇  Kafka 是如何做到百万级高并发低延迟的?
+ 原理 有别于传统的 thread per connection 模型, Kafka 使用基于 NIO 实现的 Reactor 模型.
+Kafka 使用 nio 实现了自己的 socketServer 网络层代码, 而非常见的 netty、mina 框架, 从性能上来看这一块并不是主要的性能瓶颈.
+kafka socketServer 通信采取的是 NIO 的reactor模式, 是一种事件驱动模式.
+什么是 Reactor 模型  同步的等待多个事件源到达（采用select()实现）
+ 将事件多路分解以及分配相应的事件服务进行处理，这个分派采用server集中处理（dispatch）
+ 分解的事件以及对应的事件服务应用从分派服务中分离出去（handler）
+  为何需要 Reactor 模型  同步阻塞IO，读写阻塞，线程等待时间过长 在制定线程策略的时候，只能根据CPU的数目来限定可用线程资源，不能根据连接并发数目来制定，也就是连接有限制。否则很难保证对客户端请求的高效和公平。 多线程之间的上下文切换，造成线程使用效率并不高，并且不易扩展 状态数据以及其他需要保持一致的数据，需要采用并发同步控制  Kafka 的 socketServer 如何实现 Reactor 模型 kafka 的架构模型 工作原理： 1）先创建ServerSocketChannel对象并在Selector上注册OP_ACCEPT事件，ServerSocketChannel负责监听指定端口上的连接请求。 2）当客户端发起服务端的网络连接时，服务端的Selector监听到此OP_ACCEPT事件，会触发Acceptor来处理OP_ACCEPT。 3）当Acceptor接收到来自客户端的Socket连接请求时会为这个连接创建响应的SocketChannel，将SocketChannel设置为非阻塞模式，并在Selector上注册其关注的I/O事件，如OP_READ,OP_WRITE。此时，客户端和服务端的Socket连接建立完成。 4）当客户端通过已经建立的SocketChannel连接向服务端发送请求时，服务端的Selector会监听到OP_READ事件，并触发执行相应的处理逻辑（上图中的Reader Handler）。当服务端可以向客户端写数据时，服务端的Selector会监听到OP_WRITE事件，并触发相应的执行逻辑（上图中的Writer Handler）。 这些事情都是在同一个线程完成的，KafkaProducer中的Sender线程以及KafkaConsumer的代码都是这种设计。这样的设计时候客户端这样的并发连接数小，数据量较小的场景，这样对于服务端来说就会有缺点。如：某个请求的处理过程比较复杂会造成线程的阻塞，造成所有的后续请求读无法处理，这就会导致大量的请求超时。为了避免这种情况，就必须要求服务端在读取请求，处理请求已经发送响应等各个环节上必须能迅速的完成，这样就提升了编程的难度，在有些情况下实现不了。而且这种模式不能利用服务器多核多处理器的并行处理能力，造成资源的浪费。 为了满足高并发的需求，服务端需要使用多线程来执行逻辑。我们可以对上述架构做调整，将网络的读写的逻辑和业务处理的逻辑进行拆分，让其由不同的线程池来处理，从而实现多线程处理。 链接：https://www.'>
+<meta property='og:url' content='http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bsocketserver%E5%8E%9F%E7%90%86%E7%AF%87/'>
+<meta property='og:site_name' content='Mytopia'>
+<meta property='og:type' content='article'><meta property='article:section' content='kafka'><meta property='article:published_time' content='2020-05-08T12:00:33&#43;08:00'/><meta property='article:modified_time' content='2020-05-08T12:00:33&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.59.1" />
+
+  <title>Kafka源码阅读之socketServer原理篇 • Mytopia</title>
+  <link rel='canonical' href='http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bsocketserver%E5%8E%9F%E7%90%86%E7%AF%87/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+  
+
+</head>
+<body class='page type-kafka has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      Mytopia
+      </a>
+    </h2>
+    <div class='desc'>
+    A place for him to create.
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/create/' style='font-size:1.5em'>create</a>
+      </li><li>
+        <a href='/tags/diary/' style='font-size:1em'>diary</a>
+      </li><li>
+        <a href='/tags/github/' style='font-size:1.75em'>github</a>
+      </li><li>
+        <a href='/tags/hugo/' style='font-size:2em'>hugo</a>
+      </li><li>
+        <a href='/tags/markdown/' style='font-size:2em'>markdown</a>
+      </li><li>
+        <a href='/tags/orz.../' style='font-size:1em'>ORZ...</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='Main Menu'>
+  <div class='container'>
+    <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+    <ul><li class='item'>
+        <a href='/about'>About</a>
+      </li><li class='item'>
+        <a href='/flink'>Flink笔记</a>
+      </li><li class='item'>
+        <a href='/intro'>hugo入门</a>
+      </li><li class='item'>
+        <a href='/java'>Java学习</a>
+      </li><li class='item'>
+        <a href='/kafka'>Kafka笔记</a>
+      </li><li class='item'>
+        <a href='/scala'>Scala学习</a>
+      </li></ul>
+  </div>
+</nav><div class='header-widgets'>
+        <div class='container'>
+    
+    <style>.widget-breadcrumbs li:after{content:'\2f '}</style>
+  <section class='widget widget-breadcrumbs sep-after'>
+    <nav id='breadcrumbs'>
+      <ol><li><a href='/'></a></li><li><a href='/kafka/'>Kafkas</a></li><li><span>Kafka源码阅读之socketServer原理篇</span></li></ol>
+    </nav>
+  </section></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>Mytopia</p><p class='desc site-desc'>A place for him to create.</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>Kafka源码阅读之socketServer原理篇</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2020-05-08T12:00:33&#43;08:00'>2020, May 08</time>
+</span>
+
+  
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+2 mins read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  
+
+<h1 id="kafka-源码解析之-socketserver-原理篇">Kafka 源码解析之 socketServer 原理篇</h1>
+
+<blockquote>
+<p>Kafka 是如何做到百万级高并发低延迟的?</p>
+</blockquote>
+
+<h2 id="原理">原理</h2>
+
+<p>有别于传统的 thread per connection 模型, Kafka 使用基于 NIO 实现的 Reactor 模型.</p>
+
+<p>Kafka 使用 nio 实现了自己的 socketServer 网络层代码, 而非常见的 netty、mina 框架, 从性能上来看这一块并不是主要的性能瓶颈.</p>
+
+<p>kafka socketServer 通信采取的是 NIO 的reactor模式, 是一种事件驱动模式.</p>
+
+<h2 id="什么是-reactor-模型">什么是 Reactor 模型</h2>
+
+<ol>
+<li><p>同步的等待多个事件源到达（采用select()实现）</p></li>
+
+<li><p>将事件多路分解以及分配相应的事件服务进行处理，这个分派采用server集中处理（dispatch）</p></li>
+
+<li><p>分解的事件以及对应的事件服务应用从分派服务中分离出去（handler）</p></li>
+</ol>
+
+<h3 id="为何需要-reactor-模型">为何需要 Reactor 模型</h3>
+
+<ol>
+<li>同步阻塞IO，读写阻塞，线程等待时间过长</li>
+<li>在制定线程策略的时候，只能根据CPU的数目来限定可用线程资源，不能根据连接并发数目来制定，也就是连接有限制。否则很难保证对客户端请求的高效和公平。</li>
+<li>多线程之间的上下文切换，造成线程使用效率并不高，并且不易扩展</li>
+<li>状态数据以及其他需要保持一致的数据，需要采用并发同步控制</li>
+</ol>
+
+<h2 id="kafka-的-socketserver-如何实现-reactor-模型">Kafka 的 socketServer 如何实现 Reactor 模型</h2>
+
+<h2 id="kafka-的架构模型">kafka 的架构模型</h2>
+
+<p>工作原理：
+1）先创建ServerSocketChannel对象并在Selector上注册OP_ACCEPT事件，ServerSocketChannel负责监听指定端口上的连接请求。
+2）当客户端发起服务端的网络连接时，服务端的Selector监听到此OP_ACCEPT事件，会触发Acceptor来处理OP_ACCEPT。
+3）当Acceptor接收到来自客户端的Socket连接请求时会为这个连接创建响应的SocketChannel，将SocketChannel设置为非阻塞模式，并在Selector上注册其关注的I/O事件，如OP_READ,OP_WRITE。此时，客户端和服务端的Socket连接建立完成。
+4）当客户端通过已经建立的SocketChannel连接向服务端发送请求时，服务端的Selector会监听到OP_READ事件，并触发执行相应的处理逻辑（上图中的Reader Handler）。当服务端可以向客户端写数据时，服务端的Selector会监听到OP_WRITE事件，并触发相应的执行逻辑（上图中的Writer Handler）。
+这些事情都是在同一个线程完成的，KafkaProducer中的Sender线程以及KafkaConsumer的代码都是这种设计。这样的设计时候客户端这样的并发连接数小，数据量较小的场景，这样对于服务端来说就会有缺点。如：某个请求的处理过程比较复杂会造成线程的阻塞，造成所有的后续请求读无法处理，这就会导致大量的请求超时。为了避免这种情况，就必须要求服务端在读取请求，处理请求已经发送响应等各个环节上必须能迅速的完成，这样就提升了编程的难度，在有些情况下实现不了。而且这种模式不能利用服务器多核多处理器的并行处理能力，造成资源的浪费。
+为了满足高并发的需求，服务端需要使用多线程来执行逻辑。我们可以对上述架构做调整，将网络的读写的逻辑和业务处理的逻辑进行拆分，让其由不同的线程池来处理，从而实现多线程处理。
+链接：<a href="https://www.jianshu.com/p/0239a3ced855" target="_blank">https://www.jianshu.com/p/0239a3ced855</a></p>
+
+<p>客户端请求NIO的连接器Acceptor，同时它还具备事件的转发功能，转发到Processor处理,服务端网络事件处理器Processor 请求队列RequestChannel，存储了所有待处理的请求信息, 请求处理线程池(RequestHandlerPool)作为守护线程轮训RequestChannel的请求处理信息，并将其转发给API层对应的处理器处理API层处理器将请求处理完成之后放入到Response Queue中，并由Processor从ResponseQueue取出发送到对应的Client端.</p>
+
+<ol>
+<li>1 个 Acceptor 线程，负责监听 Socket 新的连接请求，注册了 OP_ACCEPT 事件，将新的连接按照 round robin 方式交给对应的 Processor 线程处理；<strong>注意</strong> kafka 一般情况下的 reactor 模型还是单线程Acceptor多线程handler, 每个 EndPoint (网卡) 只能构造一个 Acceptor.</li>
+<li>N 个 Processor 线程，其中每个 Processor 都有自己的 selector，它会向 Acceptor 分配的 SocketChannel 注册相应的 OP_READ 事件，N 的大小由 num.networker.threads (3) 决定；</li>
+<li>M 个 KafkaRequestHandler 线程处理请求，并将处理的结果返回给 Processor 线程对应的 response queue 中，由 Processor 将处理的结果返回给相应的请求发送者，M 的大小由 num.io.threads (8) 来决定。</li>
+</ol>
+
+<p>整体请求流程如下:</p>
+
+<ol>
+<li>Acceptor 监听到来自请求者（请求者可以是来自 client，也可以来自 server）的新的连接，Acceptor 将这个请求者按照 round robin 的方式交给对对应的 Processor 进行处理；</li>
+<li>Processor 注册这个 SocketChannel 的 OP_READ 的事件，如果有请求发送过来就可以被 Processor 的 Selector 选中；</li>
+<li>Processor 将请求者发送的请求放入到一个 Request Queue 中，这是所有 Processor 共有的一个队列；queued.max.requests requestChannel 的大小, 默认500</li>
+<li>KafkaRequestHandler 从 Request Queue 中取出请求；</li>
+<li>调用 KafkaApis 进行相应的处理；</li>
+<li>处理的结果放入到该 Processor 对应的 Response Queue 中（每个 request 都标识它们来自哪个 Processor），Request Queue 的数量与 Processor 的数量保持一致；</li>
+<li>Processor 从对应的 Response Queue 中取出 response；</li>
+<li>Processor 将处理的结果返回给对应的请求者</li>
+</ol>
+
+<h2 id="源码详解">源码详解</h2>
+
+<p><a href="https://www.geek-share.com/detail/2789927213.html" target="_blank">https://www.geek-share.com/detail/2789927213.html</a>
+<a href="https://www.jianshu.com/p/ff1432f5a14b" target="_blank">https://www.jianshu.com/p/ff1432f5a14b</a></p>
+
+<h3 id="acceptor">Acceptor</h3>
+
+<p>Acceptor是NIO里面的一个轻量级接入服务，它主要包含如下变量：</p>
+
+<p>nioSelector：Java的NIO网络选择器
+serverChannel：ip和端口绑定到socket
+Processors:processor的容器，存放的是processor对象</p>
+
+<p><strong>它的主要处理流程如下：</strong></p>
+
+<ol>
+<li><p>将nioSelector注册为OP_ACCEPT</p></li>
+
+<li><p>轮训从nioSelector读取事件</p></li>
+
+<li><p>通过RR的模式选择processor (Round-Robin)</p></li>
+
+<li><p>接收一个新的链接设置(从serverSocketChannel获取socketChannel，并对它的属性进行设置)</p></li>
+
+<li><p>移交processor的accept处理</p></li>
+</ol>
+
+<h3 id="processor">Processor</h3>
+
+<p>Processor的主要职责是将来自客户端的网络链接请求封装成RequestContext并发送给RequestChannel，同时需要对handler处理完的响应回执发送给客户端。它主要包括：</p>
+
+<p>newConnections：是一个线程安全的队列，存放从acceptor接收到的网络新链接
+inflightResponses：已发送客户端的响应，存放了和客户端的链接id(由本地ip、port以及远端ip、port还有额外一个序列值组成)和响应对象的映射
+responseQueue：是一个阻塞队列，存放handler的响应请求</p>
+
+<p><strong>它的主要处理流程如下：</strong></p>
+
+<ol>
+<li><p>proccessor线程从newConnections中轮询获取socketChannel，并将selector监听事件修改为OP_READ；</p></li>
+
+<li><p>processNewResponses处理新的响应需求，其中类型为SendAction的就是向客户端发送响应，并将发送的响应记录在inflightResponses ,它的核心逻辑是sendResponse如下：</p></li>
+
+<li><p>Selector调用poll从客户端获取到的请求信息，并将获取到的NetworkReceive添加到completedReceives缓存中。</p></li>
+
+<li><p>而processCompletedReceives负责处理completedReceives中的接收信息，最后封装为RequestChannel.Request，再调用requestChannel将请求添加到发送队列（即requestQueue）当中，源码逻辑如下所示：</p></li>
+</ol>
+
+<h3 id="requestchannel">RequestChannel</h3>
+
+<p>requestChannel承载了kafka请求和响应的所有转发，它包含有如下两个变量：</p>
+
+<p>requestQueue：是一个加锁阻塞队列，RequestChannel传输请求和响应信息的重要组件，上面讲到的RequestChannel.Request就是被放入到这个队列中</p>
+
+<p>Processors：存储了processorid和processor的映射关系，主要是在response发送的时候从中选择对应的processor
+它的两个核心功能是添加请求和发送响应回执，源码逻辑分别如下：</p>
+
+<h2 id="selector-的封装-todo">Selector 的封装 (TODO)</h2>
+
+<p><a href="https://blog.csdn.net/zhanyuanlin/article/details/76906583" target="_blank">https://blog.csdn.net/zhanyuanlin/article/details/76906583</a>
+<a href="https://blog.csdn.net/zhanyuanlin/article/details/76556578" target="_blank">https://blog.csdn.net/zhanyuanlin/article/details/76556578</a>
+<a href="https://matt33.com/2018/06/27/kafka-server-process-model/" target="_blank">https://matt33.com/2018/06/27/kafka-server-process-model/</a>
+<a href="https://www.zhenchao.org/2019/06/21/kafka/kafka-reactor/" target="_blank">https://www.zhenchao.org/2019/06/21/kafka/kafka-reactor/</a></p>
+
+<h2 id="ref">Ref</h2>
+
+<p><a href="https://www.geek-share.com/detail/2789927213.html" target="_blank">https://www.geek-share.com/detail/2789927213.html</a></p>
+
+<p>Reactor
+<a href="https://juejin.im/post/5b4570cce51d451984695a9b" target="_blank">https://juejin.im/post/5b4570cce51d451984695a9b</a></p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'>
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bbroker%E5%90%AF%E5%8A%A8/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>Kafka源码阅读之broker启动</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E6%80%A7%E8%83%BD%E7%AF%87/'>
+        <span class='screen-reader-text'>Next post: </span>Kafka源码阅读之性能篇<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/tangzhongham' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://instagram.com/TZHDSG' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Instagram account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+  <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:13122260573@163.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2019-2020 tzh </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script><script src='/js/custom.js'></script>
+
+</body>
+
+</html>
+
