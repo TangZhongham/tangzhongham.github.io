@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='JVM原理入门  tzh 2020/05/19./
+  JVM原理入门  Why JVM Why Java Java、JDK、JRE JVM 概论 什么是 JVM JVM 概览 前端编译/Class 文件  Class 文件结构  后端编译 虚拟机类加载机制  加载 验证 准备 解析 初始化 使用 卸载  内存/堆/GC 私有  程序计数器 Java 虚拟机栈 &#43; 本地方法栈  公有  方法区 &#43; 常量池 堆 堆的分布 GC 词汇 一般性的GC流程 一般性的 YGC/FGC 堆内存的具体分布  为什么有两个 Survivor 区   直接内存 常用命令 k8s 上极其方便的玩法 jps jinfo jstat  YGC 和 Survivor Thoughts  jmap jstack Slipstream 常用分析 (待续) 作业 Ref   Why JVM 以下问题很是让人头疼?'>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='JVM原理入门 • Mytopia'>
+<meta property='og:description' content='JVM原理入门  tzh 2020/05/19./
+  JVM原理入门  Why JVM Why Java Java、JDK、JRE JVM 概论 什么是 JVM JVM 概览 前端编译/Class 文件  Class 文件结构  后端编译 虚拟机类加载机制  加载 验证 准备 解析 初始化 使用 卸载  内存/堆/GC 私有  程序计数器 Java 虚拟机栈 &#43; 本地方法栈  公有  方法区 &#43; 常量池 堆 堆的分布 GC 词汇 一般性的GC流程 一般性的 YGC/FGC 堆内存的具体分布  为什么有两个 Survivor 区   直接内存 常用命令 k8s 上极其方便的玩法 jps jinfo jstat  YGC 和 Survivor Thoughts  jmap jstack Slipstream 常用分析 (待续) 作业 Ref   Why JVM 以下问题很是让人头疼?'>
+<meta property='og:url' content='http://tangzhongham.github.io/java/jvm%E5%8E%9F%E7%90%86%E5%85%A5%E9%97%A8/'>
+<meta property='og:site_name' content='Mytopia'>
+<meta property='og:type' content='article'><meta property='article:section' content='java'><meta property='article:published_time' content='2020-06-08T17:04:51&#43;08:00'/><meta property='article:modified_time' content='2020-06-08T17:04:51&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.59.1" />
+
+  <title>JVM原理入门 • Mytopia</title>
+  <link rel='canonical' href='http://tangzhongham.github.io/java/jvm%E5%8E%9F%E7%90%86%E5%85%A5%E9%97%A8/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+  
+
+</head>
+<body class='page type-java has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      Mytopia
+      </a>
+    </h2>
+    <div class='desc'>
+    A place for him to create.
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/create/' style='font-size:1.5em'>create</a>
+      </li><li>
+        <a href='/tags/diary/' style='font-size:1em'>diary</a>
+      </li><li>
+        <a href='/tags/github/' style='font-size:1.75em'>github</a>
+      </li><li>
+        <a href='/tags/hugo/' style='font-size:2em'>hugo</a>
+      </li><li>
+        <a href='/tags/markdown/' style='font-size:2em'>markdown</a>
+      </li><li>
+        <a href='/tags/orz.../' style='font-size:1em'>ORZ...</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='Main Menu'>
+  <div class='container'>
+    <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+    <ul><li class='item'>
+        <a href='/about'>About</a>
+      </li><li class='item'>
+        <a href='/flink'>Flink笔记</a>
+      </li><li class='item'>
+        <a href='/intro'>hugo入门</a>
+      </li><li class='item'>
+        <a href='/java'>Java学习</a>
+      </li><li class='item'>
+        <a href='/kafka'>Kafka笔记</a>
+      </li><li class='item'>
+        <a href='/scala'>Scala学习</a>
+      </li></ul>
+  </div>
+</nav><div class='header-widgets'>
+        <div class='container'>
+    
+    <style>.widget-breadcrumbs li:after{content:'\2f '}</style>
+  <section class='widget widget-breadcrumbs sep-after'>
+    <nav id='breadcrumbs'>
+      <ol><li><a href='/'></a></li><li><a href='/java/'>Javas</a></li><li><span>JVM原理入门</span></li></ol>
+    </nav>
+  </section></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>Mytopia</p><p class='desc site-desc'>A place for him to create.</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>JVM原理入门</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2020-06-08T17:04:51&#43;08:00'>2020, Jun 08</time>
+</span>
+
+  
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+11 mins read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  
+
+<h1 id="jvm原理入门">JVM原理入门</h1>
+
+<blockquote>
+<p>tzh 2020/05/19./</p>
+</blockquote>
+
+<!-- TOC -->
+
+<ul>
+<li><a href="#jvm原理入门">JVM原理入门</a>
+
+<ul>
+<li><a href="#why-jvm">Why JVM</a></li>
+<li><a href="#why-java">Why Java</a></li>
+<li><a href="#javajdkjre">Java、JDK、JRE</a></li>
+<li><a href="#jvm-概论">JVM 概论</a></li>
+<li><a href="#什么是-jvm">什么是 JVM</a></li>
+<li><a href="#jvm-概览">JVM 概览</a></li>
+<li><a href="#前端编译class-文件">前端编译/Class 文件</a>
+
+<ul>
+<li><a href="#class-文件结构">Class 文件结构</a></li>
+</ul></li>
+<li><a href="#后端编译">后端编译</a></li>
+<li><a href="#虚拟机类加载机制">虚拟机类加载机制</a>
+
+<ul>
+<li><a href="#加载">加载</a></li>
+<li><a href="#验证">验证</a></li>
+<li><a href="#准备">准备</a></li>
+<li><a href="#解析">解析</a></li>
+<li><a href="#初始化">初始化</a></li>
+<li><a href="#使用">使用</a></li>
+<li><a href="#卸载">卸载</a></li>
+</ul></li>
+<li><a href="#内存堆gc">内存/堆/GC</a></li>
+<li><a href="#私有">私有</a>
+
+<ul>
+<li><a href="#程序计数器">程序计数器</a></li>
+<li><a href="#java-虚拟机栈--本地方法栈">Java 虚拟机栈 + 本地方法栈</a></li>
+</ul></li>
+<li><a href="#公有">公有</a>
+
+<ul>
+<li><a href="#方法区--常量池">方法区 + 常量池</a></li>
+<li><a href="#堆">堆</a></li>
+<li><a href="#堆的分布">堆的分布</a></li>
+<li><a href="#gc-词汇">GC 词汇</a></li>
+<li><a href="#一般性的gc流程">一般性的GC流程</a></li>
+<li><a href="#一般性的-ygcfgc">一般性的 YGC/FGC</a></li>
+<li><a href="#堆内存的具体分布">堆内存的具体分布</a>
+
+<ul>
+<li><a href="#为什么有两个-survivor-区">为什么有两个 Survivor 区</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#直接内存">直接内存</a></li>
+<li><a href="#常用命令">常用命令</a></li>
+<li><a href="#k8s-上极其方便的玩法">k8s 上极其方便的玩法</a></li>
+<li><a href="#jps">jps</a></li>
+<li><a href="#jinfo">jinfo</a></li>
+<li><a href="#jstat">jstat</a>
+
+<ul>
+<li><a href="#ygc-和-survivor">YGC 和 Survivor</a></li>
+<li><a href="#thoughts">Thoughts</a></li>
+</ul></li>
+<li><a href="#jmap">jmap</a></li>
+<li><a href="#jstack">jstack</a></li>
+<li><a href="#slipstream-常用分析-待续">Slipstream 常用分析 (待续)</a></li>
+<li><a href="#作业">作业</a></li>
+<li><a href="#ref">Ref</a></li>
+</ul></li>
+</ul>
+
+<!-- /TOC -->
+
+<h2 id="why-jvm">Why JVM</h2>
+
+<p>以下问题很是让人头疼?</p>
+
+<ul>
+<li>内存溢出?</li>
+<li>GC FGC YGC?</li>
+<li>server 没响应 4040页面上不去?</li>
+<li>executor 一跑就挂executor lost?</li>
+<li>beeline 作业提交不上去?</li>
+<li>&hellip;&hellip;</li>
+</ul>
+
+<p>你必须学会看懂日志吧。那么你就必须要看得懂 GC 日志，这是 Java 虚拟机内容的一部分。你看懂了 GC 日志，那么你就得明白什么是年轻代、老年代、永久代、元数据区等，这些就是 Java 虚拟机的内存模型。你懂了 Java 虚拟机的内存模型，那你就得知道 Java 虚拟机是如何进行垃圾回收的，它们使用的垃圾回收算法是怎样的，它们有何优缺点。接下来就是各种垃圾回收器的特性&hellip;&hellip;</p>
+
+<h2 id="why-java">Why Java</h2>
+
+<p>Java 出生时主要解决的两个问题:</p>
+
+<ul>
+<li>一次编写, 到处运行 (Write once, run anywhere)</li>
+<li>相对安全的内存管理和访问机制, 避免了大部分内存泄露和指针越界(语言往人这边更加偏向化)</li>
+</ul>
+
+<p>以前程序员写代码需要分平台, 在linux能跑的代码放到win上面就跑不了了. 然后C/C++自己申请内存还得自己自己free. 讲白了就是你手里的代码是跟机器又远了一步, 跟概念抽象又近了一步.</p>
+
+<p>比方说, 你写了一个 hello world 的 C程序, 在linux编译完后的可执行文件是不可以在windows运行的. (generally) 但是你没听说写一段 Java 代码还分 windows/linux 吧. 这就是 JVM 的优势了.</p>
+
+<p><img src="./images/jvmlogic.png" alt="xx" /></p>
+
+<h3 id="java-jdk-jre">Java、JDK、JRE</h3>
+
+<p>Java 社区把 Java技术体系 分为以下四个部分:</p>
+
+<ul>
+<li>Java 程序设计语言</li>
+<li>各种平台款式的 JVM (java -verion)</li>
+<li>Class 文件格式</li>
+<li>Java API 类库 + 第三方类库</li>
+</ul>
+
+<p><img src="./images/java.png" alt="java_architecture" /></p>
+
+<p>JRE = Java Runtime Environment = JVM + Java 核心类库. 支持 Java 程序运行的标准环境</p>
+
+<p>JDK = JRE + 开发、诊断工具. 用于支持 Java 程序开发的最小环境</p>
+
+<h2 id="jvm-概论">JVM 概论</h2>
+
+<h3 id="什么是-jvm">什么是 JVM</h3>
+
+<p>JVM，全称Java Virtual Machine，英文为Java虚拟机，简单的探讨一下虚拟机这三个字，对后面的学习也是挺舒服的。百度百科描述说，“虚拟机（Virtual Machine）指通过软件模拟的具有完整硬件系统功能的、运行在一个完全隔离环境中的完整计算机系统”，但是虚拟机本质还是该计算机系统的一个进程，可以类比香港澳门具有高度自治，但本质上他们还是属于中国的。为了方便描述，我们把整个计算机当成一幢大楼，而虚拟机则是某一个楼层。大楼划分了一个区域给一个楼层，让这个楼层自己管理自己，也就对应着，计算机划分了一个内存给JVM，让JVM自己管理自己。</p>
+
+<p>与其他语言不同，Java 语言并不直接将代码编译成与系统有关的机器码，而是编译成一种特定的语言规范，这种语言规范我们称之为字节码。无论 Java 程序要在 Windows 系统，还是 Mac OSX 系统，抑或是 Linux 系统，它首先都得编译成字节码文件，之后才能运行。</p>
+
+<p>但即使编译成字节码文件了，各个系统还是无法明白字节码文件的内容，这时候就需要 <strong>Java 虚拟机</strong>的帮助了。Java 虚拟机会解析字节码文件的内容，并将其翻译为各操作系统能理解的机器码。</p>
+
+<p><img src="./images/jvm_flow.png" alt="jvm flow" /></p>
+
+<p>Java的程序编译的最终样子是.class文件，不同虚拟机的对每一个.class文件的翻译结果都是一致的。而对于C／C++而言，编译生成的是纯二进制的机器指令，是直接面对计算机系统的内存，但是，java程序的编译结果是面向JVM，是要交付给JVM，让他再做进一步处理从而让计算机识别运行，这就是所谓的“屏蔽掉各种硬件和操作系统的内存访问差异”。</p>
+
+<h2 id="jvm-概览">JVM 概览</h2>
+
+<blockquote>
+<p>代码编译的结果从本地机器码转变为字节码, 是储存格式发展的一小步, 确实编程语言发展的一大步</p>
+</blockquote>
+
+<h3 id="前端编译-class-文件">前端编译/Class 文件</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#960050;background-color:#1e0010">public class </span>Helloworld{
+	<span style="color:#960050;background-color:#1e0010">public static void main</span>(<span style="color:#960050;background-color:#1e0010">String[] args</span>) {
+		System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;hello world&#34;</span>);
+	}
+}</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">javac Helloworld.java
+
+ll
+Helloworld.java
+// 二进制的字节码
+Helloworld.class
+
+<span style="color:#f92672">[</span>root@linux-pm-0-37 tzh<span style="color:#f92672">]</span><span style="color:#75715e"># java Helloworld</span>
+
+hello world</code></pre></div>
+<p>我们运行 javac 命令的过程，其实就是 javac 编译器解析 Java 源代码，并生成字节码文件的过程。说白了，其实就是使用 javac 编译器把 Java 语言规范转化为字节码语言规范。javac 编译器的处理过程可以分为下面四个阶段：</p>
+
+<p><strong>第一个阶段</strong>：词法、语法分析。在这个阶段，JVM 会对源代码的字符进行一次扫描，最终生成一个抽象的语法树。简单地说，在这个阶段 JVM 会搞懂我们的代码到底想要干嘛。就像我们分析一个句子一样，我们会对句子划分主谓宾，弄清楚这个句子要表达的意思一样。</p>
+
+<p><strong>第二个阶段</strong>：填充符号表。我们知道类之间是会互相引用的，但在编译阶段，我们无法确定其具体的地址，所以我们会使用一个符号来替代。在这个阶段做的就是类似的事情，即对抽象的类或接口进行符号填充。等到类加载阶段，JVM 会将符号替换成具体的内存地址。</p>
+
+<p><strong>第三个阶段</strong>：注解处理。我们知道 Java 是支持注解的，因此在这个阶段会对注解进行分析，根据注解的作用将其还原成具体的指令集。</p>
+
+<p><strong>第四个阶段</strong>：分析与字节码生成。到了这个阶段，JVM 便会根据上面几个阶段分析出来的结果，进行字节码的生成，最终输出为 class 文件。</p>
+
+<h4 id="class-文件结构">Class 文件结构</h4>
+
+<ul>
+<li>魔数与Class文件版本</li>
+<li>常量池</li>
+<li>访问标志</li>
+<li>类索引、父类索引、接口索引</li>
+<li>字段表集合</li>
+<li>方法表集合</li>
+<li>属性表集合</li>
+</ul>
+
+<h3 id="后端编译">后端编译</h3>
+
+<p>AOT: Ahead of Time, 运行前编译</p>
+
+<p>JIT: Just in Time, 动态(即时)编译，边运行边编译</p>
+
+<p>这两种方式的区别在于，前者启动速度快但运行速度慢，而后者启动速度慢但运行速度快。至于为什么会这样，其原因很简单。因为解释器不需要像 JIT 编译器一样，将所有字节码都转化为机器码，自然就少去了优化的时间。而当 JIT 编译器完成第一次编译后，其会将字节码对应的机器码保存下来，下次可以直接使用。而我们知道，机器码的运行效率肯定是高于 Java 解释器的。所以在实际情况中，为了运行速度以及效率，我们通常采用两者相结合的方式进行 Java 代码的编译执行。</p>
+
+<p>所以一般都是默认两种一起上.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#f92672">[</span>root@linux-pm-0-37 tzh<span style="color:#f92672">]</span><span style="color:#75715e"># java -version</span>
+java version <span style="color:#e6db74">&#34;1.8.0_191&#34;</span>
+Java<span style="color:#f92672">(</span>TM<span style="color:#f92672">)</span> SE Runtime Environment <span style="color:#f92672">(</span>build <span style="color:#ae81ff">1</span>.8.0_191-b12<span style="color:#f92672">)</span>
+Java HotSpot<span style="color:#f92672">(</span>TM<span style="color:#f92672">)</span> <span style="color:#ae81ff">64</span>-Bit Server VM <span style="color:#f92672">(</span>build <span style="color:#ae81ff">25</span>.191-b12, mixed mode<span style="color:#f92672">)</span>
+
+
+<span style="color:#f92672">[</span>root@linux-pm-0-37 tzh<span style="color:#f92672">]</span><span style="color:#75715e"># java -Xcomp -version</span>
+java version <span style="color:#e6db74">&#34;1.8.0_191&#34;</span>
+Java<span style="color:#f92672">(</span>TM<span style="color:#f92672">)</span> SE Runtime Environment <span style="color:#f92672">(</span>build <span style="color:#ae81ff">1</span>.8.0_191-b12<span style="color:#f92672">)</span>
+Java HotSpot<span style="color:#f92672">(</span>TM<span style="color:#f92672">)</span> <span style="color:#ae81ff">64</span>-Bit Server VM <span style="color:#f92672">(</span>build <span style="color:#ae81ff">25</span>.191-b12, compiled mode<span style="color:#f92672">)</span>
+
+
+<span style="color:#f92672">[</span>root@linux-pm-0-37 tzh<span style="color:#f92672">]</span><span style="color:#75715e"># java -Xint -version</span>
+java version <span style="color:#e6db74">&#34;1.8.0_191&#34;</span>
+Java<span style="color:#f92672">(</span>TM<span style="color:#f92672">)</span> SE Runtime Environment <span style="color:#f92672">(</span>build <span style="color:#ae81ff">1</span>.8.0_191-b12<span style="color:#f92672">)</span>
+Java HotSpot<span style="color:#f92672">(</span>TM<span style="color:#f92672">)</span> <span style="color:#ae81ff">64</span>-Bit Server VM <span style="color:#f92672">(</span>build <span style="color:#ae81ff">25</span>.191-b12, interpreted mode<span style="color:#f92672">)</span></code></pre></div>
+<h3 id="虚拟机类加载机制">虚拟机类加载机制</h3>
+
+<p>JVM 把描述类的数据从 Class 文件加载到内存, 并对数据进行校验、转换解析、初始化等最终形成能被虚拟机直接使用的 Java类型, 这个过程叫做虚拟机的类加载机制.</p>
+
+<p>当我们的Java代码编译完成后，会生成对应的 class 文件。接着我们运行java Demo命令的时候，我们其实是启动了JVM 虚拟机执行 class 字节码文件的内容。而 JVM 虚拟机执行 class 字节码的过程可以分为七个阶段：<strong>加载、验证、准备、解析、初始化、使用、卸载</strong>。</p>
+
+<p><img src="./images/classloading.png" alt="jvm flow" /></p>
+
+<h4 id="加载">加载</h4>
+
+<ol>
+<li>通过一个类的全限定名(源文件中的全新定名是包名加类名， 包名的各个部分之间，包名和类名之间， 使用点号分割。 如Object类， 在源文件中的全限定名是java.lang.Object )获取定义此类的二进制字节流</li>
+<li>将该二进制字节流所代表的静态储存结构转化为 方法区(Method Area) 运行时的数据结构</li>
+<li>在内存中生成一个代表这个类的 java.lang.Class 对象, 作为方法区这个类的各种数据的访问入口</li>
+</ol>
+
+<p>加载用的类加载器classloader 分为 <strong>启动类加载器</strong> sun.boot.class.path 控制(jinfo 可看) 和 <strong>其他加载器</strong>.</p>
+
+<p><strong>注意</strong>: 对于任何一个类, 都必须由它的类加载器和这个类本身一起确定在 JVM 的唯一性. inceptor 有个问题: 不支持动态更新UDF. 就是由于用了同一个classloader + UDF 全限定名未改(可能曾加载到method area并且未清掉) 而导致JVM无法确定udf行为不可测.</p>
+
+<p>WARP-27681 TDH 6.0.1, TDH 6.1, TDH 5.2.3支持不重启服务更新udf jar包
+drop permanent function kafka_demo with resource;
+create permanent function kafka_demo as &lsquo;io.transwarp.udf.KafkaUDF&rsquo; using jar &lsquo;file:///home/wangcheng/marason/udf/udf/target/kafka.jar&rsquo;;</p>
+
+<h4 id="验证">验证</h4>
+
+<p>当 JVM 加载完 Class 字节码文件并在方法区创建对应的 Class 对象之后，JVM 便会启动对该字节码流的校验，只有符合 JVM 字节码规范的文件才能被 JVM 正确执行。这个校验过程大致可以分为下面几个类型：</p>
+
+<p>JVM规范校验。JVM 会对字节流进行文件格式校验，判断其是否符合 JVM 规范，是否能被当前版本的虚拟机处理。例如：文件是否是以 0x cafe bene开头，主次版本号是否在当前虚拟机处理范围之内等。
+代码逻辑校验。JVM 会对代码组成的数据流和控制流进行校验，确保 JVM 运行该字节码文件后不会出现致命错误。例如一个方法要求传入 int 类型的参数，但是使用它的时候却传入了一个 String 类型的参数。一个方法要求返回 String 类型的结果，但是最后却没有返回结果。代码中引用了一个名为 Apple 的类，但是你实际上却没有定义 Apple 类。
+当代码数据被加载到内存中后，虚拟机就会对代码数据进行校验，看看这份代码是不是真的按照JVM规范去写的。这个过程对于我们解答问题也没有直接的关系，但是了解类加载机制必须要知道有这个过程。</p>
+
+<h4 id="准备">准备</h4>
+
+<p>当完成字节码文件的校验之后，JVM 便会开始为类变量分配内存并初始化。这里需要注意两个关键点，即内存分配的对象以及初始化的类型。</p>
+
+<p>内存分配的对象。Java 中的变量有「类变量」和「类成员变量」两种类型，「类变量」指的是被 static 修饰的变量，而其他所有类型的变量都属于「类成员变量」。在准备阶段，JVM 只会为「类变量」分配内存，而不会为「类成员变量」分配内存。「类成员变量」的内存分配需要等到初始化阶段才开始。
+例如下面的代码在准备阶段，只会为 factor 属性分配内存，而不会为 website 属性分配内存。</p>
+
+<p>public static int factor = 3;
+public String website = &ldquo;www.cnblogs.com/chanshuyi&rdquo;;
+初始化的类型。在准备阶段，JVM 会为类变量分配内存，并为其初始化。但是这里的初始化指的是为变量赋予 Java 语言中该数据类型的零值，而不是用户代码里初始化的值。
+例如下面的代码在准备阶段之后，sector 的值将是 0，而不是 3。</p>
+
+<p>public static int sector = 3;
+但如果一个变量是常量（被 static final 修饰）的话，那么在准备阶段，属性便会被赋予用户希望的值。例如下面的代码在准备阶段之后，number 的值将是 3，而不是 0。</p>
+
+<p>public static final int number = 3;
+之所以 static final 会直接被复制，而 static 变量会被赋予零值。其实我们稍微思考一下就能想明白了。</p>
+
+<p>两个语句的区别是一个有 final 关键字修饰，另外一个没有。而 final 关键字在 Java 中代表不可改变的意思，意思就是说 number 的值一旦赋值就不会在改变了。既然一旦赋值就不会再改变，那么就必须一开始就给其赋予用户想要的值，因此被 final 修饰的类变量在准备阶段就会被赋予想要的值。而没有被 final 修饰的类变量，其可能在初始化阶段或者运行阶段发生变化，所以就没有必要在准备阶段对它赋予用户想要的值。</p>
+
+<h4 id="解析">解析</h4>
+
+<p>当通过准备阶段之后，JVM 针对类或接口、字段、类方法、接口方法、方法类型、方法句柄和调用点限定符 7 类引用进行解析。这个阶段的主要任务是将其在常量池中的符号引用替换成直接其在内存中的直接引用。</p>
+
+<p>其实这个阶段对于我们来说也是几乎透明的，了解一下就好。</p>
+
+<h4 id="初始化">初始化</h4>
+
+<p>到了初始化阶段，用户定义的 Java 程序代码才真正开始执行。在这个阶段，JVM 会根据语句执行顺序对类对象进行初始化，一般来说当 JVM 遇到下面 5 种情况的时候会触发初始化：</p>
+
+<p>遇到 new、getstatic、putstatic、invokestatic 这四条字节码指令时，如果类没有进行过初始化，则需要先触发其初始化。生成这4条指令的最常见的Java代码场景是：使用new关键字实例化对象的时候、读取或设置一个类的静态字段（被final修饰、已在编译器把结果放入常量池的静态字段除外）的时候，以及调用一个类的静态方法的时候。
+使用 java.lang.reflect 包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发其初始化。
+当初始化一个类的时候，如果发现其父类还没有进行过初始化，则需要先触发其父类的初始化。
+当虚拟机启动时，用户需要指定一个要执行的主类（包含main()方法的那个类），虚拟机会先初始化这个主类。
+当使用 JDK1.7 动态语言支持时，如果一个 java.lang.invoke.MethodHandle实例最后的解析结果 REF_getstatic,REF_putstatic,REF_invokeStatic 的方法句柄，并且这个方法句柄所对应的类没有进行初始化，则需要先出触发其初始化。
+看到上面几个条件你可能会晕了，但是不要紧，不需要背，知道一下就好，后面用到的时候回到找一下就可以了。</p>
+
+<h4 id="使用">使用</h4>
+
+<p>当 JVM 完成初始化阶段之后，JVM 便开始从入口方法开始执行用户的程序代码。这个阶段也只是了解一下就可以。</p>
+
+<h4 id="卸载">卸载</h4>
+
+<p>当用户程序代码执行完毕后，JVM 便开始销毁创建的 Class 对象，最后负责运行的 JVM 也退出内存。这个阶段也只是了解一下就可以。</p>
+
+<h2 id="内存-堆-gc">内存/堆/GC</h2>
+
+<blockquote>
+<p>Java 和 C++ 有一堵由内存动态分配和垃圾收集技术所围成的高墙, 墙外的人想进来, 墙内的人却想出来</p>
+</blockquote>
+
+<p>现在对于一个 Java 源文件是如何变成字节码文件，以及字节码文件的含义已经非常清楚了。那么接下来就是让 Java 虚拟机运行字节码文件，从而得出我们最终想要的结果了。在这个过程中，Java 虚拟机会加载字节码文件，将其存入 Java 虚拟机的内存空间中，之后进行一系列的初始化动作，最后运行程序得出结果。</p>
+
+<p>根据《Java 虚拟机规范》中的说法，Java 虚拟机的内存结构可以分为<strong>公有</strong>和<strong>私有</strong>两部分。公有指的是所有线程都共享的部分，指的是 Java 堆、方法区、常量池。私有指的是每个线程的私有数据，包括：PC寄存器、Java 虚拟机栈、本地方法栈。</p>
+
+<p><img src="./images/jvminside.png" alt="jvm" /></p>
+
+<h3 id="私有">私有</h3>
+
+<h4 id="程序计数器">程序计数器</h4>
+
+<p>程序计数器: Program Counter Register, 是一块很小的内存空间(没有规定OOM), 可以看做是当前线程所执行的字节码的行号指示器. 字节码解释器在工作时就是改变计数器的值来选取下一条需要执行的字节码指令, 分支、循环、跳转、异常处理、线程恢复都依赖这个计数器.</p>
+
+<p>为什么是私有?</p>
+
+<p>这是由于 JVM 的多线程是通过线程轮流切换、分配处理器执行时间的方式实现的, 在任意一个确定的时间, 一个处理器(多核处理器就是一个核)只会执行一条线程中的指令. 所以切换后要能回到原位, 每条线程都有独立的程序计数器.</p>
+
+<h4 id="java-虚拟机栈-本地方法栈">Java 虚拟机栈 + 本地方法栈</h4>
+
+<p>java虚拟机栈是线程私有的，他与线程的声明周期同步。 虚拟机栈描述的是java方法执行的线程内存模型，每个方法执行都会创建一个栈帧，栈帧包含局部变量表、操作数栈、动态连接、方法出口等。(规定了 OOM + StackOverflow)</p>
+
+<p><strong>注意</strong>: 一条n长的SQL可能会导致 StackOverflow , 可以通过调整 xss (默认64位为 1024k) HotSpot 虚拟机将 Java 虚拟机栈 + 本地方法栈 放在一起, 只能通过 xss 一起调节</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#f92672">[</span>root@linux-pm-0-37 tzh<span style="color:#f92672">]</span><span style="color:#75715e"># java -XX:+PrintFlagsFinal -version | grep ThreadStackSize</span>
+     intx CompilerThreadStackSize                   <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>                                   <span style="color:#f92672">{</span>pd product<span style="color:#f92672">}</span>
+     intx ThreadStackSize                           <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>                                <span style="color:#f92672">{</span>pd product<span style="color:#f92672">}</span>
+     intx VMThreadStackSize                         <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>                                <span style="color:#f92672">{</span>pd product<span style="color:#f92672">}</span>
+java version <span style="color:#e6db74">&#34;1.8.0_191&#34;</span>
+Java<span style="color:#f92672">(</span>TM<span style="color:#f92672">)</span> SE Runtime Environment <span style="color:#f92672">(</span>build <span style="color:#ae81ff">1</span>.8.0_191-b12<span style="color:#f92672">)</span>
+Java HotSpot<span style="color:#f92672">(</span>TM<span style="color:#f92672">)</span> <span style="color:#ae81ff">64</span>-Bit Server VM <span style="color:#f92672">(</span>build <span style="color:#ae81ff">25</span>.191-b12, mixed mode<span style="color:#f92672">)</span></code></pre></div>
+<p>当 Java 虚拟机使用其他语言（例如 C 语言）来实现指令集解释器时，也会使用到本地方法栈。如果 Java 虚拟机不支持 natvie 方法，并且自己也不依赖传统栈的话，可以无需支持本地方法栈。</p>
+
+<h3 id="公有">公有</h3>
+
+<p>线程公有的部分分为: 堆、方法区、常量池.</p>
+
+<h4 id="方法区-常量池">方法区 + 常量池</h4>
+
+<p><strong>方法区</strong>: Method Area, 指的是存储 Java 类字节码数据的一块区域，它存储了每一个类的结构信息，例如运行时常量池、字段和方法数据、构造方法等。可以看到常量池其实是存放在方法区中的，但《Java 虚拟机规范》将常量池和方法区放在同一个等级上，这点我们知晓即可。</p>
+
+<p>方法区在不同版本的虚拟机有不同的表现形式，例如在 1.7 版本的 HotSpot 虚拟机中，方法区被称为永久代（Permanent Space），而在 JDK 1.8 中则被称之为 MetaSpace。</p>
+
+<p>这是因为 JDK 1.8 之前, HotSpot 的设计团队选择把垃圾收集器的分代设计扩展到方法区, 或者说使用 永久代 来实现方法区, 从而免去专门编写内存管理代码. 由于可能这个设计不大舒服 (很容易出现OOM 等等原因)</p>
+
+<p>JDK 1.8 将 方法区 的实现从 永久代 改成了 元空间MetaSpace. (从 -XX:MaxPermSize 变成 -XX:MetaspaceSize)</p>
+
+<p>这里最大的区别在于, Metaspace 使用的是 直接内存(本地内存 Native Memory)</p>
+
+<p>整个永久代有一个 JVM 本身设置固定大小上线，无法进行调整，而元空间使用的是直接内存，受本机可用内存的限制，并且永远不会得到java.lang.OutOfMemoryError。你可以使用 -XX：MaxMetaspaceSize 标志设置最大元空间大小，默认值为 unlimited，这意味着它只受系统内存的限制。-XX：MetaspaceSize 调整标志定义元空间的初始大小如果未指定此标志，则 Metaspace 将根据运行时的应用程序需求动态地重新调整大小。</p>
+
+<p><strong>运行时常量池</strong>: Runtime Constant Pool, 是方法区的一部分. 运行时常量池是方法区的一部分。Class 文件中除了有类的版本、字段、方法、接口等描述信息外，还有常量池信息（用于存放编译期生成的各种字面量和符号引用）</p>
+
+<p>既然运行时常量池时方法区的一部分，自然受到方法区内存的限制，当常量池无法再申请到内存时会抛出 OutOfMemoryError 异常。</p>
+
+<p>JDK1.7及之后版本的 JVM 已经将运行时常量池从方法区中移了出来，在 Java 堆（Heap）中开辟了一块区域存放运行时常量池。</p>
+
+<p><img src="./images/memory1.jpg" alt="jvm" /></p>
+
+<h4 id="堆">堆</h4>
+
+<blockquote>
+<p>自动内存管理根本上解决了: 自动给对象分配内存 + 自动回收分配给对象的内存</p>
+</blockquote>
+
+<p>Java 虚拟机所管理的内存中最大的一块，Java 堆是所有线程共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，几乎所有的对象实例以及数组都在这里分配内存。</p>
+
+<p>Java 堆是垃圾收集器管理的主要区域，因此也被称作GC堆（Garbage Collected Heap）.</p>
+
+<ul>
+<li>弱分代假说(Weak Generational Hypothisis): 绝大多数对象都是朝生夕灭</li>
+<li>强分代假说(Strong Gernerational Hypothisis): 熬过越多次垃圾回收过程的对象就越难以消亡</li>
+</ul>
+
+<h5 id="堆的分布">堆的分布</h5>
+
+<p><img src="./images/heap.png" alt="jvm" /></p>
+
+<p>从垃圾回收的角度，由于现在收集器基本都采用分代垃圾收集算法，所以Java堆还可以细分为：新生代和老年代：再细致一点有：Eden空间、From Survivor、To Survivor空间等。进一步划分的目的是更好地回收内存，或者更快地分配内存.</p>
+
+<p>注意: 垃圾回收会应为GC收集器、算法、配置不同而不同&hellip;只能谈个大概</p>
+
+<h5 id="gc-词汇">GC 词汇</h5>
+
+<p>GC 分类:</p>
+
+<p>针对HotSpot VM的实现，它里面的GC其实准确分类只有两大种：</p>
+
+<p>Partial GC：并不收集整个GC堆的模式
+    Young GC：只收集young gen的GC、Minor GC
+    Old GC：只收集old gen的GC。只有CMS的concurrent collection是这个模式
+    Mixed GC：收集整个young gen以及部分old gen的GC。只有G1有这个模式
+Full GC：收集整个堆，包括young gen、old gen、perm gen/metaspace（如果存在的话）等所有部分的模式。</p>
+
+<p>Major GC通常是跟full GC是等价的，收集整个GC堆。但因为HotSpot VM发展了这么多年，外界对各种名词的解读已经完全混乱了，当有人说“major GC”的时候一定要问清楚他想要指的是上面的full GC还是old GC。</p>
+
+<p>我们只要关注: YGC/FGC 基本可以解决问题.</p>
+
+<p>TODO/作业:</p>
+
+<ul class="task-list">
+<li><label><input type="checkbox" disabled class="task-list-item"> server 和 executor 分别用了什么垃圾收集器?</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> 基于什么垃圾收集理论? 什么 GC 算法?</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> 优缺点是啥子</label></li>
+</ul>
+
+<h5 id="一般性的gc流程">一般性的GC流程</h5>
+
+<p><img src="./images/heap.png" alt="jvm" /></p>
+
+<p>(GC收集器、配置、GC算法不同而不同)</p>
+
+<p>新生代（Young Generation）：大多数对象在新生代中被创建，其中很多对象的生命周期很短。每次新生代的垃圾回收（又称Minor GC、Young GC）后只有少量对象存活(绝大多数对象都是朝生夕灭)，所以选用复制算法，只需要少量的复制成本就可以完成回收。</p>
+
+<p>新生代内又分三个区：一个Eden区，两个Survivor区，大部分对象在Eden区中生成。当<strong>Eden区满</strong>时，还存活的对象将被复制到两个Survivor区（中的一个）。当这个<strong>Survivor区满</strong>时，此区的存活且不满足“晋升”条件的对象将被复制到另外一个Survivor区。对象每经历一次Minor GC，年龄加1，达到“晋升年龄阈值”后，被放到老年代，这个过程也称为“晋升”。显然，“晋升年龄阈值”的大小直接影响着对象在新生代中的停留时间，在Serial和ParNew GC两种回收器中，“晋升年龄阈值”通过参数MaxTenuringThreshold设定，默认值为15。
+Survivor的存在意义，就是减少被送到老年代的对象，进而减少Full GC的发生，Survivor的预筛选保证，只有经历16次Minor GC还能在新生代中存活的对象，才会被送到老年代。
+但这也不是一定的，对于一些较大的对象 ( 即需要分配一块较大的连续内存空间 ) 则是直接进入到老年代。</p>
+
+<p>老年代（Old Generation）：在新生代中经历了N次垃圾回收后仍然存活的对象，就会被放到年老代，该区域中对象存活率高。老年代的垃圾回收（又称Major GC）通常使用“标记-清理”或“标记-整理”算法。整堆包括新生代和老年代的垃圾回收称为Full GC（HotSpot VM里，除了CMS之外，其它能收集老年代的GC都会同时收集整个GC堆，包括新生代）。</p>
+
+<h5 id="一般性的-ygc-fgc">一般性的 YGC/FGC</h5>
+
+<p>YGC的时机:</p>
+
+<p>edn空间不足</p>
+
+<p>FGC的时机：</p>
+
+<p>1.old空间不足；</p>
+
+<p>2.perm空间不足；(1.8 为 metaspace)</p>
+
+<p>3.显示调用System.gc() ，包括RMI等的定时触发;</p>
+
+<p>4.YGC时的悲观策略；</p>
+
+<p>5.dump live的内存信息时(jmap –dump:live)。</p>
+
+<p>对YGC的 触发时机，相当的显而易见，就是eden空间不足， 这时候就肯定会触发ygc</p>
+
+<p>对于FGC的触发时机， old空间不足， 和perm的空间不足， 调用system.gc()这几个都比较显而易见，就是在这种情况下， 一般都会触发GC。</p>
+
+<p>最复杂的是所谓的悲观策略，它触发的机制是在首先会计算之前晋升的平均大小，也就是从新生代，通过ygc变成新生代的平均大小，然后如果旧生代剩余的空间小于晋升大小，那么就会触发一次FullGC。考虑的策略是， 从平均和长远的情况来看，下次晋升空间不够的可能性非常大， 与其等到那时候在fullGC 不如悲观的认为下次肯定会触发FullGC， 直接先执行一次FullGC。而且从实际使用过程中来看， 也达到了比较稳定的效果。</p>
+
+<h5 id="堆内存的具体分布">堆内存的具体分布</h5>
+
+<p><img src="./images/heap.png" alt="jvm" /></p>
+
+<p>默认的，新生代 ( Young ) 与老年代 ( Old ) 的比例的值为 1:2 ( 该值可以通过参数 –XX:NewRatio 来指定 )，即：新生代 ( Young ) = <sup>1</sup>&frasl;<sub>3</sub> 的堆空间大小。老年代 ( Old ) = <sup>2</sup>&frasl;<sub>3</sub> 的堆空间大小。其中，新生代 ( Young ) 被细分为 Eden 和 两个 Survivor 区域，这两个 Survivor 区域分别被命名为 from 和 to，以示区分。
+默认的，Edem : from : to = 8 : 1 : 1 ( 可以通过参数 –XX:SurvivorRatio 来设定 )，即： Eden = <sup>8</sup>&frasl;<sub>10</sub> 的新生代空间大小，from = to = <sup>1</sup>&frasl;<sub>10</sub> 的新生代空间大小。
+JVM 每次只会使用 Eden 和其中的一块 Survivor 区域来为对象服务，所以无论什么时候，总是有一块 Survivor 区域是空闲着的。
+因此，新生代实际可用的内存空间为 <sup>9</sup>&frasl;<sub>10</sub> ( 即90% )的新生代空间。
+From Survivor区域与To Survivor区域是交替切换空间，在同一时间内两者中只有一个不为空</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">–XX:SurvivorRatio 两个 Survivor区 和 eden区 的比值, 默认 <span style="color:#ae81ff">8</span> 我们未指定 survivor : eden <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span> : <span style="color:#ae81ff">8</span> 
+–XX:NewRatio 新生代和老年代的比值, 默认 <span style="color:#ae81ff">4</span> 新/老 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>/4
+
+-XX:MaxTenuringThreshold
+  晋升年龄最大阈值，默认15。在新生代中对象存活次数<span style="color:#f92672">(</span>经过YGC的次数<span style="color:#f92672">)</span>后仍然存活，就会晋升到老年代。每经过一次YGC，年龄加1，当survivor区的对象年龄达到TenuringThreshold时，表示该对象是长存活对象，就会直接晋升到老年代。
+
+-XX:TargetSurvivorRatio
+  设定survivor区的目标使用率。默认50，即survivor区对象目标使用率为50%。
+
+JVM会将每个对象的年龄信息、各个年龄段对象的总大小记录在“age table”表中。基于“age table”、survivor区大小、survivor区目标使用率（-XX:TargetSurvivorRatio）、晋升年龄阈值（-XX:MaxTenuringThreshold），JVM会动态的计算tenuring threshold的值。一旦对象年龄达到了tenuring threshold就会晋升到老年代。
+
+  为什么要动态的计算tenuring threshold的值呢？假设有很多年龄还未达到TenuringThreshold的对象依旧停留在survivor区，这样不利于新对象从eden晋升到survivor。因此设置survivor区的目标使用率，当使用率达到时重新调整TenuringThreshold值，让对象尽早的去old区。
+
+  如果希望跟踪每次新生代GC后，survivor区中对象的年龄分布，可在启动参数上增加-XX:+PrintTenuringDistribution.</code></pre></div>
+<p>最简单的分代式GC策略，按HotSpot VM的serial GC的实现来看，触发条件是：</p>
+
+<p>young GC：当young gen中的eden区分配满的时候触发。注意young GC中有部分存活对象会晋升到old gen，所以young GC后old gen的占用量通常会有所升高。</p>
+
+<p>full GC：当准备要触发一次young GC时，如果发现统计数据说之前young GC的平均晋升大小比目前old gen剩余的空间大，则不会触发young GC而是转为触发full GC（因为HotSpot VM的GC里，除了CMS的concurrent collection之外，其它能收集old gen的GC都会同时收集整个GC堆，包括young gen，所以不需要事先触发一次单独的young GC）；</p>
+
+<p>或者，如果有perm gen的话，要在perm gen分配空间但已经没有足够空间时，也要触发一次full GC；或者System.gc()、heap dump带GC，默认也是触发full GC。HotSpot VM里其它非并发GC的触发条件复杂一些，不过大致的原理与上面说的其实一样。当然也总有例外。Parallel Scavenge（-XX:+UseParallelGC）框架下，默认是在要触发full GC前先执行一次young GC，并且两次GC之间能让应用程序稍微运行一小下，以期降低full GC的暂停时间（因为young GC会尽量清理了young gen的死对象，减少了full GC的工作量）。控制这个行为的VM参数是-XX:+ScavengeBeforeFullGC。这是HotSpot VM里的奇葩嗯。可跳传送门围观：JVM full GC的奇怪现象，求解惑？ - RednaxelaFX 的回答并发GC的触发条件就不太一样。以CMS GC为例，它主要是定时去检查old gen的使用量，当使用量超过了触发比例就会启动一次CMS GC，对old gen做并发收集。</p>
+
+<h6 id="为什么有两个-survivor-区">为什么有两个 Survivor 区</h6>
+
+<p>复制算法</p>
+
+<p>将原有的内存空间划分成两块，每次只使用其中一块，在垃圾回收的时候，将正在使用的内存中的存活对象复制到另一块内存区域中，然后清除正使用过的内存区域，交换两个区域的角色，完成垃圾回收。然后为什么要在新生代中使用复制算法：因为新生代gc比较频繁、对象存活率低，用复制算法在回收时的效率会更高，也不会产生内存碎片。但复制算法的代价就是要将内存折半，为了不浪费过多的内存，就划分了两块相同大小的内存区域survivor from和survivor to。在每次gc后就会把存活对象给复制到另一个survivor上，然后清空Eden和刚使用过的survivor。</p>
+
+<p>用空间换时间，你可以模拟新生代回收两次的场景。假设现在只有一个s区，第一次，e满了之后，你把活得对象放到s，如果此时只有一个s区，那么当第二次e去满了之后，就没有s区可用了，为了使第二次GC能够进行所以在只有一个s取得情况下你只能，把s区中的或对象复制一遍放到e区，所以如果有一个s区的话，一次新生代GC要复制两次活对象。而在有两个的情况下，这个问题就可以避免了，e区满了之后进行第一次GC，把活的对象放入s0,此时s1区是没被使用的，当第二次GC的时候再把e区中活的对象和s0中活的对象一同放进s1，你有没有发现在一次GC中，两个s区会比一个s区少复制一次</p>
+
+<p>链接：<a href="https://www.zhihu.com/question/44929481/answer/98052014" target="_blank">https://www.zhihu.com/question/44929481/answer/98052014</a></p>
+
+<p>链接：<a href="https://www.zhihu.com/question/44929481/answer/98016105" target="_blank">https://www.zhihu.com/question/44929481/answer/98016105</a></p>
+
+<p>碎片化、为什么有两个survivor
+<a href="https://blog.csdn.net/antony9118/article/details/51425581" target="_blank">https://blog.csdn.net/antony9118/article/details/51425581</a></p>
+
+<p>任务:</p>
+
+<ul class="task-list">
+<li><label><input type="checkbox" disabled class="task-list-item"> 查看 inceptor 使用的是什么垃圾回收器</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> 分别是用了什么算法, 有什么好处?</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> CMSInitiatingOccupancyFraction 是啥意思?</label></li>
+</ul>
+
+<h3 id="直接内存">直接内存</h3>
+
+<p>直接内存并不是虚拟机运行时数据区的一部分，也不是虚拟机规范中定义的内存区域，但是这部分内存也被频繁地使用。而且也可能导致 OutOfMemoryError 异常出现。</p>
+
+<p>JDK1.4 中新加入的 NIO(New Input/Output) 类，引入了一种基于通道（Channel） 与缓存区（Buffer） 的 I/O 方式，它可以直接使用 Native 函数库直接分配堆外内存，然后通过一个存储在 Java 堆中的 DirectByteBuffer 对象作为这块内存的引用进行操作。这样就能在一些场景中显著提高性能，因为避免了在 Java 堆和 Native 堆之间来回复制数据。</p>
+
+<p>本机直接内存的分配不会收到 Java 堆的限制，但是，既然是内存就会受到本机总内存大小以及处理器寻址空间的限制。(-XX:MaxDirectMemorySize)</p>
+
+<h2 id="常用命令">常用命令</h2>
+
+<h3 id="k8s-上极其方便的玩法">k8s 上极其方便的玩法</h3>
+
+<p>kubectl exec -it xxx jps xx</p>
+
+<p>如果后面要加 flag 咋办?</p>
+
+<p>kubectl exec -it inceptor-server-inceptor2-b67857557-jjtjv &ndash; jps -v</p>
+
+<p>直接输出到物理机
+kubectl exec -it inceptor-server-inceptor2-b67857557-jjtjv &ndash; jps -v &gt;&gt; zz.log</p>
+
+<h3 id="jps">jps</h3>
+
+<p>JVM Process Status Tool, 用于列出正在运行的虚拟机进程. 用于查看pod 内是否存在进程挂掉/验证是否手动添加JVM参数。
+inceptor/slipstream 可以配合 grep 查询虚拟机启动时<strong>显式指定的JVM参数</strong>。显示没有jinfo全，但是够用。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#f92672">[</span>root@linux-158-15 ~<span style="color:#f92672">]</span><span style="color:#75715e"># jps -v | more</span>
+<span style="color:#ae81ff">43</span> InceptorServer2 -agentpath:/usr/lib/inceptor/bin/libagent.so -XX:MetaspaceSiz
+e<span style="color:#f92672">=</span>512m -XX:MaxMetaspaceSize<span style="color:#f92672">=</span>2g -Djava.net.preferIPv4Stack<span style="color:#f92672">=</span>true -Dsun.net.inetadd
+r.ttl<span style="color:#f92672">=</span><span style="color:#ae81ff">60</span> -XX:+UseParNewGC -XX:NewRatio<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> -XX:+CMSClassUnloadingEnabled -XX:MinHe
+apFreeRatio<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span> -XX:MaxHeapFreeRatio<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span> -XX:CMSMaxAbortablePrecleanTime<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span> -X
+X:+ExplicitGCInvokesConcurrent -XX:MaxTenuringThreshold<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> -XX:TargetSurvivorRati
+o<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span> -XX:+HeapDumpOnOutOfMemoryError -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOcc
+upancyFraction<span style="color:#f92672">=</span><span style="color:#ae81ff">70</span> -Xms2048m -Xmx8192m -verbose:gc -XX:+PrintGCDetails -XX:+Print
+GCDateStamps -XX:+PrintGCTimeStamps -Djava.library.path<span style="color:#f92672">=</span>/usr/lib/hadoop/lib/nati
+ve -Dspark.akka.threads<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span> -Dspark.akka.threads<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span> -Dspark.rdd.compress<span style="color:#f92672">=</span>false -Dsp
+ark.storage.memoryFraction<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>.5 -Dspark.driver.host<span style="color:#f92672">=</span>linux-158-15 -Dclass.default.
+serializer<span style="color:#f92672">=</span> -Dspark.fastdisk.dir<span style="color:#f92672">=</span>/vdir/mnt/ramdisk/ngmr -Dspark.storage.fastdisk
+Fraction<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>.5 -Dngmr.task.pipeline<span style="color:#f92672">=</span>false -Dngmr.task.pipeline.start.fraction<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>.5
+-Dngmr.task.pipeline.task.timeout.ms<span style="color:#f92672">=</span>-1 -Dspark.local.dir<span style="color:#f92672">=</span>/vdir/mnt/disk1/hadoop
+/ng</code></pre></div>
+<h3 id="jinfo">jinfo</h3>
+
+<p>Configuration Info for Java, 实时查看虚拟机各项参数，涵盖显式和默认等等，多儿全。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">jinfo pid <span style="color:#f92672">(</span>slipstream executor<span style="color:#f92672">)</span>
+
+Attaching to process ID <span style="color:#ae81ff">50</span>, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is <span style="color:#ae81ff">25</span>.25-b02
+Java System Properties:
+
+spark.storage.fastdiskFraction <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>.3
+java.vendor <span style="color:#f92672">=</span> Oracle Corporation
+inceptor.executorID.zkPath <span style="color:#f92672">=</span> /slipstream2/executorID
+sun.java.launcher <span style="color:#f92672">=</span> SUN_STANDARD
+sun.management.compiler <span style="color:#f92672">=</span> HotSpot <span style="color:#ae81ff">64</span>-Bit Tiered Compilers
+sun.nio.ch.bugLevel <span style="color:#f92672">=</span> 
+ngmr.engine <span style="color:#f92672">=</span> morphling
+spark.network.numberOfBuffers <span style="color:#f92672">=</span> <span style="color:#ae81ff">10240</span>
+os.name <span style="color:#f92672">=</span> Linux
+ngmr.task.pipeline.task.timeout.ms <span style="color:#f92672">=</span> -1
+sun.boot.class.path <span style="color:#f92672">=</span> /usr/java/jdk1.8.0_25/jre/lib/resources.jar:/usr/java/jdk1.8.0_25/jre/lib/rt.jar:/usr/java/jdk1.8.0_25/jre/lib/sunrsasign.jar:/usr/java/jdk1.8.0_25/jre/lib/jsse.jar:/usr/java/jdk1.8.0_25/jre/lib/jce.jar:/usr/java/jdk1.8.0_25/jre/lib/charsets.jar:/usr/java/jdk1.8.0_25/jre/lib/jfr.jar:/usr/java/jdk1.8.0_25/jre/classes
+spark.network.client.numThreads <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+java.vm.specification.vendor <span style="color:#f92672">=</span> Oracle Corporation
+slipstream.metrics.gateway.host <span style="color:#f92672">=</span> linux-pm-0-37
+java.runtime.version <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>.8.0_25-b17
+spark.network.server.numThreads <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+inceptor.log.dir <span style="color:#f92672">=</span> /var/log/slipstream2
+user.name <span style="color:#f92672">=</span> hive
+sun.net.inetaddr.ttl <span style="color:#f92672">=</span> <span style="color:#ae81ff">60</span>
+transwarp.io.netty.noKeySetOptimization <span style="color:#f92672">=</span> true
+user.language <span style="color:#f92672">=</span> en
+sun.boot.library.path <span style="color:#f92672">=</span> /usr/java/jdk1.8.0_25/jre/lib/amd64
+ngmr.task.pipeline.start.fraction <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>.5
+spark.fastdisk.dir <span style="color:#f92672">=</span> /vdir/mnt/ramdisk/ngmr
+java.version <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>.8.0_25
+spark.kerberos.keytabs <span style="color:#f92672">=</span> /etc/slipstream2/conf/slipstream.keytab
+user.timezone <span style="color:#f92672">=</span> Asia/Shanghai
+java.net.preferIPv4Stack <span style="color:#f92672">=</span> true
+spark.rdd.compress <span style="color:#f92672">=</span> false
+sun.arch.data.model <span style="color:#f92672">=</span> <span style="color:#ae81ff">64</span>
+java.endorsed.dirs <span style="color:#f92672">=</span> /usr/java/jdk1.8.0_25/jre/lib/endorsed
+sun.cpu.isalist <span style="color:#f92672">=</span> 
+sun.jnu.encoding <span style="color:#f92672">=</span> UTF-8
+file.encoding.pkg <span style="color:#f92672">=</span> sun.io
+spark.kerberos.principal <span style="color:#f92672">=</span> hive/_HOST@TDH
+file.separator <span style="color:#f92672">=</span> /
+java.specification.name <span style="color:#f92672">=</span> Java Platform API Specification
+java.class.version <span style="color:#f92672">=</span> <span style="color:#ae81ff">52</span>.0
+user.country <span style="color:#f92672">=</span> US
+java.home <span style="color:#f92672">=</span> /usr/java/jdk1.8.0_25/jre
+java.vm.info <span style="color:#f92672">=</span> mixed mode
+spark.storage.memoryFraction <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>.5
+os.version <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>.10.0-693.el7.x86_64
+path.separator <span style="color:#f92672">=</span> :
+java.vm.version <span style="color:#f92672">=</span> <span style="color:#ae81ff">25</span>.25-b02
+ngmr.task.pipeline <span style="color:#f92672">=</span> false
+java.awt.printerjob <span style="color:#f92672">=</span> sun.print.PSPrinterJob
+spark.network.server.backlog <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>
+sun.io.unicode.encoding <span style="color:#f92672">=</span> UnicodeLittle
+awt.toolkit <span style="color:#f92672">=</span> sun.awt.X11.XToolkit
+user.home <span style="color:#f92672">=</span> /home/hive
+transwarp.io.netty.noUnsafe <span style="color:#f92672">=</span> true
+java.specification.vendor <span style="color:#f92672">=</span> Oracle Corporation
+spark.shuffle.io.preferDirectBufs <span style="color:#f92672">=</span> true
+spark.shuffle.io.numConnectionsPerPeer <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>
+java.library.path <span style="color:#f92672">=</span> /usr/lib/hadoop/lib/native
+java.vendor.url <span style="color:#f92672">=</span> http://java.oracle.com/
+java.vm.vendor <span style="color:#f92672">=</span> Oracle Corporation
+java.runtime.name <span style="color:#f92672">=</span> Java<span style="color:#f92672">(</span>TM<span style="color:#f92672">)</span> SE Runtime Environment
+sun.java.command <span style="color:#f92672">=</span> io.transwarp.nucleon.executor.CoarseGrainedExecutorBackend akka.tcp://sparkDriver@linux-pm-0-37:52888/user/CoarseGrainedScheduler <span style="color:#ae81ff">0</span> linux-pm-0-38 <span style="color:#ae81ff">30</span>
+java.class.path <span style="color:#f92672">=</span> /etc/slipstream2/conf:/etc/hdfs1/conf:/etc/yarn1/conf:/etc/hyperbase1/conf::/usr/lib/guardian-plugins/lib/*:/usr/lib/inceptor/lib/HikariCP-2.6.1.jar:/usr/lib/inceptor/lib/JavaEWAH-0.3.2.jar:/usr.......等等
+java.vm.specification.name <span style="color:#f92672">=</span> Java Virtual Machine Specification
+java.vm.specification.version <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>.8
+sun.cpu.endian <span style="color:#f92672">=</span> little
+sun.os.patch.level <span style="color:#f92672">=</span> unknown
+java.io.tmpdir <span style="color:#f92672">=</span> /tmp
+spark.memory.segmentSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">32768</span>
+inceptor.executorID.zkTimeout <span style="color:#f92672">=</span> <span style="color:#ae81ff">10000</span>
+java.vendor.url.bug <span style="color:#f92672">=</span> http://bugreport.sun.com/bugreport/
+transwarp.io.netty.recycler.maxCapacityPerThread <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+spark.network.client.connectTimeoutSec <span style="color:#f92672">=</span> <span style="color:#ae81ff">120</span>
+spark.network.sendAndReceiveBuffer <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+inceptor.executorID.zkServer <span style="color:#f92672">=</span> linux-pm-0-37,linux-pm-0-38,linux-pm-0-40
+os.arch <span style="color:#f92672">=</span> amd64
+java.awt.graphicsenv <span style="color:#f92672">=</span> sun.awt.X11GraphicsEnvironment
+class.default.serializer <span style="color:#f92672">=</span> 
+java.ext.dirs <span style="color:#f92672">=</span> /usr/java/jdk1.8.0_25/jre/lib/ext:/usr/java/packages/lib/ext
+user.dir <span style="color:#f92672">=</span> /home/hive
+inceptor.executorID.zkPort <span style="color:#f92672">=</span> <span style="color:#ae81ff">2181</span>
+spark.local.dir <span style="color:#f92672">=</span> /vdir/mnt/disk1/hadoop/ngmr/slipstream2,/vdir/mnt/disk2/hadoop/ngmr/slipstream2,/vdir/mnt/disk3/hadoop/ngmr/slipstream2,/vdir/mnt/disk4/hadoop/ngmr/slipstream2,/vdir/mnt/disk5/hadoop/ngmr/slipstream2
+line.separator <span style="color:#f92672">=</span> 
+
+java.vm.name <span style="color:#f92672">=</span> Java HotSpot<span style="color:#f92672">(</span>TM<span style="color:#f92672">)</span> <span style="color:#ae81ff">64</span>-Bit Server VM
+java.security.auth.login.config <span style="color:#f92672">=</span> /etc/slipstream2/conf/jaas.conf
+inceptor.authentication <span style="color:#f92672">=</span> kerberos
+file.encoding <span style="color:#f92672">=</span> UTF-8
+java.specification.version <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>.8
+spark.akka.threads <span style="color:#f92672">=</span> <span style="color:#ae81ff">8</span>
+inceptor.log.file <span style="color:#f92672">=</span> inceptor-executor.log
+
+VM Flags:
+Non-default VM flags: -XX:CICompilerCount<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span> -XX:+CMSClassUnloadingEnabled -XX:CMSInitiatingOccupancyFraction<span style="color:#f92672">=</span><span style="color:#ae81ff">55</span> -XX:CMSMaxAbortablePrecleanTime<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span> -XX:+ExplicitGCInvokesConcurrent -XX:+HeapDumpOnOutOfMemoryError -XX:InitialHeapSize<span style="color:#f92672">=</span><span style="color:#ae81ff">33554432000</span> -XX:InitialTenuringThreshold<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> -XX:MaxDirectMemorySize<span style="color:#f92672">=</span><span style="color:#ae81ff">34359738368</span> -XX:MaxHeapFreeRatio<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span> -XX:MaxHeapSize<span style="color:#f92672">=</span><span style="color:#ae81ff">33554432000</span> -XX:MaxMetaspaceSize<span style="color:#f92672">=</span><span style="color:#ae81ff">268435456</span> -XX:MaxNewSize<span style="color:#f92672">=</span><span style="color:#ae81ff">6710886400</span> -XX:MaxTenuringThreshold<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> -XX:MetaspaceSize<span style="color:#f92672">=</span><span style="color:#ae81ff">268435456</span> -XX:MinHeapDeltaBytes<span style="color:#f92672">=</span><span style="color:#ae81ff">196608</span> -XX:MinHeapFreeRatio<span style="color:#f92672">=</span><span style="color:#ae81ff">99</span> -XX:NewRatio<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> -XX:NewSize<span style="color:#f92672">=</span><span style="color:#ae81ff">6710886400</span> -XX:OldPLABSize<span style="color:#f92672">=</span><span style="color:#ae81ff">16</span> -XX:OldSize<span style="color:#f92672">=</span><span style="color:#ae81ff">26843545600</span> -XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:TargetSurvivorRatio<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span> -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseConcMarkSweepGC -XX:+UseParNewGC 
+Command line:  -agentpath:/usr/lib/inceptor/bin/libagent.so -Dsun.net.inetaddr.ttl<span style="color:#f92672">=</span><span style="color:#ae81ff">60</span> -Djava.net.preferIPv4Stack<span style="color:#f92672">=</span>true -Dspark.akka.threads<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span> -Dspark.rdd.compress<span style="color:#f92672">=</span>false -Dspark.storage.memoryFraction<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>.5 -Dclass.default.serializer<span style="color:#f92672">=</span> -Dspark.fastdisk.dir<span style="color:#f92672">=</span>/vdir/mnt/ramdisk/ngmr -Dspark.storage.fastdiskFraction<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>.3 -Dngmr.task.pipeline<span style="color:#f92672">=</span>false -Dngmr.task.pipeline.start.fraction<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>.5 -Dngmr.task.pipeline.task.timeout.ms<span style="color:#f92672">=</span>-1 -verbose:gc -Xloggc:/var/log/slipstream2/inceptor-executor.gc.log -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -Dspark.local.dir<span style="color:#f92672">=</span>/vdir/mnt/disk1/hadoop/ngmr/slipstream2,/vdir/mnt/disk2/hadoop/ngmr/slipstream2,/vdir/mnt/disk3/hadoop/ngmr/slipstream2,/vdir/mnt/disk4/hadoop/ngmr/slipstream2,/vdir/mnt/disk5/hadoop/ngmr/slipstream2 -XX:MetaspaceSize<span style="color:#f92672">=</span>256m -XX:MaxMetaspaceSize<span style="color:#f92672">=</span>256m -Djava.library.path<span style="color:#f92672">=</span>/usr/lib/hadoop/lib/native -Dinceptor.executorID.zkPath<span style="color:#f92672">=</span>/slipstream2/executorID -Dinceptor.executorID.zkServer<span style="color:#f92672">=</span>linux-pm-0-37,linux-pm-0-38,linux-pm-0-40 -Dinceptor.executorID.zkPort<span style="color:#f92672">=</span><span style="color:#ae81ff">2181</span> -Dinceptor.executorID.zkTimeout<span style="color:#f92672">=</span><span style="color:#ae81ff">10000</span> -XX:MaxDirectMemorySize<span style="color:#f92672">=</span>32G -Xms32000m -Xmx32000m -XX:+UseParNewGC -XX:NewRatio<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> -XX:+CMSClassUnloadingEnabled -XX:MinHeapFreeRatio<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span> -XX:MaxHeapFreeRatio<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span> -XX:CMSMaxAbortablePrecleanTime<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span> -XX:+ExplicitGCInvokesConcurrent -XX:MaxTenuringThreshold<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> -XX:TargetSurvivorRatio<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span> -XX:+HeapDumpOnOutOfMemoryError -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction<span style="color:#f92672">=</span><span style="color:#ae81ff">55</span> -Dinceptor.log.dir<span style="color:#f92672">=</span>/var/log/slipstream2 -Dinceptor.log.file<span style="color:#f92672">=</span>inceptor-executor.log -Dinceptor.authentication<span style="color:#f92672">=</span>kerberos -Dspark.kerberos.keytabs<span style="color:#f92672">=</span>/etc/slipstream2/conf/slipstream.keytab -Dspark.kerberos.principal<span style="color:#f92672">=</span>hive/_HOST@TDH -Dngmr.engine<span style="color:#f92672">=</span>morphling -Dspark.network.sendAndReceiveBuffer<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> -Dspark.network.numberOfBuffers<span style="color:#f92672">=</span><span style="color:#ae81ff">10240</span> -Dspark.memory.segmentSize<span style="color:#f92672">=</span><span style="color:#ae81ff">32768</span> -Dspark.network.server.numThreads<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> -Dspark.network.client.numThreads<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> -Dspark.network.client.connectTimeoutSec<span style="color:#f92672">=</span><span style="color:#ae81ff">120</span> -Dspark.shuffle.io.preferDirectBufs<span style="color:#f92672">=</span>true -Dspark.shuffle.io.numConnectionsPerPeer<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> -Dspark.network.server.backlog<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> -Dslipstream.metrics.gateway.host<span style="color:#f92672">=</span>linux-pm-0-37 -Djava.security.auth.login.config<span style="color:#f92672">=</span>/etc/slipstream2/conf/jaas.conf</code></pre></div>
+<p><a href="https://www.cnblogs.com/redcreen/archive/2011/05/04/2037057.html" target="_blank">https://www.cnblogs.com/redcreen/archive/2011/05/04/2037057.html</a></p>
+
+<h3 id="jstat">jstat</h3>
+
+<p><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jstat.html" target="_blank">https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jstat.html</a></p>
+
+<p>-gc：监视 JAVA 堆情况，常用查看 gc 容量情况的工具</p>
+
+<p>-gcutil：主要关注百分比信息</p>
+
+<p>-gccause：和百分比输出一样，多一个上次垃圾收集产生原因
+<strong>建议使用</strong> -gccause 收集 GC 信息！！！</p>
+
+<p>LGCC：Cause of last Garbage Collection
+GCC：Cause of current Garbage Collection
+YGC ：对新生代堆进行GC。频率比较高，因为大部分对象的存活寿命较短，在新生代里被回收。性能耗费较小。
+FGC ：全堆范围的GC。默认堆空间使用到达80%(可调整)的时候会触发FGC。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#f92672">[</span>root@linux-158-15 ~<span style="color:#f92672">]</span><span style="color:#75715e"># jstat -gccause 43 2 5</span>
+  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT    LGCC                 GCC
+
+ <span style="color:#ae81ff">20</span>.61   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">56</span>.14   <span style="color:#ae81ff">3</span>.41  <span style="color:#ae81ff">98</span>.85  <span style="color:#ae81ff">98</span>.17     <span style="color:#ae81ff">32</span>    <span style="color:#ae81ff">2</span>.696     <span style="color:#ae81ff">5</span>    <span style="color:#ae81ff">7</span>.225    <span style="color:#ae81ff">9</span>.921 Allocation Failure   No GC
+
+ <span style="color:#ae81ff">20</span>.61   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">56</span>.14   <span style="color:#ae81ff">3</span>.41  <span style="color:#ae81ff">98</span>.85  <span style="color:#ae81ff">98</span>.17     <span style="color:#ae81ff">32</span>    <span style="color:#ae81ff">2</span>.696     <span style="color:#ae81ff">5</span>    <span style="color:#ae81ff">7</span>.225    <span style="color:#ae81ff">9</span>.921 Allocation Failure   No GC
+
+ <span style="color:#ae81ff">20</span>.61   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">56</span>.14   <span style="color:#ae81ff">3</span>.41  <span style="color:#ae81ff">98</span>.85  <span style="color:#ae81ff">98</span>.17     <span style="color:#ae81ff">32</span>    <span style="color:#ae81ff">2</span>.696     <span style="color:#ae81ff">5</span>    <span style="color:#ae81ff">7</span>.225    <span style="color:#ae81ff">9</span>.921 Allocation Failure   No GC
+
+ <span style="color:#ae81ff">20</span>.61   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">56</span>.14   <span style="color:#ae81ff">3</span>.41  <span style="color:#ae81ff">98</span>.85  <span style="color:#ae81ff">98</span>.17     <span style="color:#ae81ff">32</span>    <span style="color:#ae81ff">2</span>.696     <span style="color:#ae81ff">5</span>    <span style="color:#ae81ff">7</span>.225    <span style="color:#ae81ff">9</span>.921 Allocation Failure   No GC
+
+ <span style="color:#ae81ff">20</span>.61   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">56</span>.14   <span style="color:#ae81ff">3</span>.41  <span style="color:#ae81ff">98</span>.85  <span style="color:#ae81ff">98</span>.17     <span style="color:#ae81ff">32</span>    <span style="color:#ae81ff">2</span>.696     <span style="color:#ae81ff">5</span>    <span style="color:#ae81ff">7</span>.225    <span style="color:#ae81ff">9</span>.921 Allocation Failure   No GC</code></pre></div>
+<p>以上表明该 inceptor server 新生代Eden区（E）使用了 56% 的空间，两个Survivor 区（Survivor0、Survivor1），老年代（O) 和 <strong>元空间</strong>（M），<strong>程序运行以来</strong>发生了 32 次 Minor GC（YGC Young GC），<strong>总耗时</strong> 2.6 s，发生 Full GC （FGC）5次，<strong>总耗时</strong> 7s，上次GC（LGCC） 是因为 Allocation Failure （Allocation Failure： 表明本次引起GC的原因是因为在年轻代中没有足够的空间能够存储新的数据了），现在没有在GC （GCC）</p>
+
+<p>ps：方法区 P (或永久代)，用来存放class，Method等元数据信息，但在JDK1.8已经没有了，取而代之的是MetaSpace(元空间)，元空间不在虚拟机里面，而是直接使用本地内存。</p>
+
+<p>为什么要用元空间代替永久代？
+ (1) 类以及方法的信息比较难确定其大小，因此对于永久代的指定比较困难，太小容易导致永久代溢出，太大容易导致老年代溢出。
+ (2) 永久代会给GC带来不需要的复杂度，并且回收效率偏低。
+ (3) Oracle可能会将HotSpot和Jrockit合二为一。</p>
+
+<p>CCS: Compressed class space utilization as a percentage.</p>
+
+<h4 id="ygc-和-survivor">YGC 和 Survivor</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">^C<span style="color:#f92672">[</span>root@linux-pm-158-51 ~<span style="color:#f92672">]</span><span style="color:#75715e"># jstat -gcutil 47 5s</span>
+  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT   
+  <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">19</span>.66  <span style="color:#ae81ff">54</span>.19  <span style="color:#ae81ff">27</span>.52  <span style="color:#ae81ff">98</span>.97  <span style="color:#ae81ff">97</span>.97     <span style="color:#ae81ff">39</span>    <span style="color:#ae81ff">1</span>.932     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">1</span>.932
+  <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">19</span>.66  <span style="color:#ae81ff">61</span>.45  <span style="color:#ae81ff">27</span>.52  <span style="color:#ae81ff">98</span>.97  <span style="color:#ae81ff">97</span>.97     <span style="color:#ae81ff">39</span>    <span style="color:#ae81ff">1</span>.932     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">1</span>.932
+  <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">19</span>.66  <span style="color:#ae81ff">74</span>.16  <span style="color:#ae81ff">27</span>.52  <span style="color:#ae81ff">98</span>.97  <span style="color:#ae81ff">97</span>.97     <span style="color:#ae81ff">39</span>    <span style="color:#ae81ff">1</span>.932     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">1</span>.932
+ <span style="color:#ae81ff">52</span>.19   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">30</span>.43  <span style="color:#ae81ff">27</span>.94  <span style="color:#ae81ff">98</span>.87  <span style="color:#ae81ff">98</span>.07     <span style="color:#ae81ff">40</span>    <span style="color:#ae81ff">1</span>.972     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">1</span>.972
+ <span style="color:#ae81ff">52</span>.19   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">63</span>.37  <span style="color:#ae81ff">27</span>.94  <span style="color:#ae81ff">98</span>.87  <span style="color:#ae81ff">98</span>.07     <span style="color:#ae81ff">40</span>    <span style="color:#ae81ff">1</span>.972     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">1</span>.972
+ <span style="color:#ae81ff">52</span>.19   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">67</span>.65  <span style="color:#ae81ff">27</span>.94  <span style="color:#ae81ff">98</span>.87  <span style="color:#ae81ff">98</span>.07     <span style="color:#ae81ff">40</span>    <span style="color:#ae81ff">1</span>.972     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">1</span>.972
+ <span style="color:#ae81ff">52</span>.19   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">83</span>.11  <span style="color:#ae81ff">27</span>.94  <span style="color:#ae81ff">98</span>.87  <span style="color:#ae81ff">98</span>.07     <span style="color:#ae81ff">40</span>    <span style="color:#ae81ff">1</span>.972     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">1</span>.972
+  <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">63</span>.95  <span style="color:#ae81ff">14</span>.55  <span style="color:#ae81ff">28</span>.95  <span style="color:#ae81ff">98</span>.87  <span style="color:#ae81ff">98</span>.15     <span style="color:#ae81ff">41</span>    <span style="color:#ae81ff">2</span>.021     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.021
+ <span style="color:#ae81ff">81</span>.82   <span style="color:#ae81ff">0</span>.00   <span style="color:#ae81ff">7</span>.30  <span style="color:#ae81ff">30</span>.05  <span style="color:#ae81ff">98</span>.83  <span style="color:#ae81ff">98</span>.19     <span style="color:#ae81ff">42</span>    <span style="color:#ae81ff">2</span>.098     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.098
+ <span style="color:#ae81ff">81</span>.82   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">44</span>.98  <span style="color:#ae81ff">30</span>.05  <span style="color:#ae81ff">98</span>.83  <span style="color:#ae81ff">98</span>.19     <span style="color:#ae81ff">42</span>    <span style="color:#ae81ff">2</span>.098     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.098
+ <span style="color:#ae81ff">81</span>.82   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">69</span>.58  <span style="color:#ae81ff">30</span>.05  <span style="color:#ae81ff">98</span>.83  <span style="color:#ae81ff">98</span>.19     <span style="color:#ae81ff">42</span>    <span style="color:#ae81ff">2</span>.098     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.098
+ <span style="color:#ae81ff">81</span>.82   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">69</span>.73  <span style="color:#ae81ff">30</span>.05  <span style="color:#ae81ff">98</span>.83  <span style="color:#ae81ff">98</span>.19     <span style="color:#ae81ff">42</span>    <span style="color:#ae81ff">2</span>.098     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.098
+  <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">56</span>.05  <span style="color:#ae81ff">17</span>.56  <span style="color:#ae81ff">31</span>.32  <span style="color:#ae81ff">98</span>.90  <span style="color:#ae81ff">98</span>.19     <span style="color:#ae81ff">43</span>    <span style="color:#ae81ff">2</span>.137     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.137
+  <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">56</span>.05  <span style="color:#ae81ff">37</span>.69  <span style="color:#ae81ff">31</span>.32  <span style="color:#ae81ff">98</span>.90  <span style="color:#ae81ff">98</span>.19     <span style="color:#ae81ff">43</span>    <span style="color:#ae81ff">2</span>.137     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.137
+ <span style="color:#ae81ff">44</span>.39   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">40</span>.69  <span style="color:#ae81ff">32</span>.05  <span style="color:#ae81ff">98</span>.95  <span style="color:#ae81ff">98</span>.19     <span style="color:#ae81ff">44</span>    <span style="color:#ae81ff">2</span>.222     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.222
+ <span style="color:#ae81ff">44</span>.39   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">90</span>.69  <span style="color:#ae81ff">32</span>.05  <span style="color:#ae81ff">98</span>.95  <span style="color:#ae81ff">98</span>.19     <span style="color:#ae81ff">44</span>    <span style="color:#ae81ff">2</span>.222     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.222
+  <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">44</span>.85  <span style="color:#ae81ff">19</span>.95  <span style="color:#ae81ff">32</span>.76  <span style="color:#ae81ff">99</span>.01  <span style="color:#ae81ff">98</span>.20     <span style="color:#ae81ff">45</span>    <span style="color:#ae81ff">2</span>.308     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.308
+  <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">44</span>.85  <span style="color:#ae81ff">21</span>.26  <span style="color:#ae81ff">32</span>.76  <span style="color:#ae81ff">99</span>.01  <span style="color:#ae81ff">98</span>.20     <span style="color:#ae81ff">45</span>    <span style="color:#ae81ff">2</span>.308     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.308
+  <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">44</span>.85  <span style="color:#ae81ff">33</span>.22  <span style="color:#ae81ff">32</span>.76  <span style="color:#ae81ff">99</span>.01  <span style="color:#ae81ff">98</span>.20     <span style="color:#ae81ff">45</span>    <span style="color:#ae81ff">2</span>.308     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.308
+  <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">29</span>.63  <span style="color:#ae81ff">43</span>.46  <span style="color:#ae81ff">33</span>.68  <span style="color:#ae81ff">98</span>.91  <span style="color:#ae81ff">98</span>.20     <span style="color:#ae81ff">47</span>    <span style="color:#ae81ff">2</span>.453     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.453
+ <span style="color:#ae81ff">24</span>.94   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">93</span>.40  <span style="color:#ae81ff">34</span>.12  <span style="color:#ae81ff">98</span>.92  <span style="color:#ae81ff">98</span>.20     <span style="color:#ae81ff">48</span>    <span style="color:#ae81ff">2</span>.549     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.549
+ <span style="color:#ae81ff">24</span>.94   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">95</span>.36  <span style="color:#ae81ff">34</span>.12  <span style="color:#ae81ff">98</span>.92  <span style="color:#ae81ff">98</span>.20     <span style="color:#ae81ff">48</span>    <span style="color:#ae81ff">2</span>.549     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.549
+ <span style="color:#ae81ff">24</span>.94   <span style="color:#ae81ff">0</span>.00  <span style="color:#ae81ff">96</span>.11  <span style="color:#ae81ff">34</span>.12  <span style="color:#ae81ff">98</span>.92  <span style="color:#ae81ff">98</span>.20     <span style="color:#ae81ff">48</span>    <span style="color:#ae81ff">2</span>.549     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>.000    <span style="color:#ae81ff">2</span>.549</code></pre></div>
+<p>S0C: Current survivor space 0 capacity (kB).</p>
+
+<p>S1C: Current survivor space 1 capacity (kB).</p>
+
+<p>S0U: Survivor space 0 utilization (kB).</p>
+
+<p>S1U: Survivor space 1 utilization (kB).</p>
+
+<p>EC: Current eden space capacity (kB).</p>
+
+<p>EU: Eden space utilization (kB).</p>
+
+<p>OC: Current old space capacity (kB).</p>
+
+<p>OU: Old space utilization (kB).</p>
+
+<p>MC: Metaspace capacity (kB).</p>
+
+<p>MU: Metacspace utilization (kB).</p>
+
+<p>CCSC: Compressed class space capacity (kB).</p>
+
+<p>CCSU: Compressed class space used (kB).</p>
+
+<p>YGC: Number of young generation garbage collection events.</p>
+
+<p>YGCT: Young generation garbage collection time.</p>
+
+<p>FGC: Number of full GC events.</p>
+
+<p>FGCT: Full garbage collection time.</p>
+
+<p>GCT: Total garbage collection time.</p>
+
+<h5 id="thoughts">Thoughts</h5>
+
+<p><a href="https://www.oracle.com/technetwork/java/tuning-139912.html" target="_blank">https://www.oracle.com/technetwork/java/tuning-139912.html</a></p>
+
+<p>-XX:TargetSurvivorRatio=8 并没有生效(还好还好), but why?</p>
+
+<p>ageTable.cpp</p>
+
+<h3 id="jmap">jmap</h3>
+
+<p>Memory Map for Java, 用于生成堆转储快照</p>
+
+<p>jmap -heap 47</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">显示堆中对象统计信息，包括类、实例数量、合计容量
+jmap -histo:live <span style="color:#e6db74">${</span>JAVA_PID<span style="color:#e6db74">}</span>     【一般简称为jmap（统计信息）】相关效果： 触发一次常规full gc
+
+jmap -dump:live,format<span style="color:#f92672">=</span>b,file<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>FILE_PATH<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>JAVA_PID<span style="color:#e6db74">}</span>   【一般简称为heapdump】
+相关效果： 触发一次常规full gc，将所有live对象写入文件。
+操作及注意事项： 
+  a. 由于live对象总大小最大可能达到堆大小<span style="color:#f92672">(</span>-Xmx指定<span style="color:#f92672">)</span>，甚至由于存储格式问题达到更大，注意存储文件的磁盘可用空间。
+  b. 一般可先使用histo分析一下活对象总大小，以此估计文件大小。
+  c. 网络传输该文件强烈建议先采用常见压缩.tar.gz等，压缩率可达10倍。</code></pre></div>
+<p>ps: 持续 FGC 可能出现 Unable to open socket file 的错误，因为当前Java进程一直在持续的GC，而在GC期间java进程是不响应外部jmap请求，建议一顿猛打，无间隔持续地尝试jmap命令一定时间（不超过2分钟），一般在其中可以有概率成功打出jmap。</p>
+
+<p>pps: 由 live 引起的 FGC 可以在GC日志看到:Heap Inspection Initiated GC 标志</p>
+
+<h3 id="jstack">jstack</h3>
+
+<p>Stack Trace for Java, 生成虚拟机当前时刻的线程快照，线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成线程快照的 目的通常是定位线程出现长时间停顿的原因，如线程间死锁、死循环、请求外部资源导致的长时间挂 起等，都是导致线程长时间停顿的常见原因。线程出现停顿时通过jstack来查看各个线程的调用堆栈， 就可以获知没有响应的线程到底在后台做些什么事情，或者等待着什么资源。</p>
+
+<p>一般存在 incepto job 卡死，等情况需要用到，隔 x 秒打几个。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">jstack pid
+可尝试“su hive”，再打jstack信息。
+sudo -u hive /usr/java/latest/bin/jstack <span style="color:#f92672">{</span>PID<span style="color:#f92672">}</span></code></pre></div>
+<h2 id="slipstream-常用分析-待续">Slipstream 常用分析 (待续)</h2>
+
+<p>-XX:CMSInitiatingOccupancyFraction=70
+CMS垃圾收集器，当老年代达到70%时，触发CMS垃圾回收。</p>
+
+<h2 id="作业">作业</h2>
+
+<p>阅读:</p>
+
+<p>常见OOM报错
+<a href="https://my.oschina.net/huyuBlog/blog/1788473" target="_blank">https://my.oschina.net/huyuBlog/blog/1788473</a></p>
+
+<h2 id="ref">Ref</h2>
+
+<p>《深入理解JVM虚拟机》</p>
+
+<p>深入理解JVM虚拟机 笔记
+<a href="https://www.cnblogs.com/chanshuyi/p/jvm_serial_00_why_learn_jvm.html" target="_blank">https://www.cnblogs.com/chanshuyi/p/jvm_serial_00_why_learn_jvm.html</a></p>
+
+<p>《Java 虚拟机规范》</p>
+
+<p>总结图
+<a href="https://www.zhihu.com/question/29833675" target="_blank">https://www.zhihu.com/question/29833675</a></p>
+
+<p>为什么 32 位 JVM 最多使用 4G 内存.</p>
+
+<p><a href="https://xiaozhuanlan.com/topic/1847690325#section153permgenmetaspace" target="_blank">https://xiaozhuanlan.com/topic/1847690325#section153permgenmetaspace</a></p>
+
+<p>分代理论
+<a href="https://blog.csdn.net/Muyundefeng/article/details/72667863" target="_blank">https://blog.csdn.net/Muyundefeng/article/details/72667863</a></p>
+
+<p>为什么有两个 survivor 区
+<a href="https://blog.csdn.net/antony9118/article/details/51425581" target="_blank">https://blog.csdn.net/antony9118/article/details/51425581</a></p>
+
+<p>JVM 参数解析
+<a href="https://www.cnblogs.com/redcreen/archive/2011/05/04/2037057.html" target="_blank">https://www.cnblogs.com/redcreen/archive/2011/05/04/2037057.html</a></p>
+
+<p>GC分代收集
+<a href="https://juejin.im/post/5b6b986c6fb9a04fd1603f4a" target="_blank">https://juejin.im/post/5b6b986c6fb9a04fd1603f4a</a></p>
+
+<p>GC 分类
+作者：RednaxelaFX
+链接：<a href="https://www.zhihu.com/question/41922036/answer/93079526" target="_blank">https://www.zhihu.com/question/41922036/answer/93079526</a></p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'>
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/java/jvm%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>JVM工具使用</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/tangzhongham' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://instagram.com/TZHDSG' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Instagram account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+  <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:13122260573@163.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2019-2020 tzh </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script><script src='/js/custom.js'></script>
+
+</body>
+
+</html>
+
