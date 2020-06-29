@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang='en'><head>
+<html lang='zh'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <meta name='description' content='hugo 日志操作流程 [toc]
  本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
  本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D cd build git add . git commit -m &#34;xxx&#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:
-cd ./mytopia hugo -D git add . git commit -m &#34;xxx&#34; git push original master deploy文件:
-TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.
+cd ./mytopia hugo -D git add . git commit -m &#34;xxx&#34; git push original master 二进制图片怎么办: TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.
 一个很坑的事情, 按照文档添加 search 则会把homepage的介绍挤掉.'>
 <meta name='theme-color' content='#ffcd00'>
 
@@ -14,8 +13,7 @@ TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,�
 <meta property='og:description' content='hugo 日志操作流程 [toc]
  本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
  本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D cd build git add . git commit -m &#34;xxx&#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:
-cd ./mytopia hugo -D git add . git commit -m &#34;xxx&#34; git push original master deploy文件:
-TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.
+cd ./mytopia hugo -D git add . git commit -m &#34;xxx&#34; git push original master 二进制图片怎么办: TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.
 一个很坑的事情, 按照文档添加 search 则会把homepage的介绍挤掉.'>
 <meta property='og:url' content='http://tangzhongham.github.io/posts/new_intro/'>
 <meta property='og:site_name' content='Mytopia'>
@@ -38,7 +36,7 @@ TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,�
 <body class='page type-posts has-sidebar'>
 
   <div class='site'><div id='sidebar' class='sidebar'>
-  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+  <a class='screen-reader-text' href='#main-menu'>跳到主页</a>
 
   <div class='container'><section class='widget widget-about sep-after'>
   <header>
@@ -62,7 +60,7 @@ TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,�
 </section>
 <section class='widget widget-taxonomy_cloud sep-after'>
   <header>
-    <h4 class='title widget-title'>Tags</h4>
+    <h4 class='title widget-title'>标签</h4>
   </header>
 
   <div class='container list-container'>
@@ -86,12 +84,12 @@ TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,�
 </div>
 
   <div class='sidebar-overlay'></div>
-</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='Main Menu'>
+</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='主菜单'>
   <div class='container'>
-    <a class='screen-reader-text' href='#content'>Skip to Content</a>
+    <a class='screen-reader-text' href='#content'>跳到文章</a>
 
 <button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
-  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='screen-reader-text'>切换侧边栏</span>
   <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <line x1="3" y1="12" x2="21" y2="12" />
@@ -143,7 +141,7 @@ TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,�
       <main id='content'>
 
 
-<article lang='en' class='entry'>
+<article lang='zh' class='entry'>
   <header class='header entry-header'>
   <div class='container sep-after'>
     <div class='header-info'>
@@ -160,7 +158,7 @@ TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,�
   <line x1="3" y1="10" x2="21" y2="10"/>
   
 </svg>
-<span class='screen-reader-text'>Posted on </span>
+<span class='screen-reader-text'>发布 </span>
   <time class='entry-date' datetime='2020-02-13T18:24:45&#43;08:00'>2020, Feb 13</time>
 </span>
 
@@ -178,7 +176,7 @@ TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,�
   <polyline points="12 6 12 12 15 15"/>
   
 </svg>
-One min read
+需要1分钟读完
 </span>
 
 
@@ -219,7 +217,7 @@ hugo -D
 git add .
 git commit -m <span style="color:#e6db74">&#34;xxx&#34;</span>
 git push original master</code></pre></div>
-<p>deploy文件:</p>
+<p>二进制图片怎么办: <img src="/static/jvmlogic.png" alt="xx" /></p>
 
 <h2 id="todo">TODO</h2>
 
@@ -277,14 +275,14 @@ ps: 发现该shell脚本自带传参功能了...</code></pre></div>
   <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
   
 </svg>
-<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/tutorial/'>tutorial</a></div>
+<span class='screen-reader-text'>分类: </span><a class='category' href='/categories/tutorial/'>tutorial</a></div>
 <div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
   <line x1="7" y1="7" x2="7" y2="7"/>
   
 </svg>
-<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hugo/'>hugo</a>, <a class='tag' href='/tags/markdown/'>markdown</a>, <a class='tag' href='/tags/github/'>github</a></div>
+<span class='screen-reader-text'>标签: </span><a class='tag' href='/tags/hugo/'>hugo</a>, <a class='tag' href='/tags/markdown/'>markdown</a>, <a class='tag' href='/tags/github/'>github</a></div>
 
   </div>
 </footer>
@@ -301,8 +299,8 @@ ps: 发现该shell脚本自带传参功能了...</code></pre></div>
   <polyline points="10 18 4 12 10 6"/>
   
 </svg>
- Previous</span>
-        <span class='screen-reader-text'>Previous post: </span>How_to_hugo</a>
+ 上一个</span>
+        <span class='screen-reader-text'>上一篇文章: </span>How_to_hugo</a>
     </div></div>
 </nav>
 
@@ -312,10 +310,10 @@ ps: 发现该shell脚本自带传参功能了...</code></pre></div>
       </main>
 
       <footer id='footer' class='footer'>
-        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='社交菜单'>
     <ul><li>
         <a href='https://github.com/tangzhongham' target='_blank' rel='noopener'>
-          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+          <span class='screen-reader-text'>在新标签打开Github的账户</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
   
@@ -323,7 +321,7 @@ ps: 发现该shell脚本自带传参功能了...</code></pre></div>
 </a>
       </li><li>
         <a href='https://instagram.com/TZHDSG' target='_blank' rel='noopener'>
-          <span class='screen-reader-text'>Open Instagram account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+          <span class='screen-reader-text'>在新标签打开Instagram的账户</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
@@ -333,7 +331,7 @@ ps: 发现该shell脚本自带传参功能了...</code></pre></div>
 </a>
       </li><li>
         <a href='mailto:13122260573@163.com' target='_blank' rel='noopener'>
-          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+          <span class='screen-reader-text'>通过邮件联系</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
   <polyline points="22,6 12,13 2,6"/>
