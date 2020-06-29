@@ -16,11 +16,7 @@
       <pubDate>Thu, 13 Feb 2020 18:24:45 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/posts/new_intro/</guid>
-      <description>hugo 日志操作流程 [toc]
- 本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
- 本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D cd build git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:
-cd ./mytopia hugo -D git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 二进制图片怎么办: TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.
-一个很坑的事情, 按照文档添加 search 则会把homepage的介绍挤掉.</description>
+      <description>hugo 日志操作流程 [toc] 本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤 本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的</description>
     </item>
     
     <item>
@@ -29,7 +25,7 @@ cd ./mytopia hugo -D git add . git commit -m &amp;#34;xxx&amp;#34; git push orig
       <pubDate>Mon, 18 Nov 2019 22:13:51 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/posts/how_to_hugo/</guid>
-      <description>1. Markdown 5分钟使用指南  注意: 该主题的toc渲染有点问题,不支持1.1.1 这种表达(和 visual studio code 里面冲突)   1. Markdown 5分钟使用指南  1.1. Why Markdown How to Markdown 1.2.1. 结构 1.2.2. 段落  1.2.2.1. 分隔符 1.2.2.2. 引用 1.2.2.3. 代码块 1.2.2.3.1. 单行代码 1.2.2.3.2. 多行代码  1.2.3. 句子  1.2.3.1. 换行 1.2.3.2. Bullet Dot  1.2.4. 文本  1.2.4.1. 链接  1.3. Others 1.3.1. 杂   1.1. Why Markdown  Markdown is a lightweight markup language that you can use to add formatting elements to plaintext text documents.</description>
+      <description>1. Markdown 5分钟使用指南 注意: 该主题的toc渲染有点问题,不支持1.1.1 这种表达(和 visual studio code 里面冲突) 1. Markdown 5分钟使用指南 1.1. Why Markdown How to Markdown 1.2.1. 结构 1.2.2. 段落 1.2.2.1.</description>
     </item>
     
     <item>
@@ -38,11 +34,7 @@ cd ./mytopia hugo -D git add . git commit -m &amp;#34;xxx&amp;#34; git push orig
       <pubDate>Mon, 18 Nov 2019 22:13:43 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/posts/how_to_markdown/</guid>
-      <description>Markdown 5分钟使用指南  Markdown 5分钟使用指南  Why Markdown How to Markdown 结构 段落  分隔符 引用 代码块 单行代码 多行代码  句子  换行 Bullet Dot  文本  链接  Others 杂   Why Markdown  Markdown is a lightweight markup language that you can use to add formatting elements to plaintext text documents.
- Markdown 本质上就是一种标记语言，让你在不需要过度关注文章结构的同时，提供了符合逻辑的文章结构。
-How to Markdown 正如以上所说，Markdown 只是为了让你更舒服的组织好文章架构，那么从以下几个方面来使用则很符合逻辑。
-结构 Markdown 把一篇文章分为如下结构:
- 这是一级标题 这是二级标题 这是三级标题 这是四级标题 这是五级标题  一级标题只能有一个，等价于文章的标题，所有其他等级标题都在一级标题下面。</description>
+      <description>Markdown 5分钟使用指南 Markdown 5分钟使用指南 Why Markdown How to Markdown 结构 段落 分隔符 引用 代码块 单行代码 多行代码 句子 换行 Bullet Dot 文本 链接 Others 杂 Why Markdown Markdown is a lightweight markup language that you can use to add formatting elements to</description>
     </item>
     
   </channel>

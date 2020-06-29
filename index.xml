@@ -52,8 +52,7 @@
       <pubDate>Mon, 08 Jun 2020 17:04:51 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/java/jvm%E5%8E%9F%E7%90%86%E5%85%A5%E9%97%A8/</guid>
-      <description>JVM原理入门  tzh 2020/05/19./
-  JVM原理入门  Why JVM Why Java Java、JDK、JRE JVM 概论 什么是 JVM JVM 概览 前端编译/Class 文件  Class 文件结构  后端编译 虚拟机类加载机制  加载 验证 准备 解析 初始化 使用 卸载  内存/堆/GC 私有  程序计数器 Java 虚拟机栈 + 本地方法栈  公有  方法区 + 常量池 堆 堆的分布 GC 词汇 一般性的GC流程 一般性的 YGC/FGC 堆内存的具体分布  为什么有两个 Survivor 区   直接内存 常用命令 k8s 上极其方便的玩法 jps jinfo jstat  YGC 和 Survivor Thoughts  jmap jstack Slipstream 常用分析 (待续) 作业 Ref   Why JVM 以下问题很是让人头疼?</description>
+      <description>JVM原理入门 tzh 2020/05/19./ JVM原理入门 Why JVM Why Java Java、JDK、JRE JVM 概论 什么是 JVM JVM 概览 前端编译/Class 文件 Class 文件结构 后端编译 虚拟机类加载机</description>
     </item>
     
     <item>
@@ -62,8 +61,7 @@
       <pubDate>Mon, 08 Jun 2020 17:04:06 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/java/jvm%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/</guid>
-      <description>Java 基础运维工具使用   jps JVM Process Status Tool, 用于列出正在运行的虚拟机进程. 用于查看pod 内是否存在进程挂掉/验证是否手动添加JVM参数。 inceptor/slipstream 可以配合 grep 查询虚拟机启动时显式指定的JVM参数。显示没有jinfo全，但是够用。
-[root@linux-158-15 ~]# jps -v | more 43 InceptorServer2 -agentpath:/usr/lib/inceptor/bin/libagent.so -XX:MetaspaceSiz e=512m -XX:MaxMetaspaceSize=2g -Djava.net.preferIPv4Stack=true -Dsun.net.inetadd r.ttl=60 -XX:+UseParNewGC -XX:NewRatio=4 -XX:+CMSClassUnloadingEnabled -XX:MinHe apFreeRatio=100 -XX:MaxHeapFreeRatio=100 -XX:CMSMaxAbortablePrecleanTime=1000 -X X:+ExplicitGCInvokesConcurrent -XX:MaxTenuringThreshold=4 -XX:TargetSurvivorRati o=8 -XX:+HeapDumpOnOutOfMemoryError -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOcc upancyFraction=70 -Xms2048m -Xmx8192m -verbose:gc -XX:+PrintGCDetails -XX:+Print GCDateStamps -XX:+PrintGCTimeStamps -Djava.library.path=/usr/lib/hadoop/lib/nati ve -Dspark.akka.threads=8 -Dspark.akka.threads=8 -Dspark.rdd.compress=false -Dsp ark.storage.memoryFraction=0.5 -Dspark.driver.host=linux-158-15 -Dclass.default. serializer= -Dspark.fastdisk.dir=/vdir/mnt/ramdisk/ngmr -Dspark.storage.fastdisk Fraction=0.5 -Dngmr.task.pipeline=false -Dngmr.task.pipeline.start.fraction=0.5 -Dngmr.</description>
+      <description>Java 基础运维工具使用 jps JVM Process Status Tool, 用于列出正在运行的虚拟机进程. 用于查看pod 内是否存在进程挂掉/验证是否手动添加JVM参数。 inceptor/slipstream 可以配合 grep 查询虚拟</description>
     </item>
     
     <item>
@@ -72,39 +70,7 @@
       <pubDate>Mon, 08 Jun 2020 16:59:22 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/flink/flink%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E4%BB%BB%E5%8A%A1%E6%8F%90%E4%BA%A4%E6%B5%81%E7%A8%8B/</guid>
-      <description>Flink 源码阅读之任务提交基本流程 org.apache.flink.runtime.blob.BlobServer#run java.net.ServerSocket#accept
-BlobServer.run
-涉及的类:
-org.apache.flink.client.cli.CliFrontend org.apache.flink.client.ClientUtils org.apache.flink.streaming.examples.wordcount.WordCount
-org.apache.flink.runtime.blob.BlobServer#run
-org.apache.flink.runtime.taskexecutor.TaskExecutor#submitTask
-org.apache.flink.runtime.deployment.TaskDeploymentDescriptor
-流程准备 以远程调试模式运行 org.apache.flink.client.cli.CliFrontend
-org.apache.flink.runtime.entrypoint.StandaloneSessionClusterEntrypoint
-org.apache.flink.runtime.taskexecutor.TaskManagerRunner
-使用 ./flink 提交 WordCount.jar, 查看整个任务的流转过程
-org.apache.flink.client.program.PackagedProgram#callMainMethod java.lang.reflect.Method#invoke
-org.apache.flink.streaming.api.environment.StreamContextEnvironment#execute
-org.apache.flink.streaming.api.graph.StreamGraphGenerator#generate
-org.apache.flink.streaming.api.graph.StreamGraphGenerator#transform
-org.apache.flink.streaming.api.environment.StreamExecutionEnvironment#executeAsync(org.apache.flink.streaming.api.graph.StreamGraph)
-org.apache.flink.core.execution.JobListener#onJobSubmitted
-org.apache.flink.client.program.rest.RestClusterClient#submitJob
-JM
-org.apache.flink.runtime.dispatcher.Dispatcher#submitJob log.info(&amp;ldquo;Received JobGraph submission {} ({}).&amp;rdquo;, jobGraph.getJobID(), jobGraph.getName());
-org.apache.flink.runtime.dispatcher.Dispatcher#runJob
-org.apache.flink.runtime.dispatcher.Dispatcher#createJobManagerRunner
-flink-rest-server-netty-worker-thread org.apache.flink.runtime.rest.handler.AbstractRestHandler#handleRequest org.apache.flink.runtime.rest.handler.AbstractRestHandler#respondToRequest
-org.apache.flink.runtime.rpc.akka.AkkaRpcActor#handleRpcMessage
-JM org.apache.flink.runtime.blob.BlobServer#run java.net.ServerSocket#accept
-org.apache.flink.streaming.api.environment.StreamContextEnvironment#execute
-Job 发到 JM 后
-org.apache.flink.runtime.dispatcher.Dispatcher#runJob
-org.apache.flink.runtime.jobmaster.JobMaster#offerSlots
-Scheduler 调度 生成 StreamGraph org.apache.flink.runtime.executiongraph.Execution
-发给 TM RemoteRpcInvocation(submitTask(TaskDeploymentDescriptor, JobMasterId, Time))
-org.apache.flink.runtime.taskexecutor.TaskExecutor#submitTask
-submitTask 方法 new 一个 Task</description>
+      <description>Flink 源码阅读之任务提交基本流程 org.apache.flink.runtime.blob.BlobServer#run java.net.ServerSocket#accept BlobServer.run 涉及的类: org.apache.flink.client.cli.CliFrontend org.apache.flink.client.ClientUtils org.apache.flink.streaming.examples.wordcount.WordCount org.apache.flink.runtime.blob.BlobServer#run org.apache.flink.runtime.taskexecutor.TaskExecutor#submitTask org.apache.flink.runtime.deployment.TaskDeploymentDescriptor 流程准备 以远程调试模式运行 org.apache.flink.client.cli.CliFrontend org.apache.flink.runtime.entrypoint.StandaloneSessionClusterEntrypoint org.apache.flink.runtime.taskexecutor.TaskManagerRunner 使用 ./flink 提交 WordCount.jar, 查看整个任务的流转过程 org.apache.flink.client.program.PackagedProgram#callMainMethod java.lang.reflect.Method#invoke org.apache.flink.streaming.api.environment.StreamContextEnvironment#execute org.apache.flink.streaming.api.graph.StreamGraphGenerator#generate org.apache.flink.streaming.api.graph.StreamGraphGenerator#transform org.apache.flink.streaming.api.environment.StreamExecutionEnvironment#executeAsync(org.apache.flink.streaming.api.graph.StreamGraph) org.apache.flink.core.execution.JobListener#onJobSubmitted org.apache.flink.client.program.rest.RestClusterClient#submitJob JM</description>
     </item>
     
     <item>
@@ -113,8 +79,7 @@ submitTask 方法 new 一个 Task</description>
       <pubDate>Mon, 08 Jun 2020 16:57:43 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/flink/flink%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/</guid>
-      <description>Flink源码阅读之启动流程  本文分析了 Flink standalone/yarn 的启动流程
- 先看启动脚本 start-cluster.sh ## 读取默认 config 配置文件 . &amp;#34;$bin&amp;#34;/config.sh # Start the JobManager instance(s) ## 用来定制 shell 环境 -s 开启某个选项 nocasematch 忽略大小写 shopt -s nocasematch ## 支持高可用模式启动 if [[ $HIGH_AVAILABILITY == &amp;#34;zookeeper&amp;#34; ]]; then # HA Mode readMasters echo &amp;#34;Starting HA cluster with ${#MASTERS[@]}masters.&amp;#34; for ((i=0;i&amp;lt;${#MASTERS[@]};++i)); do master=${MASTERS[i]} webuiport=${WEBUIPORTS[i]} if [ ${MASTERS_ALL_LOCALHOST} = true ] ; then &amp;#34;${FLINK_BIN_DIR}&amp;#34;/jobmanager.sh start &amp;#34;${master}&amp;#34; &amp;#34;${webuiport}&amp;#34; else ssh -n $FLINK_SSH_OPTS $master -- &amp;#34;nohup /bin/bash -l \&amp;#34;${FLINK_BIN_DIR}/jobmanager.</description>
+      <description>Flink源码阅读之启动流程 本文分析了 Flink standalone/yarn 的启动流程 先看启动脚本 start-cluster.sh ## 读取默认 config 配置文件 . &amp;#34;$bin&amp;#34;/config.sh # Start the JobManager instance(s) ## 用来定制 shell 环境 -s 开启某个选项 nocasematch 忽略大小</description>
     </item>
     
     <item>
@@ -150,16 +115,7 @@ submitTask 方法 new 一个 Task</description>
       <pubDate>Fri, 08 May 2020 17:02:23 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bserversocketchannel/</guid>
-      <description>kafka源码解析之 ServerSocketChannel 详解  由于kafka socketServer 使用到了 nio 的 serverSocketChannel, 本文详细解析了 该类的使用方法。 https://blog.csdn.net/kavu1/article/details/53212178
- Kafka 的 kafka.network.Acceptor 负责监听外界 Socket 连接并把请求转发给 kafka.network.Processor，完事后 Processor 负责转发 Socket 的请求和响应，并将其发送到 kafka.network.RequestChannel。
-与java.net.Socket类和java.net.ServerSocket类相对应，NIO也提供了SocketChannel和ServerSocketChannel两种不同的套接字通道实现。这两种新增的通道都支持阻塞和非阻塞两种模式。 低负载、低并发的应用程序可以选择同步阻塞I/O以降低编程复杂度；对于高负载、高并发的网络应用，需要使用NIO的非阻塞模式进行开发。 链接：https://www.jianshu.com/p/5442b04ccff8
-注意, 如果一个 Channel 要注册到 Selector 中, 那么这个 Channel 必须是非阻塞的, 即channel.configureBlocking(false); 因为 Channel 必须要是非阻塞的, 因此 FileChannel 是不能够使用选择器的, 因为 FileChannel 都是阻塞的.
-ServerSocketChannel 与 ServerSocket ServerSocketChannel类似于SocketChannel,只不过ServerSocketChannel使用server端.ServerSocketChannel是ServerSocket + Selector的高层 封装.可以通过socket()方法获得与其关联的ServerSocket.
-事实上channel即为socket链接的高层封装,每个channel都绑定在一个socket上,它们息息相关.
-SocketChannel的关闭支持异步关闭(来自InterruptableChannel特性),这与Channel类中指定的异步close操作有关.如果一个线程关闭了某个Socket input,那么同时另一个线程被阻塞在该SocketChannel的read操作中,那么处于阻塞线程中的读取操作将完成,而不读取任何字节且返回-1.如果一个线程关闭了socket output,而同时另一个线程被阻塞在该socketChannel的write操作中,此时阻塞线程将收到AsynchronousClosedException.
-SocketChannel是线程安全的,但是任何时刻只能有一个线程处于read或者write操作(read操作同步readLock,write操作同步writeLock,2个线程可以同时进行read和write;),不过DatagramChannel支持并发的读写.
-参考:http://shift-alt-ctrl.iteye.com/blog/1840409
-NIO 的四种事件    OP_ACCEPT OP_CONNECT OP_WRITE OP_READ        Y Y Y SocketChannel 客户端   Y    ServerSocketChannel 服务端     Y Y SocketChannel 服务端            就绪条件：</description>
+      <description>kafka源码解析之 ServerSocketChannel 详解 由于kafka socketServer 使用到了 nio 的 serverSocketChannel, 本文详细解析了 该类的使用方法。 https://blog.csdn.net/kavu1/article/details/53212178 Kafka 的 kafka.network.Acceptor 负责监听外界 Socket 连接并把请求转发给 kafka.n</description>
     </item>
     
     <item>
@@ -168,23 +124,7 @@ NIO 的四种事件    OP_ACCEPT OP_CONNECT OP_WRITE OP_READ        Y Y Y Socket
       <pubDate>Fri, 08 May 2020 17:01:30 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E6%80%A7%E8%83%BD%E7%AF%87/</guid>
-      <description>kafka源码解析之性能篇 概念篇 Linux 的 Page Cache 和 Buffer Cache page cache是系统读写磁盘文件时为了提高性能而将一部分文件缓存到内存中。 这种做法虽然提高了磁盘I/O性能，但是也极大的占用了物理内存，特别当系统内存紧张时更容易出现问题。
-也就是说，我们平常向硬盘写文件时，默认异步情况下，并不是直接把文件内容写入到硬盘中才返回的，而是成功拷贝到内核的page cache后就直接返回，所以大多数情况下，硬盘写操作不会是性能瓶颈。写入到内核page cache的pages成为dirty pages，稍后会由内核线程pdflush真正写入到硬盘上。
-从硬盘读取文件时，同样不是直接把硬盘上文件内容读取到用户态内存，而是先拷贝到内核的page cache，然后再“拷贝”到用户态内存，这样用户就可以访问该文件。因为涉及到硬盘操作，所以第一次读取一个文件时，不会有性能提升；不过，如果一个文件已经存在page cache中，再次读取该文件时就可以直接从page cache中命中读取不涉及硬盘操作，这时性能就会有很大提高。
-Page Cache 的构成 page cache中的每个文件都是一棵基数树（radix tree，本质上是多叉搜索树），树的每个节点都是一个页。根据文件内的偏移量就可以快速定位到所在的页，如下图所示。
-原理篇 Kafka为什么不自己管理缓存，而非要用page cache？原因有如下三点：
- JVM中一切皆对象，数据的对象存储会带来所谓object overhead，浪费空间；
- 如果由JVM来管理缓存，会受到GC的影响，并且过大的堆也会拖累GC的效率，降低吞吐量；
- 一旦程序崩溃，自己管理的缓存数据会全部丢失。
-  Kafka三大件（broker、producer、consumer）与page cache的关系可以用下面的简图来表示。
-![page cache](./images/pagecache.jpg）
-producer生产消息时，会使用pwrite()系统调用【对应到Java NIO中是FileChannel.write() API】按偏移量写入数据，并且都会先写入page cache里。consumer消费消息时，会使用sendfile()系统调用【对应FileChannel.transferTo() API】，零拷贝地将数据从page cache传输到broker的Socket buffer，再通过网络传输。
-https://zhuanlan.zhihu.com/p/105509080
-图中没有画出来的还有leader与follower之间的同步，这与consumer是同理的：只要follower处在ISR中，就也能够通过零拷贝机制将数据从leader所在的broker page cache传输到follower所在的broker。
-同时，page cache中的数据会随着内核中flusher线程的调度以及对sync()/fsync()的调用写回到磁盘，就算进程崩溃，也不用担心数据丢失。另外，如果consumer要消费的消息不在page cache里，才会去磁盘读取，并且会顺便预读出一些相邻的块放入page cache，以方便下一次读取。
-由此我们可以得出重要的结论：如果Kafka producer的生产速率与consumer的消费速率相差不大，那么就能几乎只靠对broker page cache的读写完成整个生产-消费过程，磁盘访问非常少。并且Kafka持久化消息到各个topic的partition文件时，是只追加的顺序写，充分利用了磁盘顺序访问快的特性，效率高。
-注意事项与相关参数 对于单纯运行Kafka的集群而言，首先要注意的就是为Kafka设置合适（不那么大）的JVM堆大小。从上面的分析可知，Kafka的性能与堆内存关系并不大，而对page cache需求巨大。根据经验值，为Kafka分配5~8GB的堆内存就已经足足够用了，将剩下的系统内存都作为page cache空间，可以最大化I/O效率。
-另一个需要特别注意的问题是lagging consumer，即那些消费速率慢、明显落后的consumer。它们要读取的数据有较大概率不在broker page cache中，因此会增加很多不必要的读盘操作。比这更坏的是，lagging consumer读取的“冷”数据仍然会进入page cache，污染了多数正常consumer要读取的“热”数据，连带着正常consumer的性能变差。在生产环境中，这个问题尤为重要。</description>
+      <description>kafka源码解析之性能篇 概念篇 Linux 的 Page Cache 和 Buffer Cache page cache是系统读写磁盘文件时为了提高性能而将一部分文件缓存到内存中。 这种做法虽然提高了磁盘</description>
     </item>
     
     <item>
@@ -193,14 +133,7 @@ https://zhuanlan.zhihu.com/p/105509080
       <pubDate>Fri, 08 May 2020 12:00:33 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bsocketserver%E5%8E%9F%E7%90%86%E7%AF%87/</guid>
-      <description>Kafka 源码解析之 socketServer 原理篇  Kafka 是如何做到百万级高并发低延迟的?
- 原理 有别于传统的 thread per connection 模型, Kafka 使用基于 NIO 实现的 Reactor 模型.
-Kafka 使用 nio 实现了自己的 socketServer 网络层代码, 而非常见的 netty、mina 框架, 从性能上来看这一块并不是主要的性能瓶颈.
-kafka socketServer 通信采取的是 NIO 的reactor模式, 是一种事件驱动模式.
-什么是 Reactor 模型  同步的等待多个事件源到达（采用select()实现）
- 将事件多路分解以及分配相应的事件服务进行处理，这个分派采用server集中处理（dispatch）
- 分解的事件以及对应的事件服务应用从分派服务中分离出去（handler）
-  为何需要 Reactor 模型  同步阻塞IO，读写阻塞，线程等待时间过长 在制定线程策略的时候，只能根据CPU的数目来限定可用线程资源，不能根据连接并发数目来制定，也就是连接有限制。否则很难保证对客户端请求的高效和公平。 多线程之间的上下文切换，造成线程使用效率并不高，并且不易扩展 状态数据以及其他需要保持一致的数据，需要采用并发同步控制  Kafka 的 socketServer 如何实现 Reactor 模型 kafka 的架构模型 工作原理： 1）先创建ServerSocketChannel对象并在Selector上注册OP_ACCEPT事件，ServerSocketChannel负责监听指定端口上的连接请求。 2）当客户端发起服务端的网络连接时，服务端的Selector监听到此OP_ACCEPT事件，会触发Acceptor来处理OP_ACCEPT。 3）当Acceptor接收到来自客户端的Socket连接请求时会为这个连接创建响应的SocketChannel，将SocketChannel设置为非阻塞模式，并在Selector上注册其关注的I/O事件，如OP_READ,OP_WRITE。此时，客户端和服务端的Socket连接建立完成。 4）当客户端通过已经建立的SocketChannel连接向服务端发送请求时，服务端的Selector会监听到OP_READ事件，并触发执行相应的处理逻辑（上图中的Reader Handler）。当服务端可以向客户端写数据时，服务端的Selector会监听到OP_WRITE事件，并触发相应的执行逻辑（上图中的Writer Handler）。 这些事情都是在同一个线程完成的，KafkaProducer中的Sender线程以及KafkaConsumer的代码都是这种设计。这样的设计时候客户端这样的并发连接数小，数据量较小的场景，这样对于服务端来说就会有缺点。如：某个请求的处理过程比较复杂会造成线程的阻塞，造成所有的后续请求读无法处理，这就会导致大量的请求超时。为了避免这种情况，就必须要求服务端在读取请求，处理请求已经发送响应等各个环节上必须能迅速的完成，这样就提升了编程的难度，在有些情况下实现不了。而且这种模式不能利用服务器多核多处理器的并行处理能力，造成资源的浪费。 为了满足高并发的需求，服务端需要使用多线程来执行逻辑。我们可以对上述架构做调整，将网络的读写的逻辑和业务处理的逻辑进行拆分，让其由不同的线程池来处理，从而实现多线程处理。 链接：https://www.</description>
+      <description>Kafka 源码解析之 socketServer 原理篇 Kafka 是如何做到百万级高并发低延迟的? 原理 有别于传统的 thread per connection 模型, Kafka 使用基于 NIO 实现的 Reactor 模型. Kafka 使用 nio 实现了自己的 socketServer 网络层代码</description>
     </item>
     
     <item>
@@ -209,9 +142,7 @@ kafka socketServer 通信采取的是 NIO 的reactor模式, 是一种事件驱�
       <pubDate>Fri, 17 Apr 2020 17:44:51 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bbroker%E5%90%AF%E5%8A%A8/</guid>
-      <description>Kafka 源码解析之 broker启动  基于 kafka 2.3.0 C:/kafka created on 0327 modified on 0410 学习了 scala 之后我又来了
-  Kafka 启动脚本分析 Kafka 核心主类 kafka.Kafka 由于作者的 java 知识相对薄弱，源码注解可能做的比较细
-object Kafka extends Logging { // 读取配置文件方法  def getPropsFromArgs(args: Array[String]): Properties = { // 处理命令行参数的解析工具 OptionParser  val optionParser = new OptionParser(false) // 允许覆盖内容  val overrideOpt = optionParser.accepts(&amp;#34;override&amp;#34;, &amp;#34;Optional property that should override values set in server.properties file&amp;#34;) .withRequiredArg() .ofType(classOf[String]) // This is just to make the parameter show up in the help output, we are not actually using this due the  // fact that this class ignores the first parameter which is interpreted as positional and mandatory  // but would not be mandatory if --version is specified  // This is a bit of an ugly crutch till we get a chance to rework the entire command line parsing  val versionOpt = optionParser.</description>
+      <description>Kafka 源码解析之 broker启动 基于 kafka 2.3.0 C:/kafka created on 0327 modified on 0410 学习了 scala 之后我又来了 Kafka 启动脚本分析 Kafka 核心主类 kafka.Kafka 由于作者的 java 知识相对薄弱，源码注解可能做的比</description>
     </item>
     
     <item>
@@ -229,9 +160,7 @@ object Kafka extends Logging { // 读取配置文件方法  def getPropsFromArgs
       <pubDate>Sat, 15 Feb 2020 14:34:05 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_hugo%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%AF%87/</guid>
-      <description>How to hugo 日常使用篇  本篇介绍如何发布一篇文章并编写shell脚本快捷发布/
-  How to hugo 日常使用篇  本地撰写博文 发布 shell 脚本自动发布 TODO Ref    本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
- 本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D // 默认hugo new出来的文章都有个标签是草稿, -D 指的是build 所有草稿 cd build git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:</description>
+      <description>How to hugo 日常使用篇 本篇介绍如何发布一篇文章并编写shell脚本快捷发布/ How to hugo 日常使用篇 本地撰写博文 发布 shell 脚本自动发布 TODO Ref 本篇文章介绍如何发布</description>
     </item>
     
     <item>
@@ -240,8 +169,7 @@ object Kafka extends Logging { // 读取配置文件方法  def getPropsFromArgs
       <pubDate>Fri, 14 Feb 2020 14:33:55 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_hugo%E5%AE%89%E8%A3%85%E7%AF%87/</guid>
-      <description> How to hugo 安装篇  本篇介绍如何安装 hugo 并将 blog 部署到 github pages.
- </description>
+      <description>How to hugo 安装篇 本篇介绍如何安装 hugo 并将 blog 部署到 github pages.</description>
     </item>
     
     <item>
@@ -250,11 +178,7 @@ object Kafka extends Logging { // 读取配置文件方法  def getPropsFromArgs
       <pubDate>Thu, 13 Feb 2020 18:24:45 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/posts/new_intro/</guid>
-      <description>hugo 日志操作流程 [toc]
- 本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
- 本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D cd build git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:
-cd ./mytopia hugo -D git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 二进制图片怎么办: TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.
-一个很坑的事情, 按照文档添加 search 则会把homepage的介绍挤掉.</description>
+      <description>hugo 日志操作流程 [toc] 本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤 本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的</description>
     </item>
     
     <item>
@@ -263,9 +187,7 @@ cd ./mytopia hugo -D git add . git commit -m &amp;#34;xxx&amp;#34; git push orig
       <pubDate>Tue, 31 Dec 2019 17:04:51 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/about/</guid>
-      <description>Hello! 有问题欢迎交流!
-微信: tzh-1166
-邮箱: 13122260573@163.com</description>
+      <description>Hello! 有问题欢迎交流! 微信: tzh-1166 邮箱: 13122260573@163.com</description>
     </item>
     
     <item>
@@ -283,9 +205,7 @@ cd ./mytopia hugo -D git add . git commit -m &amp;#34;xxx&amp;#34; git push orig
       <pubDate>Tue, 19 Nov 2019 22:31:48 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/diary/201911/</guid>
-      <description> 2019 年 11 月  2019 年 11 月  1119 - 1126 11 19 周二  Thoughts TODO LIST     This is for PRIVATE ONLY !!!
- 1119 - 1126 11 19 周二 Thoughts 今天终于把页面部署好了~ 然后可以舒舒服服的发布,然后在哪里都能看啦.
-TODO LIST deploy 脚本研究 git submodule 是什么意思 文章润色~ 明天要开始输出 kafka 的东西啦~ 然后 Spark 源码也要看起来了!!!  </description>
+      <description>2019 年 11 月 2019 年 11 月 1119 - 1126 11 19 周二 Thoughts TODO LIST This is for PRIVATE ONLY !!! 1119 - 1126 11 19 周二 Thoughts 今天终于把页面部署好了~ 然后可以舒舒服服的发布,然后在哪里都能看啦. TODO LIST deploy 脚</description>
     </item>
     
     <item>
@@ -294,11 +214,7 @@ TODO LIST deploy 脚本研究 git submodule 是什么意思 文章润色~ 明天
       <pubDate>Tue, 19 Nov 2019 13:10:03 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_github_pages/</guid>
-      <description>How to deploy your hugo sites to Github Pages  How to deploy your hugo sites to Github Pages  部署到 Github 个人页面 常见错误 TODO LIST   部署到 Github 个人页面  在github 分别建立 mytopia 和 &amp;lt;username&amp;gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容
- 进入之前教程中的本地目录
-cd /mytopia 将 mytopia 项目关联到远程的 mytopia 仓库
-git remote add origin git@github.com/TangZhongham/mytopia.git 将本地网站全部推送到远程的 mytopia 仓库
-git push -u origin master  可能会出现push 不了的原因。可能需要你 git add .然后git commit -m &amp;quot;first commit&amp;quot;</description>
+      <description>How to deploy your hugo sites to Github Pages How to deploy your hugo sites to Github Pages 部署到 Github 个人页面 常见错误 TODO LIST 部署到 Github 个人页面 在github 分别建立 mytopia 和 &amp;lt;username&amp;gt;.github.io 的仓库，前者用来存放网页的源文件</description>
     </item>
     
     <item>
@@ -307,15 +223,7 @@ git push -u origin master  可能会出现push 不了的原因。可能需要你
       <pubDate>Tue, 19 Nov 2019 11:23:09 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_hugo_1/</guid>
-      <description>How to Hugo [toc]
-安装篇 Git 安装 略
-Hugo 安装 Windows 下载二进制文件: Windows 安装其实要比 Mac 舒服一些.找到 binary 二进制文件 的Releases, 下载下来安装就行. 下载链接
-添加到Path: 不会的可以谷歌.
-Mac 诚然, 我一开始当然是愉快的使用 brew install hugo 的方式. 问题来了&amp;hellip;由于方方面的原因,这样下载的 hugo 版本太低了,和我喜欢的主题有冲突, 所以 mac 也老老实实和 win 一样找二进制安装然后配置path 吧~
- ps: Mac 软链接有点小坑, 没搞定的谷歌可以解决.
- 启动篇  Hugo 是目前最舒服的markdown 静态网站方案了. 简单五步开始搭建博客吧.
- 第一步: 网站 由于静态网站的便捷性, hugo 建立一个网站只需要一条命令.
-hugo new site mytopiia 此时 hugo 生成的目录结构如下: mytopiia ├── archetypes # 存放生成博客的模版 │ └── default.</description>
+      <description>How to Hugo [toc] 安装篇 Git 安装 略 Hugo 安装 Windows 下载二进制文件: Windows 安装其实要比 Mac 舒服一些.找到 binary 二进制文件 的Releases, 下载下来安装就行. 下载链接 添加到</description>
     </item>
     
     <item>
@@ -324,7 +232,7 @@ hugo new site mytopiia 此时 hugo 生成的目录结构如下: mytopiia ├─�
       <pubDate>Mon, 18 Nov 2019 22:13:51 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/posts/how_to_hugo/</guid>
-      <description>1. Markdown 5分钟使用指南  注意: 该主题的toc渲染有点问题,不支持1.1.1 这种表达(和 visual studio code 里面冲突)   1. Markdown 5分钟使用指南  1.1. Why Markdown How to Markdown 1.2.1. 结构 1.2.2. 段落  1.2.2.1. 分隔符 1.2.2.2. 引用 1.2.2.3. 代码块 1.2.2.3.1. 单行代码 1.2.2.3.2. 多行代码  1.2.3. 句子  1.2.3.1. 换行 1.2.3.2. Bullet Dot  1.2.4. 文本  1.2.4.1. 链接  1.3. Others 1.3.1. 杂   1.1. Why Markdown  Markdown is a lightweight markup language that you can use to add formatting elements to plaintext text documents.</description>
+      <description>1. Markdown 5分钟使用指南 注意: 该主题的toc渲染有点问题,不支持1.1.1 这种表达(和 visual studio code 里面冲突) 1. Markdown 5分钟使用指南 1.1. Why Markdown How to Markdown 1.2.1. 结构 1.2.2. 段落 1.2.2.1.</description>
     </item>
     
     <item>
@@ -333,11 +241,7 @@ hugo new site mytopiia 此时 hugo 生成的目录结构如下: mytopiia ├─�
       <pubDate>Mon, 18 Nov 2019 22:13:43 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/posts/how_to_markdown/</guid>
-      <description>Markdown 5分钟使用指南  Markdown 5分钟使用指南  Why Markdown How to Markdown 结构 段落  分隔符 引用 代码块 单行代码 多行代码  句子  换行 Bullet Dot  文本  链接  Others 杂   Why Markdown  Markdown is a lightweight markup language that you can use to add formatting elements to plaintext text documents.
- Markdown 本质上就是一种标记语言，让你在不需要过度关注文章结构的同时，提供了符合逻辑的文章结构。
-How to Markdown 正如以上所说，Markdown 只是为了让你更舒服的组织好文章架构，那么从以下几个方面来使用则很符合逻辑。
-结构 Markdown 把一篇文章分为如下结构:
- 这是一级标题 这是二级标题 这是三级标题 这是四级标题 这是五级标题  一级标题只能有一个，等价于文章的标题，所有其他等级标题都在一级标题下面。</description>
+      <description>Markdown 5分钟使用指南 Markdown 5分钟使用指南 Why Markdown How to Markdown 结构 段落 分隔符 引用 代码块 单行代码 多行代码 句子 换行 Bullet Dot 文本 链接 Others 杂 Why Markdown Markdown is a lightweight markup language that you can use to add formatting elements to</description>
     </item>
     
     <item>

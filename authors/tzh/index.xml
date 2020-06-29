@@ -16,9 +16,7 @@
       <pubDate>Sat, 15 Feb 2020 14:34:05 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_hugo%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%AF%87/</guid>
-      <description>How to hugo 日常使用篇  本篇介绍如何发布一篇文章并编写shell脚本快捷发布/
-  How to hugo 日常使用篇  本地撰写博文 发布 shell 脚本自动发布 TODO Ref    本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
- 本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D // 默认hugo new出来的文章都有个标签是草稿, -D 指的是build 所有草稿 cd build git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:</description>
+      <description>How to hugo 日常使用篇 本篇介绍如何发布一篇文章并编写shell脚本快捷发布/ How to hugo 日常使用篇 本地撰写博文 发布 shell 脚本自动发布 TODO Ref 本篇文章介绍如何发布</description>
     </item>
     
     <item>
@@ -27,8 +25,7 @@
       <pubDate>Fri, 14 Feb 2020 14:33:55 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_hugo%E5%AE%89%E8%A3%85%E7%AF%87/</guid>
-      <description> How to hugo 安装篇  本篇介绍如何安装 hugo 并将 blog 部署到 github pages.
- </description>
+      <description>How to hugo 安装篇 本篇介绍如何安装 hugo 并将 blog 部署到 github pages.</description>
     </item>
     
     <item>
@@ -37,11 +34,7 @@
       <pubDate>Thu, 13 Feb 2020 18:24:45 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/posts/new_intro/</guid>
-      <description>hugo 日志操作流程 [toc]
- 本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
- 本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D cd build git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:
-cd ./mytopia hugo -D git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 二进制图片怎么办: TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.
-一个很坑的事情, 按照文档添加 search 则会把homepage的介绍挤掉.</description>
+      <description>hugo 日志操作流程 [toc] 本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤 本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的</description>
     </item>
     
     <item>
@@ -50,9 +43,7 @@ cd ./mytopia hugo -D git add . git commit -m &amp;#34;xxx&amp;#34; git push orig
       <pubDate>Tue, 19 Nov 2019 22:31:48 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/diary/201911/</guid>
-      <description> 2019 年 11 月  2019 年 11 月  1119 - 1126 11 19 周二  Thoughts TODO LIST     This is for PRIVATE ONLY !!!
- 1119 - 1126 11 19 周二 Thoughts 今天终于把页面部署好了~ 然后可以舒舒服服的发布,然后在哪里都能看啦.
-TODO LIST deploy 脚本研究 git submodule 是什么意思 文章润色~ 明天要开始输出 kafka 的东西啦~ 然后 Spark 源码也要看起来了!!!  </description>
+      <description>2019 年 11 月 2019 年 11 月 1119 - 1126 11 19 周二 Thoughts TODO LIST This is for PRIVATE ONLY !!! 1119 - 1126 11 19 周二 Thoughts 今天终于把页面部署好了~ 然后可以舒舒服服的发布,然后在哪里都能看啦. TODO LIST deploy 脚</description>
     </item>
     
     <item>
@@ -61,11 +52,7 @@ TODO LIST deploy 脚本研究 git submodule 是什么意思 文章润色~ 明天
       <pubDate>Tue, 19 Nov 2019 13:10:03 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_github_pages/</guid>
-      <description>How to deploy your hugo sites to Github Pages  How to deploy your hugo sites to Github Pages  部署到 Github 个人页面 常见错误 TODO LIST   部署到 Github 个人页面  在github 分别建立 mytopia 和 &amp;lt;username&amp;gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容
- 进入之前教程中的本地目录
-cd /mytopia 将 mytopia 项目关联到远程的 mytopia 仓库
-git remote add origin git@github.com/TangZhongham/mytopia.git 将本地网站全部推送到远程的 mytopia 仓库
-git push -u origin master  可能会出现push 不了的原因。可能需要你 git add .然后git commit -m &amp;quot;first commit&amp;quot;</description>
+      <description>How to deploy your hugo sites to Github Pages How to deploy your hugo sites to Github Pages 部署到 Github 个人页面 常见错误 TODO LIST 部署到 Github 个人页面 在github 分别建立 mytopia 和 &amp;lt;username&amp;gt;.github.io 的仓库，前者用来存放网页的源文件</description>
     </item>
     
     <item>
@@ -74,15 +61,7 @@ git push -u origin master  可能会出现push 不了的原因。可能需要你
       <pubDate>Tue, 19 Nov 2019 11:23:09 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_hugo_1/</guid>
-      <description>How to Hugo [toc]
-安装篇 Git 安装 略
-Hugo 安装 Windows 下载二进制文件: Windows 安装其实要比 Mac 舒服一些.找到 binary 二进制文件 的Releases, 下载下来安装就行. 下载链接
-添加到Path: 不会的可以谷歌.
-Mac 诚然, 我一开始当然是愉快的使用 brew install hugo 的方式. 问题来了&amp;hellip;由于方方面的原因,这样下载的 hugo 版本太低了,和我喜欢的主题有冲突, 所以 mac 也老老实实和 win 一样找二进制安装然后配置path 吧~
- ps: Mac 软链接有点小坑, 没搞定的谷歌可以解决.
- 启动篇  Hugo 是目前最舒服的markdown 静态网站方案了. 简单五步开始搭建博客吧.
- 第一步: 网站 由于静态网站的便捷性, hugo 建立一个网站只需要一条命令.
-hugo new site mytopiia 此时 hugo 生成的目录结构如下: mytopiia ├── archetypes # 存放生成博客的模版 │ └── default.</description>
+      <description>How to Hugo [toc] 安装篇 Git 安装 略 Hugo 安装 Windows 下载二进制文件: Windows 安装其实要比 Mac 舒服一些.找到 binary 二进制文件 的Releases, 下载下来安装就行. 下载链接 添加到</description>
     </item>
     
     <item>
@@ -91,11 +70,7 @@ hugo new site mytopiia 此时 hugo 生成的目录结构如下: mytopiia ├─�
       <pubDate>Mon, 18 Nov 2019 22:13:43 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/posts/how_to_markdown/</guid>
-      <description>Markdown 5分钟使用指南  Markdown 5分钟使用指南  Why Markdown How to Markdown 结构 段落  分隔符 引用 代码块 单行代码 多行代码  句子  换行 Bullet Dot  文本  链接  Others 杂   Why Markdown  Markdown is a lightweight markup language that you can use to add formatting elements to plaintext text documents.
- Markdown 本质上就是一种标记语言，让你在不需要过度关注文章结构的同时，提供了符合逻辑的文章结构。
-How to Markdown 正如以上所说，Markdown 只是为了让你更舒服的组织好文章架构，那么从以下几个方面来使用则很符合逻辑。
-结构 Markdown 把一篇文章分为如下结构:
- 这是一级标题 这是二级标题 这是三级标题 这是四级标题 这是五级标题  一级标题只能有一个，等价于文章的标题，所有其他等级标题都在一级标题下面。</description>
+      <description>Markdown 5分钟使用指南 Markdown 5分钟使用指南 Why Markdown How to Markdown 结构 段落 分隔符 引用 代码块 单行代码 多行代码 句子 换行 Bullet Dot 文本 链接 Others 杂 Why Markdown Markdown is a lightweight markup language that you can use to add formatting elements to</description>
     </item>
     
   </channel>

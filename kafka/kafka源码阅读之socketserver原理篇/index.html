@@ -2,25 +2,11 @@
 <html lang='zh'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='Kafka 源码解析之 socketServer 原理篇  Kafka 是如何做到百万级高并发低延迟的?
- 原理 有别于传统的 thread per connection 模型, Kafka 使用基于 NIO 实现的 Reactor 模型.
-Kafka 使用 nio 实现了自己的 socketServer 网络层代码, 而非常见的 netty、mina 框架, 从性能上来看这一块并不是主要的性能瓶颈.
-kafka socketServer 通信采取的是 NIO 的reactor模式, 是一种事件驱动模式.
-什么是 Reactor 模型  同步的等待多个事件源到达（采用select()实现）
- 将事件多路分解以及分配相应的事件服务进行处理，这个分派采用server集中处理（dispatch）
- 分解的事件以及对应的事件服务应用从分派服务中分离出去（handler）
-  为何需要 Reactor 模型  同步阻塞IO，读写阻塞，线程等待时间过长 在制定线程策略的时候，只能根据CPU的数目来限定可用线程资源，不能根据连接并发数目来制定，也就是连接有限制。否则很难保证对客户端请求的高效和公平。 多线程之间的上下文切换，造成线程使用效率并不高，并且不易扩展 状态数据以及其他需要保持一致的数据，需要采用并发同步控制  Kafka 的 socketServer 如何实现 Reactor 模型 kafka 的架构模型 工作原理： 1）先创建ServerSocketChannel对象并在Selector上注册OP_ACCEPT事件，ServerSocketChannel负责监听指定端口上的连接请求。 2）当客户端发起服务端的网络连接时，服务端的Selector监听到此OP_ACCEPT事件，会触发Acceptor来处理OP_ACCEPT。 3）当Acceptor接收到来自客户端的Socket连接请求时会为这个连接创建响应的SocketChannel，将SocketChannel设置为非阻塞模式，并在Selector上注册其关注的I/O事件，如OP_READ,OP_WRITE。此时，客户端和服务端的Socket连接建立完成。 4）当客户端通过已经建立的SocketChannel连接向服务端发送请求时，服务端的Selector会监听到OP_READ事件，并触发执行相应的处理逻辑（上图中的Reader Handler）。当服务端可以向客户端写数据时，服务端的Selector会监听到OP_WRITE事件，并触发相应的执行逻辑（上图中的Writer Handler）。 这些事情都是在同一个线程完成的，KafkaProducer中的Sender线程以及KafkaConsumer的代码都是这种设计。这样的设计时候客户端这样的并发连接数小，数据量较小的场景，这样对于服务端来说就会有缺点。如：某个请求的处理过程比较复杂会造成线程的阻塞，造成所有的后续请求读无法处理，这就会导致大量的请求超时。为了避免这种情况，就必须要求服务端在读取请求，处理请求已经发送响应等各个环节上必须能迅速的完成，这样就提升了编程的难度，在有些情况下实现不了。而且这种模式不能利用服务器多核多处理器的并行处理能力，造成资源的浪费。 为了满足高并发的需求，服务端需要使用多线程来执行逻辑。我们可以对上述架构做调整，将网络的读写的逻辑和业务处理的逻辑进行拆分，让其由不同的线程池来处理，从而实现多线程处理。 链接：https://www.'>
+<meta name='description' content='Kafka 源码解析之 socketServer 原理篇 Kafka 是如何做到百万级高并发低延迟的? 原理 有别于传统的 thread per connection 模型, Kafka 使用基于 NIO 实现的 Reactor 模型. Kafka 使用 nio 实现了自己的 socketServer 网络层代码'>
 <meta name='theme-color' content='#ffcd00'>
 
 <meta property='og:title' content='Kafka源码阅读之socketServer原理篇 • Mytopia'>
-<meta property='og:description' content='Kafka 源码解析之 socketServer 原理篇  Kafka 是如何做到百万级高并发低延迟的?
- 原理 有别于传统的 thread per connection 模型, Kafka 使用基于 NIO 实现的 Reactor 模型.
-Kafka 使用 nio 实现了自己的 socketServer 网络层代码, 而非常见的 netty、mina 框架, 从性能上来看这一块并不是主要的性能瓶颈.
-kafka socketServer 通信采取的是 NIO 的reactor模式, 是一种事件驱动模式.
-什么是 Reactor 模型  同步的等待多个事件源到达（采用select()实现）
- 将事件多路分解以及分配相应的事件服务进行处理，这个分派采用server集中处理（dispatch）
- 分解的事件以及对应的事件服务应用从分派服务中分离出去（handler）
-  为何需要 Reactor 模型  同步阻塞IO，读写阻塞，线程等待时间过长 在制定线程策略的时候，只能根据CPU的数目来限定可用线程资源，不能根据连接并发数目来制定，也就是连接有限制。否则很难保证对客户端请求的高效和公平。 多线程之间的上下文切换，造成线程使用效率并不高，并且不易扩展 状态数据以及其他需要保持一致的数据，需要采用并发同步控制  Kafka 的 socketServer 如何实现 Reactor 模型 kafka 的架构模型 工作原理： 1）先创建ServerSocketChannel对象并在Selector上注册OP_ACCEPT事件，ServerSocketChannel负责监听指定端口上的连接请求。 2）当客户端发起服务端的网络连接时，服务端的Selector监听到此OP_ACCEPT事件，会触发Acceptor来处理OP_ACCEPT。 3）当Acceptor接收到来自客户端的Socket连接请求时会为这个连接创建响应的SocketChannel，将SocketChannel设置为非阻塞模式，并在Selector上注册其关注的I/O事件，如OP_READ,OP_WRITE。此时，客户端和服务端的Socket连接建立完成。 4）当客户端通过已经建立的SocketChannel连接向服务端发送请求时，服务端的Selector会监听到OP_READ事件，并触发执行相应的处理逻辑（上图中的Reader Handler）。当服务端可以向客户端写数据时，服务端的Selector会监听到OP_WRITE事件，并触发相应的执行逻辑（上图中的Writer Handler）。 这些事情都是在同一个线程完成的，KafkaProducer中的Sender线程以及KafkaConsumer的代码都是这种设计。这样的设计时候客户端这样的并发连接数小，数据量较小的场景，这样对于服务端来说就会有缺点。如：某个请求的处理过程比较复杂会造成线程的阻塞，造成所有的后续请求读无法处理，这就会导致大量的请求超时。为了避免这种情况，就必须要求服务端在读取请求，处理请求已经发送响应等各个环节上必须能迅速的完成，这样就提升了编程的难度，在有些情况下实现不了。而且这种模式不能利用服务器多核多处理器的并行处理能力，造成资源的浪费。 为了满足高并发的需求，服务端需要使用多线程来执行逻辑。我们可以对上述架构做调整，将网络的读写的逻辑和业务处理的逻辑进行拆分，让其由不同的线程池来处理，从而实现多线程处理。 链接：https://www.'>
+<meta property='og:description' content='Kafka 源码解析之 socketServer 原理篇 Kafka 是如何做到百万级高并发低延迟的? 原理 有别于传统的 thread per connection 模型, Kafka 使用基于 NIO 实现的 Reactor 模型. Kafka 使用 nio 实现了自己的 socketServer 网络层代码'>
 <meta property='og:url' content='http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bsocketserver%E5%8E%9F%E7%90%86%E7%AF%87/'>
 <meta property='og:site_name' content='Mytopia'>
 <meta property='og:type' content='article'><meta property='article:section' content='kafka'><meta property='article:published_time' content='2020-05-08T12:00:33&#43;08:00'/><meta property='article:modified_time' content='2020-05-08T12:00:33&#43;08:00'/><meta name='twitter:card' content='summary'>
@@ -176,7 +162,7 @@ kafka socketServer 通信采取的是 NIO 的reactor模式, 是一种事件驱�
   <polyline points="12 6 12 12 15 15"/>
   
 </svg>
-需要2分钟读完
+需要7分钟读完
 </span>
 
 

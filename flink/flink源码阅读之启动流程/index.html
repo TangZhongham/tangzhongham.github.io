@@ -2,13 +2,11 @@
 <html lang='zh'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='Flink源码阅读之启动流程  本文分析了 Flink standalone/yarn 的启动流程
- 先看启动脚本 start-cluster.sh ## 读取默认 config 配置文件 . &#34;$bin&#34;/config.sh # Start the JobManager instance(s) ## 用来定制 shell 环境 -s 开启某个选项 nocasematch 忽略大小写 shopt -s nocasematch ## 支持高可用模式启动 if [[ $HIGH_AVAILABILITY == &#34;zookeeper&#34; ]]; then # HA Mode readMasters echo &#34;Starting HA cluster with ${#MASTERS[@]}masters.&#34; for ((i=0;i&lt;${#MASTERS[@]};&#43;&#43;i)); do master=${MASTERS[i]} webuiport=${WEBUIPORTS[i]} if [ ${MASTERS_ALL_LOCALHOST} = true ] ; then &#34;${FLINK_BIN_DIR}&#34;/jobmanager.sh start &#34;${master}&#34; &#34;${webuiport}&#34; else ssh -n $FLINK_SSH_OPTS $master -- &#34;nohup /bin/bash -l \&#34;${FLINK_BIN_DIR}/jobmanager.'>
+<meta name='description' content='Flink源码阅读之启动流程 本文分析了 Flink standalone/yarn 的启动流程 先看启动脚本 start-cluster.sh ## 读取默认 config 配置文件 . &#34;$bin&#34;/config.sh # Start the JobManager instance(s) ## 用来定制 shell 环境 -s 开启某个选项 nocasematch 忽略大小'>
 <meta name='theme-color' content='#ffcd00'>
 
 <meta property='og:title' content='Flink源码阅读之启动流程 • Mytopia'>
-<meta property='og:description' content='Flink源码阅读之启动流程  本文分析了 Flink standalone/yarn 的启动流程
- 先看启动脚本 start-cluster.sh ## 读取默认 config 配置文件 . &#34;$bin&#34;/config.sh # Start the JobManager instance(s) ## 用来定制 shell 环境 -s 开启某个选项 nocasematch 忽略大小写 shopt -s nocasematch ## 支持高可用模式启动 if [[ $HIGH_AVAILABILITY == &#34;zookeeper&#34; ]]; then # HA Mode readMasters echo &#34;Starting HA cluster with ${#MASTERS[@]}masters.&#34; for ((i=0;i&lt;${#MASTERS[@]};&#43;&#43;i)); do master=${MASTERS[i]} webuiport=${WEBUIPORTS[i]} if [ ${MASTERS_ALL_LOCALHOST} = true ] ; then &#34;${FLINK_BIN_DIR}&#34;/jobmanager.sh start &#34;${master}&#34; &#34;${webuiport}&#34; else ssh -n $FLINK_SSH_OPTS $master -- &#34;nohup /bin/bash -l \&#34;${FLINK_BIN_DIR}/jobmanager.'>
+<meta property='og:description' content='Flink源码阅读之启动流程 本文分析了 Flink standalone/yarn 的启动流程 先看启动脚本 start-cluster.sh ## 读取默认 config 配置文件 . &#34;$bin&#34;/config.sh # Start the JobManager instance(s) ## 用来定制 shell 环境 -s 开启某个选项 nocasematch 忽略大小'>
 <meta property='og:url' content='http://tangzhongham.github.io/flink/flink%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/'>
 <meta property='og:site_name' content='Mytopia'>
 <meta property='og:type' content='article'><meta property='article:section' content='flink'><meta property='article:published_time' content='2020-06-08T16:57:43&#43;08:00'/><meta property='article:modified_time' content='2020-06-08T16:57:43&#43;08:00'/><meta name='twitter:card' content='summary'>
@@ -164,7 +162,7 @@
   <polyline points="12 6 12 12 15 15"/>
   
 </svg>
-需要5分钟读完
+需要3分钟读完
 </span>
 
 

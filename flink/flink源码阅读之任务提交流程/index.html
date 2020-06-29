@@ -2,75 +2,11 @@
 <html lang='zh'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='Flink 源码阅读之任务提交基本流程 org.apache.flink.runtime.blob.BlobServer#run java.net.ServerSocket#accept
-BlobServer.run
-涉及的类:
-org.apache.flink.client.cli.CliFrontend org.apache.flink.client.ClientUtils org.apache.flink.streaming.examples.wordcount.WordCount
-org.apache.flink.runtime.blob.BlobServer#run
-org.apache.flink.runtime.taskexecutor.TaskExecutor#submitTask
-org.apache.flink.runtime.deployment.TaskDeploymentDescriptor
-流程准备 以远程调试模式运行 org.apache.flink.client.cli.CliFrontend
-org.apache.flink.runtime.entrypoint.StandaloneSessionClusterEntrypoint
-org.apache.flink.runtime.taskexecutor.TaskManagerRunner
-使用 ./flink 提交 WordCount.jar, 查看整个任务的流转过程
-org.apache.flink.client.program.PackagedProgram#callMainMethod java.lang.reflect.Method#invoke
-org.apache.flink.streaming.api.environment.StreamContextEnvironment#execute
-org.apache.flink.streaming.api.graph.StreamGraphGenerator#generate
-org.apache.flink.streaming.api.graph.StreamGraphGenerator#transform
-org.apache.flink.streaming.api.environment.StreamExecutionEnvironment#executeAsync(org.apache.flink.streaming.api.graph.StreamGraph)
-org.apache.flink.core.execution.JobListener#onJobSubmitted
-org.apache.flink.client.program.rest.RestClusterClient#submitJob
-JM
-org.apache.flink.runtime.dispatcher.Dispatcher#submitJob log.info(&ldquo;Received JobGraph submission {} ({}).&rdquo;, jobGraph.getJobID(), jobGraph.getName());
-org.apache.flink.runtime.dispatcher.Dispatcher#runJob
-org.apache.flink.runtime.dispatcher.Dispatcher#createJobManagerRunner
-flink-rest-server-netty-worker-thread org.apache.flink.runtime.rest.handler.AbstractRestHandler#handleRequest org.apache.flink.runtime.rest.handler.AbstractRestHandler#respondToRequest
-org.apache.flink.runtime.rpc.akka.AkkaRpcActor#handleRpcMessage
-JM org.apache.flink.runtime.blob.BlobServer#run java.net.ServerSocket#accept
-org.apache.flink.streaming.api.environment.StreamContextEnvironment#execute
-Job 发到 JM 后
-org.apache.flink.runtime.dispatcher.Dispatcher#runJob
-org.apache.flink.runtime.jobmaster.JobMaster#offerSlots
-Scheduler 调度 生成 StreamGraph org.apache.flink.runtime.executiongraph.Execution
-发给 TM RemoteRpcInvocation(submitTask(TaskDeploymentDescriptor, JobMasterId, Time))
-org.apache.flink.runtime.taskexecutor.TaskExecutor#submitTask
-submitTask 方法 new 一个 Task'>
+<meta name='description' content='Flink 源码阅读之任务提交基本流程 org.apache.flink.runtime.blob.BlobServer#run java.net.ServerSocket#accept BlobServer.run 涉及的类: org.apache.flink.client.cli.CliFrontend org.apache.flink.client.ClientUtils org.apache.flink.streaming.examples.wordcount.WordCount org.apache.flink.runtime.blob.BlobServer#run org.apache.flink.runtime.taskexecutor.TaskExecutor#submitTask org.apache.flink.runtime.deployment.TaskDeploymentDescriptor 流程准备 以远程调试模式运行 org.apache.flink.client.cli.CliFrontend org.apache.flink.runtime.entrypoint.StandaloneSessionClusterEntrypoint org.apache.flink.runtime.taskexecutor.TaskManagerRunner 使用 ./flink 提交 WordCount.jar, 查看整个任务的流转过程 org.apache.flink.client.program.PackagedProgram#callMainMethod java.lang.reflect.Method#invoke org.apache.flink.streaming.api.environment.StreamContextEnvironment#execute org.apache.flink.streaming.api.graph.StreamGraphGenerator#generate org.apache.flink.streaming.api.graph.StreamGraphGenerator#transform org.apache.flink.streaming.api.environment.StreamExecutionEnvironment#executeAsync(org.apache.flink.streaming.api.graph.StreamGraph) org.apache.flink.core.execution.JobListener#onJobSubmitted org.apache.flink.client.program.rest.RestClusterClient#submitJob JM'>
 <meta name='theme-color' content='#ffcd00'>
 
 <meta property='og:title' content='Flink源码阅读之任务提交流程 • Mytopia'>
-<meta property='og:description' content='Flink 源码阅读之任务提交基本流程 org.apache.flink.runtime.blob.BlobServer#run java.net.ServerSocket#accept
-BlobServer.run
-涉及的类:
-org.apache.flink.client.cli.CliFrontend org.apache.flink.client.ClientUtils org.apache.flink.streaming.examples.wordcount.WordCount
-org.apache.flink.runtime.blob.BlobServer#run
-org.apache.flink.runtime.taskexecutor.TaskExecutor#submitTask
-org.apache.flink.runtime.deployment.TaskDeploymentDescriptor
-流程准备 以远程调试模式运行 org.apache.flink.client.cli.CliFrontend
-org.apache.flink.runtime.entrypoint.StandaloneSessionClusterEntrypoint
-org.apache.flink.runtime.taskexecutor.TaskManagerRunner
-使用 ./flink 提交 WordCount.jar, 查看整个任务的流转过程
-org.apache.flink.client.program.PackagedProgram#callMainMethod java.lang.reflect.Method#invoke
-org.apache.flink.streaming.api.environment.StreamContextEnvironment#execute
-org.apache.flink.streaming.api.graph.StreamGraphGenerator#generate
-org.apache.flink.streaming.api.graph.StreamGraphGenerator#transform
-org.apache.flink.streaming.api.environment.StreamExecutionEnvironment#executeAsync(org.apache.flink.streaming.api.graph.StreamGraph)
-org.apache.flink.core.execution.JobListener#onJobSubmitted
-org.apache.flink.client.program.rest.RestClusterClient#submitJob
-JM
-org.apache.flink.runtime.dispatcher.Dispatcher#submitJob log.info(&ldquo;Received JobGraph submission {} ({}).&rdquo;, jobGraph.getJobID(), jobGraph.getName());
-org.apache.flink.runtime.dispatcher.Dispatcher#runJob
-org.apache.flink.runtime.dispatcher.Dispatcher#createJobManagerRunner
-flink-rest-server-netty-worker-thread org.apache.flink.runtime.rest.handler.AbstractRestHandler#handleRequest org.apache.flink.runtime.rest.handler.AbstractRestHandler#respondToRequest
-org.apache.flink.runtime.rpc.akka.AkkaRpcActor#handleRpcMessage
-JM org.apache.flink.runtime.blob.BlobServer#run java.net.ServerSocket#accept
-org.apache.flink.streaming.api.environment.StreamContextEnvironment#execute
-Job 发到 JM 后
-org.apache.flink.runtime.dispatcher.Dispatcher#runJob
-org.apache.flink.runtime.jobmaster.JobMaster#offerSlots
-Scheduler 调度 生成 StreamGraph org.apache.flink.runtime.executiongraph.Execution
-发给 TM RemoteRpcInvocation(submitTask(TaskDeploymentDescriptor, JobMasterId, Time))
-org.apache.flink.runtime.taskexecutor.TaskExecutor#submitTask
-submitTask 方法 new 一个 Task'>
+<meta property='og:description' content='Flink 源码阅读之任务提交基本流程 org.apache.flink.runtime.blob.BlobServer#run java.net.ServerSocket#accept BlobServer.run 涉及的类: org.apache.flink.client.cli.CliFrontend org.apache.flink.client.ClientUtils org.apache.flink.streaming.examples.wordcount.WordCount org.apache.flink.runtime.blob.BlobServer#run org.apache.flink.runtime.taskexecutor.TaskExecutor#submitTask org.apache.flink.runtime.deployment.TaskDeploymentDescriptor 流程准备 以远程调试模式运行 org.apache.flink.client.cli.CliFrontend org.apache.flink.runtime.entrypoint.StandaloneSessionClusterEntrypoint org.apache.flink.runtime.taskexecutor.TaskManagerRunner 使用 ./flink 提交 WordCount.jar, 查看整个任务的流转过程 org.apache.flink.client.program.PackagedProgram#callMainMethod java.lang.reflect.Method#invoke org.apache.flink.streaming.api.environment.StreamContextEnvironment#execute org.apache.flink.streaming.api.graph.StreamGraphGenerator#generate org.apache.flink.streaming.api.graph.StreamGraphGenerator#transform org.apache.flink.streaming.api.environment.StreamExecutionEnvironment#executeAsync(org.apache.flink.streaming.api.graph.StreamGraph) org.apache.flink.core.execution.JobListener#onJobSubmitted org.apache.flink.client.program.rest.RestClusterClient#submitJob JM'>
 <meta property='og:url' content='http://tangzhongham.github.io/flink/flink%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E4%BB%BB%E5%8A%A1%E6%8F%90%E4%BA%A4%E6%B5%81%E7%A8%8B/'>
 <meta property='og:site_name' content='Mytopia'>
 <meta property='og:type' content='article'><meta property='article:section' content='flink'><meta property='article:published_time' content='2020-06-08T16:59:22&#43;08:00'/><meta property='article:modified_time' content='2020-06-08T16:59:22&#43;08:00'/><meta name='twitter:card' content='summary'>

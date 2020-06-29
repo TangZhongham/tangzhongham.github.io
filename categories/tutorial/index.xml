@@ -16,9 +16,7 @@
       <pubDate>Sat, 15 Feb 2020 14:34:05 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_hugo%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%AF%87/</guid>
-      <description>How to hugo 日常使用篇  本篇介绍如何发布一篇文章并编写shell脚本快捷发布/
-  How to hugo 日常使用篇  本地撰写博文 发布 shell 脚本自动发布 TODO Ref    本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
- 本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D // 默认hugo new出来的文章都有个标签是草稿, -D 指的是build 所有草稿 cd build git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:</description>
+      <description>How to hugo 日常使用篇 本篇介绍如何发布一篇文章并编写shell脚本快捷发布/ How to hugo 日常使用篇 本地撰写博文 发布 shell 脚本自动发布 TODO Ref 本篇文章介绍如何发布</description>
     </item>
     
     <item>
@@ -27,8 +25,7 @@
       <pubDate>Fri, 14 Feb 2020 14:33:55 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_hugo%E5%AE%89%E8%A3%85%E7%AF%87/</guid>
-      <description> How to hugo 安装篇  本篇介绍如何安装 hugo 并将 blog 部署到 github pages.
- </description>
+      <description>How to hugo 安装篇 本篇介绍如何安装 hugo 并将 blog 部署到 github pages.</description>
     </item>
     
     <item>
@@ -37,11 +34,7 @@
       <pubDate>Thu, 13 Feb 2020 18:24:45 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/posts/new_intro/</guid>
-      <description>hugo 日志操作流程 [toc]
- 本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤
- 本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的博文编辑. hugo new /posts/new_intro.md // 创建一篇新的博文 发布 cd ./mytopia hugo -D cd build git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 注意, 以上这部分推送之后, 页面就更新了, 但是其实本体文件并没有上传到github保存, 建议先如下操作:
-cd ./mytopia hugo -D git add . git commit -m &amp;#34;xxx&amp;#34; git push original master 二进制图片怎么办: TODO deployment 文件撰写  创建了一个改版的sh文件,不知道咋样,试试.
-一个很坑的事情, 按照文档添加 search 则会把homepage的介绍挤掉.</description>
+      <description>hugo 日志操作流程 [toc] 本篇文章介绍如何发布一篇文章并上传到网页端. 一共只有两个步骤 本地撰写博文 cd ./mytopia hugo server -D // 此时开启的是fast render 模式, 会热更新你的</description>
     </item>
     
     <item>
@@ -50,11 +43,7 @@ cd ./mytopia hugo -D git add . git commit -m &amp;#34;xxx&amp;#34; git push orig
       <pubDate>Tue, 19 Nov 2019 13:10:03 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_github_pages/</guid>
-      <description>How to deploy your hugo sites to Github Pages  How to deploy your hugo sites to Github Pages  部署到 Github 个人页面 常见错误 TODO LIST   部署到 Github 个人页面  在github 分别建立 mytopia 和 &amp;lt;username&amp;gt;.github.io 的仓库，前者用来存放网页的源文件，后者用来存放最终展示的网站内容
- 进入之前教程中的本地目录
-cd /mytopia 将 mytopia 项目关联到远程的 mytopia 仓库
-git remote add origin git@github.com/TangZhongham/mytopia.git 将本地网站全部推送到远程的 mytopia 仓库
-git push -u origin master  可能会出现push 不了的原因。可能需要你 git add .然后git commit -m &amp;quot;first commit&amp;quot;</description>
+      <description>How to deploy your hugo sites to Github Pages How to deploy your hugo sites to Github Pages 部署到 Github 个人页面 常见错误 TODO LIST 部署到 Github 个人页面 在github 分别建立 mytopia 和 &amp;lt;username&amp;gt;.github.io 的仓库，前者用来存放网页的源文件</description>
     </item>
     
     <item>
@@ -63,15 +52,7 @@ git push -u origin master  可能会出现push 不了的原因。可能需要你
       <pubDate>Tue, 19 Nov 2019 11:23:09 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/intro/how_to_hugo_1/</guid>
-      <description>How to Hugo [toc]
-安装篇 Git 安装 略
-Hugo 安装 Windows 下载二进制文件: Windows 安装其实要比 Mac 舒服一些.找到 binary 二进制文件 的Releases, 下载下来安装就行. 下载链接
-添加到Path: 不会的可以谷歌.
-Mac 诚然, 我一开始当然是愉快的使用 brew install hugo 的方式. 问题来了&amp;hellip;由于方方面的原因,这样下载的 hugo 版本太低了,和我喜欢的主题有冲突, 所以 mac 也老老实实和 win 一样找二进制安装然后配置path 吧~
- ps: Mac 软链接有点小坑, 没搞定的谷歌可以解决.
- 启动篇  Hugo 是目前最舒服的markdown 静态网站方案了. 简单五步开始搭建博客吧.
- 第一步: 网站 由于静态网站的便捷性, hugo 建立一个网站只需要一条命令.
-hugo new site mytopiia 此时 hugo 生成的目录结构如下: mytopiia ├── archetypes # 存放生成博客的模版 │ └── default.</description>
+      <description>How to Hugo [toc] 安装篇 Git 安装 略 Hugo 安装 Windows 下载二进制文件: Windows 安装其实要比 Mac 舒服一些.找到 binary 二进制文件 的Releases, 下载下来安装就行. 下载链接 添加到</description>
     </item>
     
   </channel>

@@ -2,15 +2,11 @@
 <html lang='zh'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='Kafka 源码解析之 broker启动  基于 kafka 2.3.0 C:/kafka created on 0327 modified on 0410 学习了 scala 之后我又来了
-  Kafka 启动脚本分析 Kafka 核心主类 kafka.Kafka 由于作者的 java 知识相对薄弱，源码注解可能做的比较细
-object Kafka extends Logging { // 读取配置文件方法  def getPropsFromArgs(args: Array[String]): Properties = { // 处理命令行参数的解析工具 OptionParser  val optionParser = new OptionParser(false) // 允许覆盖内容  val overrideOpt = optionParser.accepts(&#34;override&#34;, &#34;Optional property that should override values set in server.properties file&#34;) .withRequiredArg() .ofType(classOf[String]) // This is just to make the parameter show up in the help output, we are not actually using this due the  // fact that this class ignores the first parameter which is interpreted as positional and mandatory  // but would not be mandatory if --version is specified  // This is a bit of an ugly crutch till we get a chance to rework the entire command line parsing  val versionOpt = optionParser.'>
+<meta name='description' content='Kafka 源码解析之 broker启动 基于 kafka 2.3.0 C:/kafka created on 0327 modified on 0410 学习了 scala 之后我又来了 Kafka 启动脚本分析 Kafka 核心主类 kafka.Kafka 由于作者的 java 知识相对薄弱，源码注解可能做的比'>
 <meta name='theme-color' content='#ffcd00'>
 
 <meta property='og:title' content='Kafka源码阅读之broker启动 • Mytopia'>
-<meta property='og:description' content='Kafka 源码解析之 broker启动  基于 kafka 2.3.0 C:/kafka created on 0327 modified on 0410 学习了 scala 之后我又来了
-  Kafka 启动脚本分析 Kafka 核心主类 kafka.Kafka 由于作者的 java 知识相对薄弱，源码注解可能做的比较细
-object Kafka extends Logging { // 读取配置文件方法  def getPropsFromArgs(args: Array[String]): Properties = { // 处理命令行参数的解析工具 OptionParser  val optionParser = new OptionParser(false) // 允许覆盖内容  val overrideOpt = optionParser.accepts(&#34;override&#34;, &#34;Optional property that should override values set in server.properties file&#34;) .withRequiredArg() .ofType(classOf[String]) // This is just to make the parameter show up in the help output, we are not actually using this due the  // fact that this class ignores the first parameter which is interpreted as positional and mandatory  // but would not be mandatory if --version is specified  // This is a bit of an ugly crutch till we get a chance to rework the entire command line parsing  val versionOpt = optionParser.'>
+<meta property='og:description' content='Kafka 源码解析之 broker启动 基于 kafka 2.3.0 C:/kafka created on 0327 modified on 0410 学习了 scala 之后我又来了 Kafka 启动脚本分析 Kafka 核心主类 kafka.Kafka 由于作者的 java 知识相对薄弱，源码注解可能做的比'>
 <meta property='og:url' content='http://tangzhongham.github.io/kafka/kafka%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8Bbroker%E5%90%AF%E5%8A%A8/'>
 <meta property='og:site_name' content='Mytopia'>
 <meta property='og:type' content='article'><meta property='article:section' content='kafka'><meta property='article:published_time' content='2020-04-17T17:44:51&#43;08:00'/><meta property='article:modified_time' content='2020-04-17T17:44:51&#43;08:00'/><meta name='twitter:card' content='summary'>
@@ -166,7 +162,7 @@ object Kafka extends Logging { // 读取配置文件方法  def getPropsFromArgs
   <polyline points="12 6 12 12 15 15"/>
   
 </svg>
-需要7分钟读完
+需要6分钟读完
 </span>
 
 

@@ -2,13 +2,11 @@
 <html lang='zh'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='Java 基础运维工具使用   jps JVM Process Status Tool, 用于列出正在运行的虚拟机进程. 用于查看pod 内是否存在进程挂掉/验证是否手动添加JVM参数。 inceptor/slipstream 可以配合 grep 查询虚拟机启动时显式指定的JVM参数。显示没有jinfo全，但是够用。
-[root@linux-158-15 ~]# jps -v | more 43 InceptorServer2 -agentpath:/usr/lib/inceptor/bin/libagent.so -XX:MetaspaceSiz e=512m -XX:MaxMetaspaceSize=2g -Djava.net.preferIPv4Stack=true -Dsun.net.inetadd r.ttl=60 -XX:&#43;UseParNewGC -XX:NewRatio=4 -XX:&#43;CMSClassUnloadingEnabled -XX:MinHe apFreeRatio=100 -XX:MaxHeapFreeRatio=100 -XX:CMSMaxAbortablePrecleanTime=1000 -X X:&#43;ExplicitGCInvokesConcurrent -XX:MaxTenuringThreshold=4 -XX:TargetSurvivorRati o=8 -XX:&#43;HeapDumpOnOutOfMemoryError -XX:&#43;UseConcMarkSweepGC -XX:CMSInitiatingOcc upancyFraction=70 -Xms2048m -Xmx8192m -verbose:gc -XX:&#43;PrintGCDetails -XX:&#43;Print GCDateStamps -XX:&#43;PrintGCTimeStamps -Djava.library.path=/usr/lib/hadoop/lib/nati ve -Dspark.akka.threads=8 -Dspark.akka.threads=8 -Dspark.rdd.compress=false -Dsp ark.storage.memoryFraction=0.5 -Dspark.driver.host=linux-158-15 -Dclass.default. serializer= -Dspark.fastdisk.dir=/vdir/mnt/ramdisk/ngmr -Dspark.storage.fastdisk Fraction=0.5 -Dngmr.task.pipeline=false -Dngmr.task.pipeline.start.fraction=0.5 -Dngmr.'>
+<meta name='description' content='Java 基础运维工具使用 jps JVM Process Status Tool, 用于列出正在运行的虚拟机进程. 用于查看pod 内是否存在进程挂掉/验证是否手动添加JVM参数。 inceptor/slipstream 可以配合 grep 查询虚拟'>
 <meta name='theme-color' content='#ffcd00'>
 
 <meta property='og:title' content='JVM工具使用 • Mytopia'>
-<meta property='og:description' content='Java 基础运维工具使用   jps JVM Process Status Tool, 用于列出正在运行的虚拟机进程. 用于查看pod 内是否存在进程挂掉/验证是否手动添加JVM参数。 inceptor/slipstream 可以配合 grep 查询虚拟机启动时显式指定的JVM参数。显示没有jinfo全，但是够用。
-[root@linux-158-15 ~]# jps -v | more 43 InceptorServer2 -agentpath:/usr/lib/inceptor/bin/libagent.so -XX:MetaspaceSiz e=512m -XX:MaxMetaspaceSize=2g -Djava.net.preferIPv4Stack=true -Dsun.net.inetadd r.ttl=60 -XX:&#43;UseParNewGC -XX:NewRatio=4 -XX:&#43;CMSClassUnloadingEnabled -XX:MinHe apFreeRatio=100 -XX:MaxHeapFreeRatio=100 -XX:CMSMaxAbortablePrecleanTime=1000 -X X:&#43;ExplicitGCInvokesConcurrent -XX:MaxTenuringThreshold=4 -XX:TargetSurvivorRati o=8 -XX:&#43;HeapDumpOnOutOfMemoryError -XX:&#43;UseConcMarkSweepGC -XX:CMSInitiatingOcc upancyFraction=70 -Xms2048m -Xmx8192m -verbose:gc -XX:&#43;PrintGCDetails -XX:&#43;Print GCDateStamps -XX:&#43;PrintGCTimeStamps -Djava.library.path=/usr/lib/hadoop/lib/nati ve -Dspark.akka.threads=8 -Dspark.akka.threads=8 -Dspark.rdd.compress=false -Dsp ark.storage.memoryFraction=0.5 -Dspark.driver.host=linux-158-15 -Dclass.default. serializer= -Dspark.fastdisk.dir=/vdir/mnt/ramdisk/ngmr -Dspark.storage.fastdisk Fraction=0.5 -Dngmr.task.pipeline=false -Dngmr.task.pipeline.start.fraction=0.5 -Dngmr.'>
+<meta property='og:description' content='Java 基础运维工具使用 jps JVM Process Status Tool, 用于列出正在运行的虚拟机进程. 用于查看pod 内是否存在进程挂掉/验证是否手动添加JVM参数。 inceptor/slipstream 可以配合 grep 查询虚拟'>
 <meta property='og:url' content='http://tangzhongham.github.io/java/jvm%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/'>
 <meta property='og:site_name' content='Mytopia'>
 <meta property='og:type' content='article'><meta property='article:section' content='java'><meta property='article:published_time' content='2020-06-08T17:04:06&#43;08:00'/><meta property='article:modified_time' content='2020-06-08T17:04:06&#43;08:00'/><meta name='twitter:card' content='summary'>
@@ -164,7 +162,7 @@
   <polyline points="12 6 12 12 15 15"/>
   
 </svg>
-需要2分钟读完
+需要5分钟读完
 </span>
 
 

@@ -16,9 +16,7 @@
       <pubDate>Tue, 19 Nov 2019 22:31:48 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/diary/201911/</guid>
-      <description> 2019 年 11 月  2019 年 11 月  1119 - 1126 11 19 周二  Thoughts TODO LIST     This is for PRIVATE ONLY !!!
- 1119 - 1126 11 19 周二 Thoughts 今天终于把页面部署好了~ 然后可以舒舒服服的发布,然后在哪里都能看啦.
-TODO LIST deploy 脚本研究 git submodule 是什么意思 文章润色~ 明天要开始输出 kafka 的东西啦~ 然后 Spark 源码也要看起来了!!!  </description>
+      <description>2019 年 11 月 2019 年 11 月 1119 - 1126 11 19 周二 Thoughts TODO LIST This is for PRIVATE ONLY !!! 1119 - 1126 11 19 周二 Thoughts 今天终于把页面部署好了~ 然后可以舒舒服服的发布,然后在哪里都能看啦. TODO LIST deploy 脚</description>
     </item>
     
     <item>
@@ -27,7 +25,7 @@ TODO LIST deploy 脚本研究 git submodule 是什么意思 文章润色~ 明天
       <pubDate>Mon, 18 Nov 2019 22:13:51 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/posts/how_to_hugo/</guid>
-      <description>1. Markdown 5分钟使用指南  注意: 该主题的toc渲染有点问题,不支持1.1.1 这种表达(和 visual studio code 里面冲突)   1. Markdown 5分钟使用指南  1.1. Why Markdown How to Markdown 1.2.1. 结构 1.2.2. 段落  1.2.2.1. 分隔符 1.2.2.2. 引用 1.2.2.3. 代码块 1.2.2.3.1. 单行代码 1.2.2.3.2. 多行代码  1.2.3. 句子  1.2.3.1. 换行 1.2.3.2. Bullet Dot  1.2.4. 文本  1.2.4.1. 链接  1.3. Others 1.3.1. 杂   1.1. Why Markdown  Markdown is a lightweight markup language that you can use to add formatting elements to plaintext text documents.</description>
+      <description>1. Markdown 5分钟使用指南 注意: 该主题的toc渲染有点问题,不支持1.1.1 这种表达(和 visual studio code 里面冲突) 1. Markdown 5分钟使用指南 1.1. Why Markdown How to Markdown 1.2.1. 结构 1.2.2. 段落 1.2.2.1.</description>
     </item>
     
     <item>
@@ -36,11 +34,7 @@ TODO LIST deploy 脚本研究 git submodule 是什么意思 文章润色~ 明天
       <pubDate>Mon, 18 Nov 2019 22:13:43 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/posts/how_to_markdown/</guid>
-      <description>Markdown 5分钟使用指南  Markdown 5分钟使用指南  Why Markdown How to Markdown 结构 段落  分隔符 引用 代码块 单行代码 多行代码  句子  换行 Bullet Dot  文本  链接  Others 杂   Why Markdown  Markdown is a lightweight markup language that you can use to add formatting elements to plaintext text documents.
- Markdown 本质上就是一种标记语言，让你在不需要过度关注文章结构的同时，提供了符合逻辑的文章结构。
-How to Markdown 正如以上所说，Markdown 只是为了让你更舒服的组织好文章架构，那么从以下几个方面来使用则很符合逻辑。
-结构 Markdown 把一篇文章分为如下结构:
- 这是一级标题 这是二级标题 这是三级标题 这是四级标题 这是五级标题  一级标题只能有一个，等价于文章的标题，所有其他等级标题都在一级标题下面。</description>
+      <description>Markdown 5分钟使用指南 Markdown 5分钟使用指南 Why Markdown How to Markdown 结构 段落 分隔符 引用 代码块 单行代码 多行代码 句子 换行 Bullet Dot 文本 链接 Others 杂 Why Markdown Markdown is a lightweight markup language that you can use to add formatting elements to</description>
     </item>
     
   </channel>
