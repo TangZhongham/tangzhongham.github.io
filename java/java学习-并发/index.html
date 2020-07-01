@@ -2,11 +2,11 @@
 <html lang='zh'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content=''>
+<meta name='description' content='Java 并发 记录在各个地方学到的小知识, 起常看常新和弥补作用 并发知识索引: 什么是线程, 线程的状态, 线程可以干嘛, 为了解决线程干嘛带来的新问题的解决'>
 <meta name='theme-color' content='#ffcd00'>
 
 <meta property='og:title' content='Java学习 并发 • Mytopia'>
-<meta property='og:description' content=''>
+<meta property='og:description' content='Java 并发 记录在各个地方学到的小知识, 起常看常新和弥补作用 并发知识索引: 什么是线程, 线程的状态, 线程可以干嘛, 为了解决线程干嘛带来的新问题的解决'>
 <meta property='og:url' content='http://tangzhongham.github.io/java/java%E5%AD%A6%E4%B9%A0-%E5%B9%B6%E5%8F%91/'>
 <meta property='og:site_name' content='Mytopia'>
 <meta property='og:type' content='article'><meta property='article:section' content='java'><meta property='article:published_time' content='2020-06-29T18:16:04&#43;08:00'/><meta property='article:modified_time' content='2020-06-29T18:16:04&#43;08:00'/><meta name='twitter:card' content='summary'>
@@ -162,7 +162,7 @@
   <polyline points="12 6 12 12 15 15"/>
   
 </svg>
-需要0分钟读完
+需要1分钟读完
 </span>
 
 
@@ -177,6 +177,45 @@
 
   <div class='container entry-content'>
   
+
+<h1 id="java-并发">Java 并发</h1>
+
+<blockquote>
+<p>记录在各个地方学到的小知识, 起常看常新和弥补作用</p>
+</blockquote>
+
+<p>并发知识索引:</p>
+
+<p>什么是线程, 线程的状态, 线程可以干嘛, 为了解决线程干嘛带来的新问题的解决方案.</p>
+
+<h2 id="java-核心技术">《Java 核心技术》</h2>
+
+<p>Runnable 状态是因为: 此时线程可能正在运行也可能没在运行, 要由操作系统为线程提供具体的运行时间, 线程调度的细节依赖于操作系统提供的服务.</p>
+
+<p>线程的状态: New、Runnable、Terminated、+ 并发所产生的三个condition: Blocked、Waiting、Timed Waiting.</p>
+
+<p>在 Race Condition 竞态条件下, 同步的几种锁使用方式:</p>
+
+<ol>
+<li>synchronized, 不够灵活</li>
+<li>ReentrantLock, 灵活, 需要在 finally unlock</li>
+<li>使用object 自带的内部锁 锁自己(flink 常用) synchronized (lock) {}</li>
+</ol>
+
+<p>条件对象的使用需要注意: if a &gt; 0 , xxx , 这两步中间可能就导致不一致, 可以用 Condition 来操作</p>
+
+<p>如果是实例字段的话使用 volatile 关键字.</p>
+
+<p>stop 方法不会执行 finally 语句块, 导致一些锁得不到释放, 因此不再使用.</p>
+
+<ul class="task-list">
+<li><label><input type="checkbox" disabled class="task-list-item"> BlockingQueue 常用的几个基本实现原理.</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> 起线程开销大, 涉及到和操作系统的交互, 因此有线程池. Executors 常用方法.</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> Fork Join 基本原理 (akka 使用)</label></li>
+</ul>
+
+<h2 id="开源世界">开源世界</h2>
+
 </div>
 
   
