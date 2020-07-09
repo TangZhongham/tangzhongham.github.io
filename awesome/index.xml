@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Awesomes on Mytopia</title>
+    <link>http://tangzhongham.github.io/awesome/</link>
+    <description>Recent content in Awesomes on Mytopia</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Sun, 05 Jul 2020 01:27:52 +0800</lastBuildDate>
+    
+	<atom:link href="http://tangzhongham.github.io/awesome/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Mac</title>
+      <link>http://tangzhongham.github.io/awesome/mac/</link>
+      <pubDate>Sun, 05 Jul 2020 01:27:52 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/awesome/mac/</guid>
+      <description>My Awesome Mac CheatSheet 1440 hidden bar Pocket cmd + s 直接保存 Chrome option + cmd + arrow tab 左右移动 shift + t 所有tab 搜索 （vim 插件 窗口 Magnet ctrl + option + arrow 左右半边 ctrl + option + u/i/jk 四分之一边 ctrl + option + d/f/g 三</description>
+    </item>
+    
+  </channel>
+</rss>

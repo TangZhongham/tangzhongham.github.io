@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Mytopia</title>
@@ -9,6 +9,24 @@
     
 	<atom:link href="http://tangzhongham.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Mac</title>
+      <link>http://tangzhongham.github.io/awesome/mac/</link>
+      <pubDate>Sun, 05 Jul 2020 01:27:52 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/awesome/mac/</guid>
+      <description>My Awesome Mac CheatSheet 1440 hidden bar Pocket cmd + s 直接保存 Chrome option + cmd + arrow tab 左右移动 shift + t 所有tab 搜索 （vim 插件 窗口 Magnet ctrl + option + arrow 左右半边 ctrl + option + u/i/jk 四分之一边 ctrl + option + d/f/g 三</description>
+    </item>
+    
+    <item>
+      <title>Me</title>
+      <link>http://tangzhongham.github.io/java/me/</link>
+      <pubDate>Thu, 02 Jul 2020 19:05:57 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/java/me/</guid>
+      <description>the Way to become a Computer Scientist 记录自己成为一名计算机科学家的成长之路. 20200702: 第一次编译IDEA运行一个商业项目. yeah~~ 才发现自己把mac 搞坏了&amp;hellip;可能还</description>
+    </item>
     
     <item>
       <title>Java学习 JVM</title>
