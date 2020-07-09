@@ -11,6 +11,15 @@
     
     
     <item>
+      <title>Hugo_bug</title>
+      <link>http://tangzhongham.github.io/intro/hugo_bug/</link>
+      <pubDate>Thu, 09 Jul 2020 18:26:37 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/intro/hugo_bug/</guid>
+      <description>hugo 碰见的bug们 上周自己手贱，把mac系统搞坏了，结果后来只有抹掉磁盘重装解决。。。结果这么一折腾，hugo装上报错。 Error: Error building site: render of &amp;#34;404&amp;#34; failed: execute of template</description>
+    </item>
+    
+    <item>
       <title>Mac</title>
       <link>http://tangzhongham.github.io/awesome/mac/</link>
       <pubDate>Sun, 05 Jul 2020 01:27:52 +0800</pubDate>

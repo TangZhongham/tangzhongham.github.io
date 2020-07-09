@@ -5,10 +5,19 @@
     <link>http://tangzhongham.github.io/intro/</link>
     <description>Recent content in Intros on Mytopia</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sat, 15 Feb 2020 14:34:05 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 09 Jul 2020 18:26:37 +0800</lastBuildDate>
     
 	<atom:link href="http://tangzhongham.github.io/intro/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Hugo_bug</title>
+      <link>http://tangzhongham.github.io/intro/hugo_bug/</link>
+      <pubDate>Thu, 09 Jul 2020 18:26:37 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/intro/hugo_bug/</guid>
+      <description>hugo 碰见的bug们 上周自己手贱，把mac系统搞坏了，结果后来只有抹掉磁盘重装解决。。。结果这么一折腾，hugo装上报错。 Error: Error building site: render of &amp;#34;404&amp;#34; failed: execute of template</description>
+    </item>
     
     <item>
       <title>How_to_hugo日常使用篇</title>
