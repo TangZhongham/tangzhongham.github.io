@@ -11,6 +11,15 @@
     
     
     <item>
+      <title>Quantaxis_install</title>
+      <link>http://tangzhongham.github.io/quant/quantaxis_install/</link>
+      <pubDate>Fri, 17 Jul 2020 17:34:59 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/quant/quantaxis_install/</guid>
+      <description>QUANTAXIS 安装篇 小白建议直接 Docker 安装，这里介绍如何安装本地版本，两个版本都可以读写一份数据，本地版本为了更好的看代码。 1.首先打开pycharm，虚拟</description>
+    </item>
+    
+    <item>
       <title>Hugo_bug</title>
       <link>http://tangzhongham.github.io/intro/hugo_bug/</link>
       <pubDate>Thu, 09 Jul 2020 18:26:37 +0800</pubDate>
