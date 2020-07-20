@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Rusts on Mytopia</title>
+    <link>http://tangzhongham.github.io/rust/</link>
+    <description>Recent content in Rusts on Mytopia</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Mon, 20 Jul 2020 18:30:23 +0800</lastBuildDate>
+    
+	<atom:link href="http://tangzhongham.github.io/rust/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Rust_intro</title>
+      <link>http://tangzhongham.github.io/rust/rust_intro/</link>
+      <pubDate>Mon, 20 Jul 2020 18:30:23 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/rust/rust_intro/</guid>
+      <description>Rust 入门指南 How to install rust and offer learning materials start rust 项目学习 rust 安装rust环境 wget https://mirrors.ustc.edu.cn/rust-static/rustup/dist/x86_64-apple-darwin/rustup-init chmod +x ./rustup-init RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup ./rustup-init # Cargo 添加国内源 echo &amp;#34;RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup&amp;#34; &amp;gt;&amp;gt; ~./env # 添加国内源环境变量 vi ~/.zshrc （bash 的话 bashr</description>
+    </item>
+    
+  </channel>
+</rss>
