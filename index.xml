@@ -16,7 +16,7 @@
       <pubDate>Mon, 20 Jul 2020 18:30:23 +0800</pubDate>
       
       <guid>http://tangzhongham.github.io/rust/rust_intro/</guid>
-      <description>Rust 入门指南 How to install rust and offer learning materials start rust 项目学习 rust 安装rust环境 wget https://mirrors.ustc.edu.cn/rust-static/rustup/dist/x86_64-apple-darwin/rustup-init chmod +x ./rustup-init RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup ./rustup-init # Cargo 添加国内源 echo &amp;#34;RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup&amp;#34; &amp;gt;&amp;gt; ~./env # 添加国内源环境变量 vi ~/.zshrc （bash 的话 bashr</description>
+      <description>Rust 入门指南 How to install rust and offer learning materials start rust 项目学习 rust 添加自定义股票列表 安装rust环境 wget https://mirrors.ustc.edu.cn/rust-static/rustup/dist/x86_64-apple-darwin/rustup-init chmod +x ./rustup-init RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup ./rustup-init # Cargo 添加国内源 echo &amp;#34;RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup&amp;#34; &amp;gt;&amp;gt; ~./env # 添加国内源环境变量 vi ~/.zshrc （ba</description>
     </item>
     
     <item>
