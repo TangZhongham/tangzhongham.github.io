@@ -11,6 +11,15 @@
     
     
     <item>
+      <title>Redo_blog</title>
+      <link>http://tangzhongham.github.io/posts/redo_blog/</link>
+      <pubDate>Tue, 29 Dec 2020 22:23:08 +0800</pubDate>
+      
+      <guid>http://tangzhongham.github.io/posts/redo_blog/</guid>
+      <description>重新弄blog 搜索 评论系统支持 二级标题？ 404 搜索 config.toml 添加 [params.search] client = &amp;#34;fuse&amp;#34; 添加search.md在 /content 目录即可。 --- type: page layout: search outputs: - html - json --- 添加评论功能&amp;ndas</description>
+    </item>
+    
+    <item>
       <title>Rust_intro</title>
       <link>http://tangzhongham.github.io/rust/rust_intro/</link>
       <pubDate>Mon, 20 Jul 2020 18:30:23 +0800</pubDate>
@@ -291,10 +300,37 @@
     
     <item>
       <title></title>
-      <link>http://tangzhongham.github.io/page/search/</link>
+      <link>http://tangzhongham.github.io/contentt/page/search/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://tangzhongham.github.io/page/search/</guid>
+      <guid>http://tangzhongham.github.io/contentt/page/search/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://tangzhongham.github.io/pagge/search/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tangzhongham.github.io/pagge/search/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://tangzhongham.github.io/pagge/search/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tangzhongham.github.io/pagge/search/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://tangzhongham.github.io/search/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tangzhongham.github.io/search/</guid>
       <description></description>
     </item>
     

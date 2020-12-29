@@ -3,6 +3,17 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://tangzhongham.github.io/posts/</loc>
+    <lastmod>2020-12-29T22:23:08+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://tangzhongham.github.io/posts/redo_blog/</loc>
+    <lastmod>2020-12-29T22:23:08+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://tangzhongham.github.io/rust/rust_intro/</loc>
     <lastmod>2020-07-20T18:30:23+08:00</lastmod>
   </url>
@@ -219,12 +230,6 @@
   </url>
   
   <url>
-    <loc>http://tangzhongham.github.io/posts/</loc>
-    <lastmod>2020-02-13T18:24:45+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://tangzhongham.github.io/about/</loc>
     <lastmod>2019-12-31T17:04:51+08:00</lastmod>
   </url>
@@ -301,11 +306,28 @@
   </url>
   
   <url>
-    <loc>http://tangzhongham.github.io/page/search/</loc>
+    <loc>http://tangzhongham.github.io/contentt/page/search/</loc>
   </url>
   
   <url>
-    <loc>http://tangzhongham.github.io/page/</loc>
+    <loc>http://tangzhongham.github.io/pagge/search/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tangzhongham.github.io/pagge/search/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tangzhongham.github.io/search/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tangzhongham.github.io/contentt/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://tangzhongham.github.io/pagge/</loc>
     <priority>0</priority>
   </url>
   

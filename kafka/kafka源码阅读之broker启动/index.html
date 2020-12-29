@@ -73,6 +73,18 @@
 
 
 </section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'></span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='&hellip;'>
+    </label></form>
+
+</section>
 </div>
 
   <div class='sidebar-overlay'></div>
@@ -599,7 +611,15 @@ KafkaScheduler是一个基于java.util.concurrent.ScheduledThreadPoolExecutor的
 </nav>
 
 
-
+<section id='comments' class='comments'>
+  <div class='container sep-before'>
+    <div class='comments-area'><script src='https://utteranc.es/client.js'
+  repo='TangZhongham/blog-comments' issue-term='pathname'
+  crossorigin='anonymous' async>
+</script>
+</div>
+  </div>
+</section>
 
       </main>
 
