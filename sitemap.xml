@@ -3,6 +3,17 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://tangzhongham.github.io/escape/</loc>
+    <lastmod>2020-12-30T18:23:47+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://tangzhongham.github.io/escape/intro/</loc>
+    <lastmod>2020-12-30T18:23:47+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://tangzhongham.github.io/posts/</loc>
     <lastmod>2020-12-29T22:23:08+08:00</lastmod>
     <priority>0</priority>
